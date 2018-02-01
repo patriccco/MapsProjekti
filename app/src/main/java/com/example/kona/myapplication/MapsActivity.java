@@ -84,20 +84,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null) {
                     koord = (Double) dataSnapshot.child("K1").getValue();
                     koord2 = (Double) dataSnapshot.child("K2").getValue();
                     Log.d(TAG, "Value is: " + getKoord());
                     Log.d(TAG, "Value is: " + koord2);
-                } else {
-                    koord = 100;
-                }
+
 
                 // Add a marker in Sydney and move the camera
                 LatLng sydney = new LatLng(koord, koord2);
                 Log.d(TAG, "Value is: " + getKoord());
                 Log.d(TAG, "Value is: " + sydney);
-                mMap.addMarker(new MarkerOptions().position(sydney).title("EI Sydney"));
+                mMap.addMarker(new MarkerOptions().position(sydney).title("Bootyhill"));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
             }
 
