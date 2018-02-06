@@ -253,6 +253,7 @@ public class MapsActivity extends FragmentActivity
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+        double b;
         try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.
