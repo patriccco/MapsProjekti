@@ -2,9 +2,11 @@ package com.example.kona.myapplication;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Looper;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -58,6 +60,7 @@ public class MapsActivity extends FragmentActivity
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
     Marker locicon;
     FirebaseAuth auth = FirebaseAuth.getInstance();
+    String userinfo = auth.getUid();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
 
 
@@ -65,9 +68,7 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_maps);
         mLayout = findViewById(R.id.text);
         startLocationUpdates();
@@ -98,18 +99,20 @@ public class MapsActivity extends FragmentActivity
         boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         if (statusOfGPS == false){
-            Snackbar.make(mLayout, "Location access is required to display the preview.",
+            Snackbar.make(mLayout, "Turn on GPS.",
                     Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     // Request the permission
-                    ActivityCompat.requestPermissions(MapsActivity.this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            REQUEST_FINE_LOCATION);
+                    startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+
+
+                    getLastLocation();
                 }
             }).show();
 
         }
+
         if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback() {
@@ -122,34 +125,18 @@ public class MapsActivity extends FragmentActivity
                     Looper.myLooper());
         }
         else {
-            checkPermissions();
+            getLastLocation();
+            checkPermission();
         }
     }
 
     public void onLocationChanged(Location location) {
+
         DatabaseReference userRef = database.getReference("Player");
-        userRef.child("User").addValueEventListener(new ValueEventListener() {
+        userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String UID = (String) dataSnapshot.child("uid").getValue();
-                if (auth.getUid() == UID){
-
-                    Snackbar.make(mLayout, "UID: " + UID,
-                            Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    }).show();
-                }
-                else{
-                    Snackbar.make(mLayout, "False ",
-                            Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    }).show();
-
-                }
+                String UID = (String)dataSnapshot.child(userinfo).getValue();
 
 
 
@@ -161,31 +148,11 @@ public class MapsActivity extends FragmentActivity
             }
         });
 
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE );
-        boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        if (statusOfGPS == false){
-            Snackbar.make(mLayout, "Location access is required to display the preview.",
-                    Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Request the permission
-                    ActivityCompat.requestPermissions(MapsActivity.this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            REQUEST_FINE_LOCATION);
-                }
-            }).show();
-
-        }
-
-
 
         if (locicon != null)
         {
             locicon.remove();
         }
-
-
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         LatLng loc = new LatLng(latitude, longitude);
@@ -196,10 +163,6 @@ public class MapsActivity extends FragmentActivity
                 .title("You")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.rsz_lautaus)));
 
-
-
-
-
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(loc)
                 .zoom(17)                    // Sets the orientation of the camera to east
@@ -208,30 +171,13 @@ public class MapsActivity extends FragmentActivity
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         // New location has now been determined
+
     }
 
     public void getLastLocation() {
         // Get last known recent location using new Google Play Services SDK (v11+)
         FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
-
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            return;
-        }
-        else{
-            Snackbar.make(mLayout, "Location access is required to display the preview.",
-                    Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Request the permission
-                    ActivityCompat.requestPermissions(MapsActivity.this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            REQUEST_FINE_LOCATION);
-                }
-            }).show();
-        }
+        if (checkPermission()){
         locationClient.getLastLocation()
                 .addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
@@ -261,7 +207,7 @@ public class MapsActivity extends FragmentActivity
                             }
                         }).show();
                     }
-                });
+                });}
     }
 
 
@@ -286,13 +232,6 @@ public class MapsActivity extends FragmentActivity
 
 
 
-        if (checkPermissions()) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-
-            }
-        }
         // Write a message to the database
 
         DatabaseReference myRef = database.getReference("Koordinaatit");
@@ -318,7 +257,7 @@ public class MapsActivity extends FragmentActivity
         });
     }
 
-        private boolean checkPermissions() {
+        private boolean checkPermission() {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 return true;
@@ -338,6 +277,7 @@ public class MapsActivity extends FragmentActivity
                     ActivityCompat.requestPermissions(MapsActivity.this,
                             new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                             REQUEST_FINE_LOCATION);
+                    startLocationUpdates();
                 }
             }).show();
         }

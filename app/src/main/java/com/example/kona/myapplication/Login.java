@@ -42,8 +42,7 @@ public class Login extends AppCompatActivity {
             // already signed in
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference("Player");
-
-            myRef.child("User").setValue(auth.getCurrentUser());
+            myRef.child("User").child(auth.getUid()).setValue(auth.getCurrentUser());
             startActivity(new Intent(Login.this, MapsActivity.class));
             finish();
         } else {
@@ -68,7 +67,7 @@ public class Login extends AppCompatActivity {
                 // Write a message to the database
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("Player");
-                myRef.child("Player").setValue(auth.getCurrentUser());
+                myRef.child("User").child(auth.getUid()).setValue(auth.getCurrentUser());
 
                 startActivity(new Intent(Login.this,MapsActivity.class));
                 finish();
