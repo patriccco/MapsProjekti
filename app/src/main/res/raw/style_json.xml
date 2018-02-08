@@ -173,20 +173,21 @@
     "color": "#000000"
     },
     {
-    "lightness": 19
-    }
-    ]
-    },
-    {
-    "featureType": "water",
-    "elementType": "geometry",
-    "stylers": [
-    {
-    "color": "#115571"
-    },
-    {
-    "lightness": 17
-    }
-    ]
-    }
-    ]
+        "lightness": 19
+        }
+        ]
+        },
+        {
+        "featureType": "water",
+        "elementType": "geometry",
+        "stylers": [
+        {
+        "color": "#115571"
+        },
+        {
+        "lightness": 17
+        }
+        ]
+        }
+
+        ]
