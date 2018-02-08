@@ -32,14 +32,17 @@ import java.util.Arrays;
 public class Login extends AppCompatActivity {
     // Choose an arbitrary request code value
     private static final int RC_SIGN_IN = 123;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+
         if (auth.getCurrentUser() != null) {
+
             // already signed in
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference("Player");
+
             myRef.child("User").setValue(auth.getCurrentUser());
             startActivity(new Intent(Login.this, MapsActivity.class));
             finish();
@@ -65,7 +68,7 @@ public class Login extends AppCompatActivity {
                 // Write a message to the database
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("Player");
-                myRef.child("ID").child("Latitude").setValue(data);
+                myRef.child("Player").setValue(auth.getCurrentUser());
 
                 startActivity(new Intent(Login.this,MapsActivity.class));
                 finish();

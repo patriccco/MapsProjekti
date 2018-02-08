@@ -58,6 +58,7 @@ public class MapsActivity extends FragmentActivity
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
     Marker locicon;
     FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
 
 
 
@@ -126,6 +127,39 @@ public class MapsActivity extends FragmentActivity
     }
 
     public void onLocationChanged(Location location) {
+        DatabaseReference userRef = database.getReference("Player");
+        userRef.child("User").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String UID = (String) dataSnapshot.child("uid").getValue();
+                if (auth.getUid() == UID){
+
+                    Snackbar.make(mLayout, "UID: " + UID,
+                            Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    }).show();
+                }
+                else{
+                    Snackbar.make(mLayout, "False ",
+                            Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    }).show();
+
+                }
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE );
         boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -233,6 +267,7 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     public void onMapReady(GoogleMap map) {
+
         mMap = map;
         try {
             // Customised styling of the base map using a JSON object defined
@@ -259,9 +294,8 @@ public class MapsActivity extends FragmentActivity
             }
         }
         // Write a message to the database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
         DatabaseReference myRef = database.getReference("Koordinaatit");
-        DatabaseReference userRef = database.getReference("Player");
 
 
         myRef.addValueEventListener(new ValueEventListener() {
@@ -272,6 +306,7 @@ public class MapsActivity extends FragmentActivity
                 LatLng location = new LatLng(latitude,longitude);
                 LatLng boot = new LatLng(koord, koord2);
                 mMap.addMarker(new MarkerOptions().position(boot).title("Bootyhill"));
+
 
 
             }
