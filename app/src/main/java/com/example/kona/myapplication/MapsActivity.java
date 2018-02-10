@@ -1,5 +1,6 @@
 package com.example.kona.myapplication;
 
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +43,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
@@ -52,13 +54,13 @@ public class MapsActivity extends FragmentActivity
     private LocationManager locationManager;
     private static final String TAG = "MyActivity";
     GoogleMap mMap;
+    Marker locicon;
     double latitude, longitude;
     private static final int REQUEST_FINE_LOCATION = 0;
     private View mLayout;
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
-    Marker locicon;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     String userinfo = auth.getUid();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -163,6 +165,8 @@ public class MapsActivity extends FragmentActivity
                 .title("You")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.rsz_lautaus)));
 
+
+
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(loc)
                 .zoom(17)                    // Sets the orientation of the camera to east
@@ -170,6 +174,9 @@ public class MapsActivity extends FragmentActivity
                 .bearing(90)                // Sets the orientation of the camera to east
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
+
         // New location has now been determined
 
     }
@@ -213,8 +220,11 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     public void onMapReady(GoogleMap map) {
-
         mMap = map;
+
+
+
+
         try {
             // Customised styling of the base map using a JSON object defined
 
@@ -252,6 +262,19 @@ public class MapsActivity extends FragmentActivity
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                if(marker.equals(locicon)){
+                    startLocationUpdates();
+                    return true;
+                }
+                return false;
 
             }
         });
