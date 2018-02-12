@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -23,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -33,25 +36,31 @@ public class Login extends AppCompatActivity {
     // Choose an arbitrary request code value
     private static final int RC_SIGN_IN = 123;
     FirebaseAuth auth = FirebaseAuth.getInstance();
+    // Choose authentication providers
+    List<AuthUI.IdpConfig> providers = Arrays.asList(
+            new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+            new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+            new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build());
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         if (auth.getCurrentUser() != null) {
 
             // already signed in
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference("Player");
-            myRef.child("User").child(auth.getUid()).setValue(auth.getCurrentUser());
+            myRef.child("User").child(auth.getUid()).setValue(auth.getCurrentUser().toString());
             startActivity(new Intent(Login.this, MapsActivity.class));
             finish();
         } else {
             // not signed in
+            // Create and launch sign-in intent
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
-                            .setProviders(Arrays.asList(new           AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()
-                            ))
+                            .setAvailableProviders(providers)
                             .build(),
                     RC_SIGN_IN);
 
@@ -67,7 +76,7 @@ public class Login extends AppCompatActivity {
                 // Write a message to the database
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("Player");
-                myRef.child("User").child(auth.getUid()).setValue(auth.getCurrentUser());
+                myRef.child("User").child(auth.getUid()).setValue(auth.getCurrentUser().toString());
 
                 startActivity(new Intent(Login.this,MapsActivity.class));
                 finish();
@@ -90,5 +99,13 @@ public class Login extends AppCompatActivity {
             }
             Log.e("Login","Unknown sign in response");
         }
+    }
+
+    /** Called when the user taps the Log Out button */
+    public void logOut(View view) {
+        //Do something in response to button
+        Intent logout = new Intent(this, LogOutActivity.class);
+        startActivity(logout);
+        finish();
     }
 }

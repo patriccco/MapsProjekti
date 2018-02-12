@@ -43,8 +43,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -64,9 +62,6 @@ public class MapsActivity extends FragmentActivity
     FirebaseAuth auth = FirebaseAuth.getInstance();
     String userinfo = auth.getUid();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +102,6 @@ public class MapsActivity extends FragmentActivity
                 public void onClick(View view) {
                     // Request the permission
                     startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-
 
                     getLastLocation();
                 }
@@ -223,8 +217,6 @@ public class MapsActivity extends FragmentActivity
         mMap = map;
 
 
-
-
         try {
             // Customised styling of the base map using a JSON object defined
 
@@ -256,8 +248,6 @@ public class MapsActivity extends FragmentActivity
                 LatLng boot = new LatLng(koord, koord2);
                 mMap.addMarker(new MarkerOptions().position(boot).title("Bootyhill"));
 
-
-
             }
 
             @Override
@@ -278,6 +268,7 @@ public class MapsActivity extends FragmentActivity
 
             }
         });
+        startLocationUpdates();
     }
 
         private boolean checkPermission() {
@@ -291,20 +282,11 @@ public class MapsActivity extends FragmentActivity
         }
 
         private void requestPermissions() {
-
-            Snackbar.make(mLayout, "Location access is required to display the preview.",
-                    Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
                     // Request the permission
                     ActivityCompat.requestPermissions(MapsActivity.this,
                             new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                             REQUEST_FINE_LOCATION);
                     startLocationUpdates();
-                }
-            }).show();
         }
-
-
 
         }

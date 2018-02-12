@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "7951739950-6t2u2iiujmd3udd704vahdjjlmsm4bjn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.kona.myapplication",
+            "certificate_hash": "fd40684d5c7bb3a866513dd124257d4a653b5486"
+          }
+        },
+        {
           "client_id": "7951739950-h12jebfmrvvh3ncp321gptupolrs8gkv.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
