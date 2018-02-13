@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,22 +44,41 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 
 public class MapsActivity extends FragmentActivity
-        implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
+        implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback, GoogleMap.OnPoiClickListener {
     private LocationManager locationManager;
     private static final String TAG = "MyActivity";
     GoogleMap mMap;
     Marker locicon;
-    double latitude, longitude;
+    double userlongitude,userlatitude;
+
+    public double getUserlongitude() {
+        return userlongitude;
+    }
+
+    public void setUserlongitude(double longitude) {
+        this.userlongitude = longitude;
+    }
+
+    public double getUserlatitude() {
+        return userlatitude;
+    }
+
+    public void setUserlatitude(double latitude) {
+        this.userlatitude = latitude;
+    }
+
     private static final int REQUEST_FINE_LOCATION = 0;
     private View mLayout;
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
+    private String userkey,placeValue;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     String userinfo = auth.getUid();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -68,7 +88,6 @@ public class MapsActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         mLayout = findViewById(R.id.text);
-        startLocationUpdates();
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -109,8 +128,7 @@ public class MapsActivity extends FragmentActivity
 
         }
 
-        if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+        if (checkPermission()) {
             getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback() {
                         @Override
                         public void onLocationResult(LocationResult locationResult) {
@@ -122,13 +140,15 @@ public class MapsActivity extends FragmentActivity
         }
         else {
             getLastLocation();
-            checkPermission();
         }
     }
 
     public void onLocationChanged(Location location) {
 
         DatabaseReference userRef = database.getReference("Player");
+        userRef.child("User").child(auth.getUid()).child("latitude").setValue(getUserlatitude());
+        userRef.child("User").child(auth.getUid()).child("longitude").setValue(getUserlongitude());
+
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -149,9 +169,9 @@ public class MapsActivity extends FragmentActivity
         {
             locicon.remove();
         }
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        LatLng loc = new LatLng(latitude, longitude);
+        setUserlatitude(location.getLatitude());
+        setUserlongitude(location.getLongitude());
+        LatLng loc = new LatLng(getUserlatitude(), getUserlongitude());
 
 
         locicon = mMap.addMarker(new MarkerOptions()
@@ -215,6 +235,7 @@ public class MapsActivity extends FragmentActivity
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+        mMap.setOnPoiClickListener(this);
 
 
         try {
@@ -235,16 +256,37 @@ public class MapsActivity extends FragmentActivity
 
 
         // Write a message to the database
+        DatabaseReference myRef = database.getReference("Player");
+        myRef.child("User").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-        DatabaseReference myRef = database.getReference("Koordinaatit");
+
+                for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
+
+                    //Loop 1 to go through all the child nodes of users
+                    for(DataSnapshot placeSnapshot : uniqueKeySnapshot.child("Place").getChildren()){
+                        //loop 2 to go through all the child nodes of books node
+
+                        userkey = placeSnapshot.getValue().toString();
+                        placeValue = placeSnapshot.getValue().toString();
+
+                }
+            }}
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
+        myRef = database.getReference("Koordinaatit");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 double koord = (Double) dataSnapshot.child("K1").getValue();
                 double koord2 = (Double) dataSnapshot.child("K2").getValue();
-                LatLng location = new LatLng(latitude,longitude);
+
                 LatLng boot = new LatLng(koord, koord2);
                 mMap.addMarker(new MarkerOptions().position(boot).title("Bootyhill"));
 
@@ -286,7 +328,34 @@ public class MapsActivity extends FragmentActivity
                     ActivityCompat.requestPermissions(MapsActivity.this,
                             new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                             REQUEST_FINE_LOCATION);
-                    startLocationUpdates();
         }
 
+    @Override
+    public void onPoiClick(PointOfInterest poi) {
+
+        double latneartop = (getUserlatitude() + 0.00250);
+        double latnearbot = (getUserlatitude() - 0.00250);
+        double longneartop = (getUserlongitude() + 0.00250);
+        double longnearbot = (getUserlongitude() - 0.00250);
+
+            if ((poi.latLng.latitude >= latnearbot) &&
+                    poi.latLng.latitude <= latneartop &&
+                    poi.latLng.longitude >= longnearbot &&
+                    poi.latLng.longitude <= longneartop) {
+
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("Player");
+                myRef.child("User").child(auth.getUid()).child("Place").setValue(poi.placeId);
+
+
+
+                Toast.makeText(getApplicationContext(), "Radius noin 40 metriä" +
+                                "/n" + userkey +
+                                "/n" + placeValue,
+                    Toast.LENGTH_SHORT).show();
         }
+
+
+
+    }
+}

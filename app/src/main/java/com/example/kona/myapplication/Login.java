@@ -33,6 +33,8 @@ import java.util.List;
  */
 
 public class Login extends AppCompatActivity {
+
+
     // Choose an arbitrary request code value
     private static final int RC_SIGN_IN = 123;
     FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -51,7 +53,6 @@ public class Login extends AppCompatActivity {
             // already signed in
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference("Player");
-            myRef.child("User").child(auth.getUid()).setValue(auth.getCurrentUser().toString());
             startActivity(new Intent(Login.this, MapsActivity.class));
             finish();
         } else {
@@ -74,9 +75,16 @@ public class Login extends AppCompatActivity {
             // Successfully signed in
             if (resultCode == ResultCodes.OK) {
                 // Write a message to the database
+
+                String email = auth.getCurrentUser().getEmail().toString();
+                String name = auth.getCurrentUser().getDisplayName().toString();
+
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("Player");
-                myRef.child("User").child(auth.getUid()).setValue(auth.getCurrentUser().toString());
+                myRef.child("User").child(auth.getUid()).child("email").setValue(email);
+                myRef.child("User").child(auth.getUid()).child("name").setValue(name);
+
+
 
                 startActivity(new Intent(Login.this,MapsActivity.class));
                 finish();

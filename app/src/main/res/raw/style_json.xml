@@ -31,15 +31,6 @@
     ]
     },
     {
-    "featureType": "all",
-    "elementType": "labels.icon",
-    "stylers": [
-    {
-    "visibility": "off"
-    }
-    ]
-    },
-    {
     "featureType": "administrative",
     "elementType": "geometry.fill",
     "stylers": [
@@ -87,6 +78,18 @@
     }
     ]
     },
+        {
+        "featureType": "poi.school",
+        "elementType": "geometry",
+        "stylers": [
+        {
+        "color": "#32CD32"
+        },
+        {
+        "lightness": 21
+        }
+        ]
+        },
     {
     "featureType": "poi",
     "elementType": "geometry",
@@ -186,6 +189,16 @@
         },
         {
         "lightness": 17
+        }
+        ]
+        },
+
+        {
+        "featureType": "poi.school",
+        "elementType": "labels.icon",
+        "stylers": [
+        {
+        "visibility": "on"
         }
         ]
         }
