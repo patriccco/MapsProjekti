@@ -362,4 +362,11 @@ public class MapsActivity extends FragmentActivity
 
 
     }
+    /** Called when the user taps the Log Out button */
+    public void logOut(View view) {
+        //Do something in response to button
+        Intent logout = new Intent(this, LogOutActivity.class);
+        startActivity(logout);
+        finish();
+    }
 }

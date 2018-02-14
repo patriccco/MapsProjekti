@@ -6,6 +6,15 @@
     android:orientation="vertical">
 
 
+    <com.example.kona.myapplication.MovableFloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:clickable="true"
+        android:onClick="logOut"
+        map:srcCompat="@android:drawable/ic_input_add"
+        android:focusable="true" />
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -19,6 +28,8 @@
         android:text="Hello, I am a TextView"
         android:screenOrientation="portrait"
         android:orientation="vertical"/>
+
+
 
 
 
