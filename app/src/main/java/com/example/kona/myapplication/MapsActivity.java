@@ -53,6 +53,7 @@ public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback, GoogleMap.OnPoiClickListener {
     private LocationManager locationManager;
     private static final String TAG = "MyActivity";
+    double koord,koord2;
     GoogleMap mMap;
     Marker locicon;
     double userlongitude,userlatitude;
@@ -81,7 +82,7 @@ public class MapsActivity extends FragmentActivity
     private String userkey,placeValue;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     String userinfo = auth.getUid();
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    public FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -265,10 +266,10 @@ public class MapsActivity extends FragmentActivity
                 for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
 
                     //Loop 1 to go through all the child nodes of users
-                    for(DataSnapshot placeSnapshot : uniqueKeySnapshot.child("Place").getChildren()){
+                    for(DataSnapshot placeSnapshot : uniqueKeySnapshot.getChildren()){
                         //loop 2 to go through all the child nodes of books node
 
-                        userkey = placeSnapshot.getValue().toString();
+                        userkey = placeSnapshot.getKey().toString();
                         placeValue = placeSnapshot.getValue().toString();
 
                 }
@@ -284,8 +285,8 @@ public class MapsActivity extends FragmentActivity
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                double koord = (Double) dataSnapshot.child("K1").getValue();
-                double koord2 = (Double) dataSnapshot.child("K2").getValue();
+                koord = (Double) dataSnapshot.child("K1").getValue();
+                koord2 = (Double) dataSnapshot.child("K2").getValue();
 
                 LatLng boot = new LatLng(koord, koord2);
                 mMap.addMarker(new MarkerOptions().position(boot).title("Bootyhill"));
@@ -333,10 +334,10 @@ public class MapsActivity extends FragmentActivity
     @Override
     public void onPoiClick(PointOfInterest poi) {
 
-        double latneartop = (getUserlatitude() + 0.00250);
-        double latnearbot = (getUserlatitude() - 0.00250);
-        double longneartop = (getUserlongitude() + 0.00250);
-        double longnearbot = (getUserlongitude() - 0.00250);
+        double latneartop = (getUserlatitude() + 0.00150);
+        double latnearbot = (getUserlatitude() - 0.00150);
+        double longneartop = (getUserlongitude() + 0.00150);
+        double longnearbot = (getUserlongitude() - 0.00150);
 
             if ((poi.latLng.latitude >= latnearbot) &&
                     poi.latLng.latitude <= latneartop &&
@@ -346,6 +347,9 @@ public class MapsActivity extends FragmentActivity
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("Player");
                 myRef.child("User").child(auth.getUid()).child("Place").setValue(poi.placeId);
+
+                Intent bar = new Intent(MapsActivity.this, Barview.class);
+                startActivity(bar);
 
 
 
