@@ -18,6 +18,7 @@ import com.example.kona.myapplication.R;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,48 +26,80 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicMarkableReference;
 
 
 public class Barview extends AppCompatActivity{
     ArrayList <String> PlaceNames = new ArrayList<>();
     private final static String TAG = "TÄÄ";
-
+    FirebaseAuth auth = FirebaseAuth.getInstance();
     private ListView mainListView ;
-    private ArrayAdapter<String> listAdapter ;
+    public PlaceID place = new PlaceID();
+
+    public Barview(){
+
+    }
+
+    public Barview(PlaceID place) {
+        this.place=place;
+
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
-
             super.onCreate(savedInstanceState);
+            this.requestWindowFeature(Window.FEATURE_NO_TITLE);
             setContentView(R.layout.activity_bar);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Player");
+
+
+
+        final ArrayAdapter <String> adapter  = new ArrayAdapter<String>(this,R.layout.simplerow,PlaceNames);
+
+        myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String UserPlace = dataSnapshot.child(auth.getUid()).child("Place").getValue().toString();
+
+
+                for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
+
+                    //Loop 1 to go through all the child nodes of users
+                        String dbplace = uniqueKeySnapshot.child("Place").getValue().toString();
+                        String player = uniqueKeySnapshot.child("name").getValue().toString();
+
+                    if (dbplace == UserPlace){
+                        adapter.add(player);
+
+                }}}
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
             // Find the ListView resource.
             mainListView = findViewById( R.id.lista);
-
-            // Create and populate a List of planet names.
-            String[] planets = new String[] { "Mercury", "Venus", "Earth", "Mars",
-                    "Jupiter", "Saturn", "Uranus", "Neptune"};
-            ArrayList<String> planetList = new ArrayList<String>();
-
-            // Create ArrayAdapter using the planet list.
-            listAdapter = new ArrayAdapter<String>(this, R.layout.simplerow, planetList);
-
-            // Add more planets. If you passed a String[] instead of a List<String>
-            // into the ArrayAdapter constructor, you must not add more items.
-            // Otherwise an exception will occur.
-            listAdapter.add( "Ceres" );
-            listAdapter.add( "Pluto" );
-            listAdapter.add( "Haumea" );
-            listAdapter.add( "Makemake" );
-            listAdapter.add( "Eris" );
-
+            Log.d(TAG, PlaceNames.toString());
             // Set the ArrayAdapter as the ListView's adapter.
-            mainListView.setAdapter( listAdapter );
+            mainListView.setAdapter(adapter);
         }
+    @Override
+    protected void onPause() {
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Player");
+        myRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
+        super.onPause();
     }
+
+    }
+
+
+
 /*
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_bar);
