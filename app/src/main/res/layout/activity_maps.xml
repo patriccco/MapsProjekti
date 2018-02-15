@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:clickable="true"
-        android:onClick="logOut"
+        android:onClick="TologOut"
         map:srcCompat="@android:drawable/ic_input_add"
         android:focusable="true" />
     <fragment
