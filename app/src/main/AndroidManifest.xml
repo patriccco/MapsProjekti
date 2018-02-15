@@ -48,6 +48,9 @@
             android:name=".MapsActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".LogOutActivity" />
+        <activity android:name=".Barview"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

@@ -38,6 +38,8 @@ public class Login extends AppCompatActivity {
     // Choose an arbitrary request code value
     private static final int RC_SIGN_IN = 123;
     FirebaseAuth auth = FirebaseAuth.getInstance();
+
+    private PlaceID Place = new PlaceID();
     // Choose authentication providers
     List<AuthUI.IdpConfig> providers = Arrays.asList(
             new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
@@ -83,6 +85,9 @@ public class Login extends AppCompatActivity {
                 DatabaseReference myRef = database.getReference("Player");
                 myRef.child("User").child(auth.getUid()).child("email").setValue(email);
                 myRef.child("User").child(auth.getUid()).child("name").setValue(name);
+                myRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
+
+
 
 
 
