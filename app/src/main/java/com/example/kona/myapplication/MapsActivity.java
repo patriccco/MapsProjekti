@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Looper;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -30,8 +29,10 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,18 +46,24 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+import com.google.android.gms.location.places.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback, GoogleMap.OnPoiClickListener {
+    protected GeoDataClient mGeoDataClient;
     private LocationManager locationManager;
     private static final String TAG = "MyActivity";
     double koord,koord2;
     GoogleMap mMap;
     Marker locicon;
     double userlongitude,userlatitude;
+    Place placetype;
 
     public double getUserlongitude() {
         return userlongitude;
@@ -86,6 +93,9 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // Construct a GeoDataClient.
+        mGeoDataClient = Places.getGeoDataClient(this, null);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         mLayout = findViewById(R.id.text);
@@ -150,6 +160,7 @@ public class MapsActivity extends FragmentActivity
         userRef.child("User").child(auth.getUid()).child("latitude").setValue(getUserlatitude());
         userRef.child("User").child(auth.getUid()).child("longitude").setValue(getUserlongitude());
 
+
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -170,8 +181,12 @@ public class MapsActivity extends FragmentActivity
         {
             locicon.remove();
         }
-        setUserlatitude(location.getLatitude());
-        setUserlongitude(location.getLongitude());
+        //oikea sijanti
+        //setUserlatitude(location.getLatitude());
+        //setUserlongitude(location.getLongitude());
+        // Testisijainti koulu
+        setUserlatitude(60.164380);
+        setUserlongitude(24.933080);
         LatLng loc = new LatLng(getUserlatitude(), getUserlongitude());
 
 
@@ -332,41 +347,68 @@ public class MapsActivity extends FragmentActivity
         }
 
     @Override
-    public void onPoiClick(PointOfInterest poi) {
+    public void onPoiClick(PointOfInterest getpoi) {
+        final PointOfInterest poi = getpoi;
+        mGeoDataClient.getPlaceById(poi.placeId).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+            @Override
+            public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                    PlaceBufferResponse places = task.getResult();
+                    Place myPlace = places.get(0);
+                    Log.i(TAG, "Place found: " + myPlace.getPlaceTypes());
+                    if(contains(myPlace.getPlaceTypes(), 9) || contains(myPlace.getPlaceTypes(),79)) {
 
-        double latneartop = (getUserlatitude() + 0.00150);
-        double latnearbot = (getUserlatitude() - 0.00150);
-        double longneartop = (getUserlongitude() + 0.00150);
-        double longnearbot = (getUserlongitude() - 0.00150);
+                        double latneartop = (getUserlatitude() + 0.00150);
+                        double latnearbot = (getUserlatitude() - 0.00150);
+                        double longneartop = (getUserlongitude() + 0.00150);
+                        double longnearbot = (getUserlongitude() - 0.00150);
 
-            if ((poi.latLng.latitude >= latnearbot) &&
-                    poi.latLng.latitude <= latneartop &&
-                    poi.latLng.longitude >= longnearbot &&
-                    poi.latLng.longitude <= longneartop) {
+                        if ((poi.latLng.latitude >= latnearbot) &&
+                                poi.latLng.latitude <= latneartop &&
+                                poi.latLng.longitude >= longnearbot &&
+                                poi.latLng.longitude <= longneartop) {
 
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference("Player");
-                myRef.child("User").child(auth.getUid()).child("Place").setValue(poi.placeId);
+                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            DatabaseReference myRef = database.getReference("Player");
+                            myRef.child("User").child(auth.getUid()).child("Place").setValue(poi.placeId);
 
-                Intent bar = new Intent(MapsActivity.this, Barview.class);
-                startActivity(bar);
+                            Intent bar = new Intent(MapsActivity.this, Barview.class);
+                            startActivity(bar);
+
+
+                            Toast.makeText(getApplicationContext(), "Radius noin 40 metriä" +
+                                            "/n" + userkey +
+                                            "/n" + placeValue,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+        places.release();
+    }
+
+});
 
 
 
-                Toast.makeText(getApplicationContext(), "Radius noin 40 metriä" +
-                                "/n" + userkey +
-                                "/n" + placeValue,
-                    Toast.LENGTH_SHORT).show();
+    }
+    public static boolean contains(final List<Integer> list, final int v) {
+
+        boolean result = false;
+
+        for(int i : list){
+            if(i == v){
+                result = true;
+                break;
+            }
         }
 
-
-
+        return result;
     }
     /** Called when the user taps the Log Out button */
     public void logOut(View view) {
         //Do something in response to button
         Intent logout = new Intent(this, LogOutActivity.class);
+        super.finish();
         startActivity(logout);
-        finish();
+
     }
 }

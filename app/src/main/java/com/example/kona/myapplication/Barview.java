@@ -25,6 +25,8 @@ public class Barview extends AppCompatActivity{
     FirebaseAuth auth = FirebaseAuth.getInstance();
     private ListView mainListView ;
     public PlaceID place = new PlaceID();
+    String UserPlace;
+    String dbPlace;
 
     public Barview(){
 
@@ -53,19 +55,23 @@ public class Barview extends AppCompatActivity{
         myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String UserPlace = dataSnapshot.child(auth.getUid()).child("Place").getValue().toString();
+                UserPlace = dataSnapshot.child(auth.getUid()).child("Place").getValue().toString();
+                Log.d(TAG, UserPlace);
 
 
                 for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
 
                     //Loop 1 to go through all the child nodes of users
-                        String dbplace = uniqueKeySnapshot.child("Place").getValue().toString();
+                    dbPlace = uniqueKeySnapshot.child("Place").getValue().toString();
                         String player = uniqueKeySnapshot.child("name").getValue().toString();
+                        Log.d(TAG, "User " + UserPlace);
+                        Log.v(TAG, "Db " + dbPlace);
 
-                    if (dbplace == UserPlace){
-                        adapter.add(player);
+                        if (dbPlace.equals(UserPlace)) {
+                            adapter.add(player);
+                        }
 
-                }}}
+                }}
             @Override
             public void onCancelled(DatabaseError databaseError) {
 

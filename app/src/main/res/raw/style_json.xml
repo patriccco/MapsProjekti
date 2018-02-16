@@ -120,6 +120,26 @@
     {
     "visibility": "on"
     },
+
+    {
+    "featureType": "road.arterial",
+    "elementType": "labels.icon",
+    "stylers": [
+    {
+    "visibility": "off"
+    }
+    ]
+    },
+    {
+    "featureType": "poi.business.lodging",
+    "elementType": "labels.icon",
+    "stylers": [
+    {
+    "visibility": "off"
+    }
+    ]
+    }
+    ],
     {
     "hue": "#ff00f3"
     }
