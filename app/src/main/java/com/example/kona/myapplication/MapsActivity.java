@@ -47,15 +47,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import com.google.android.gms.location.places.*;
-
-import java.util.Arrays;
 import java.util.List;
-
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 
 public class MapsActivity extends FragmentActivity
-        implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback, GoogleMap.OnPoiClickListener {
+        implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback,
+        GoogleMap.OnPoiClickListener {
+
     protected GeoDataClient mGeoDataClient;
     private LocationManager locationManager;
     private static final String TAG = "MyActivity";
@@ -63,7 +62,6 @@ public class MapsActivity extends FragmentActivity
     GoogleMap mMap;
     Marker locicon;
     double userlongitude,userlatitude;
-    Place placetype;
 
     public double getUserlongitude() {
         return userlongitude;
@@ -86,7 +84,6 @@ public class MapsActivity extends FragmentActivity
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
-    private String userkey,placeValue;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     String userinfo = auth.getUid();
     public FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -155,12 +152,10 @@ public class MapsActivity extends FragmentActivity
     }
 
     public void onLocationChanged(Location location) {
-
+        //set current location to database
         DatabaseReference userRef = database.getReference("Player");
         userRef.child("User").child(auth.getUid()).child("latitude").setValue(getUserlatitude());
         userRef.child("User").child(auth.getUid()).child("longitude").setValue(getUserlongitude());
-
-
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -193,19 +188,16 @@ public class MapsActivity extends FragmentActivity
         locicon = mMap.addMarker(new MarkerOptions()
                 .position(loc)
                 .title("You")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.rsz_lautaus)));
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
 
-
-
+        //camera adjustments
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(loc)
-                .zoom(17)                    // Sets the orientation of the camera to east
-                .tilt(30)                   // Sets the tilt of the camera to 30 degrees
+                .zoom(18)                    // Sets the orientation of the camera to east
+                .tilt(25)                   // Sets the tilt of the camera to 30 degrees
                 .bearing(90)                // Sets the orientation of the camera to east
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-
 
         // New location has now been determined
 
@@ -215,6 +207,7 @@ public class MapsActivity extends FragmentActivity
         // Get last known recent location using new Google Play Services SDK (v11+)
         FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
         if (checkPermission()){
+
         locationClient.getLastLocation()
                 .addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
@@ -222,8 +215,6 @@ public class MapsActivity extends FragmentActivity
                         // GPS location can be null if GPS is switched off
                         if (location != null) {
                             onLocationChanged(location);
-
-
                         }
                     }
                 })
@@ -252,11 +243,8 @@ public class MapsActivity extends FragmentActivity
     public void onMapReady(GoogleMap map) {
         mMap = map;
         mMap.setOnPoiClickListener(this);
-
-
         try {
             // Customised styling of the base map using a JSON object defined
-
             boolean success = mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             MapsActivity.this, R.raw.style_json));
@@ -267,42 +255,14 @@ public class MapsActivity extends FragmentActivity
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
-
-
-
-
         // Write a message to the database
-        DatabaseReference myRef = database.getReference("Player");
-        myRef.child("User").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-
-                for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
-
-                    //Loop 1 to go through all the child nodes of users
-                    for(DataSnapshot placeSnapshot : uniqueKeySnapshot.getChildren()){
-                        //loop 2 to go through all the child nodes of books node
-
-                        userkey = placeSnapshot.getKey().toString();
-                        placeValue = placeSnapshot.getValue().toString();
-
-                }
-            }}
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-        myRef = database.getReference("Koordinaatit");
+        DatabaseReference myRef = database.getReference("Koordinaatit");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                //Test customer marker
                 koord = (Double) dataSnapshot.child("K1").getValue();
                 koord2 = (Double) dataSnapshot.child("K2").getValue();
-
                 LatLng boot = new LatLng(koord, koord2);
                 mMap.addMarker(new MarkerOptions().position(boot).title("Bootyhill"));
 
@@ -314,6 +274,8 @@ public class MapsActivity extends FragmentActivity
             }
         });
 
+
+        //A listener to the location icon to get the updates if they stop
         mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -346,6 +308,7 @@ public class MapsActivity extends FragmentActivity
                             REQUEST_FINE_LOCATION);
         }
 
+        //click a point of view (PoI)
     @Override
     public void onPoiClick(PointOfInterest getpoi) {
         final PointOfInterest poi = getpoi;
@@ -355,19 +318,20 @@ public class MapsActivity extends FragmentActivity
                     PlaceBufferResponse places = task.getResult();
                     Place myPlace = places.get(0);
                     Log.i(TAG, "Place found: " + myPlace.getPlaceTypes());
-                    if(contains(myPlace.getPlaceTypes(), 9) || contains(myPlace.getPlaceTypes(),79)) {
+                    //Check if clicked PoI is a bar
+                    if(contains(myPlace.getPlaceTypes(), 9) || contains(myPlace.getPlaceTypes(),79) && !contains(myPlace.getPlaceTypes(),59) ) {
 
                         double latneartop = (getUserlatitude() + 0.00150);
                         double latnearbot = (getUserlatitude() - 0.00150);
                         double longneartop = (getUserlongitude() + 0.00150);
                         double longnearbot = (getUserlongitude() - 0.00150);
 
+                        //creating the radius where player can click a PoI
                         if ((poi.latLng.latitude >= latnearbot) &&
                                 poi.latLng.latitude <= latneartop &&
                                 poi.latLng.longitude >= longnearbot &&
                                 poi.latLng.longitude <= longneartop) {
 
-                            FirebaseDatabase database = FirebaseDatabase.getInstance();
                             DatabaseReference myRef = database.getReference("Player");
                             myRef.child("User").child(auth.getUid()).child("Place").setValue(poi.placeId);
 
@@ -375,25 +339,28 @@ public class MapsActivity extends FragmentActivity
                             startActivity(bar);
 
 
-                            Toast.makeText(getApplicationContext(), "Radius noin 40 metriä" +
-                                            "/n" + userkey +
-                                            "/n" + placeValue,
+                            Toast.makeText(getApplicationContext(), "Welcome to the Bar",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
+                    //Check if clicked PoI is a shop
+                    else if(contains(myPlace.getPlaceTypes(), 26) || contains(myPlace.getPlaceTypes(),88) || contains(myPlace.getPlaceTypes(),43)) {
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef = database.getReference("Player");
+                        myRef.child("User").child(auth.getUid()).child("Place").setValue(poi.placeId);
 
+                        Intent shop = new Intent(MapsActivity.this, ShopView.class);
+                        startActivity(shop);
+                    }
         places.release();
     }
-
 });
 
-
-
     }
+
+    //go through a list to check if it contains a value
     public static boolean contains(final List<Integer> list, final int v) {
-
         boolean result = false;
-
         for(int i : list){
             if(i == v){
                 result = true;
