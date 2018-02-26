@@ -25,11 +25,20 @@ public class ShopView extends AppCompatActivity{
     ArrayList<String> PlaceNames = new ArrayList<>();
     private final static String TAG = "TÄÄ";
     FirebaseAuth auth = FirebaseAuth.getInstance();
+
+    public FirebaseDatabase database = FirebaseDatabase.getInstance();
     private ListView mainListView ;
     String UserPlace;
     String dbPlace;
+    int money,price;
 
+    public int getMoney() {
+        return money;
+    }
 
+    public void setMoney(int money) {
+        this.money = money;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +54,42 @@ public class ShopView extends AppCompatActivity{
         DatabaseReference myRef = database.getReference("Player");
         myRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
         super.onPause();
+    }
+
+    public void checkmoney(){
+
+        DatabaseReference myRef = database.getReference("Player");
+        myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                setMoney((Integer) dataSnapshot.child(auth.getUid()).child("money").getValue());
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        if (Transaction()){
+
+        }
+
+    }
+
+
+
+            public boolean Transaction(){
+
+        if (price <= getMoney()){
+            return true;
+
+
+
+        }
+
+
     }
 
 }

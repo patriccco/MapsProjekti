@@ -39,7 +39,6 @@ public class Login extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
-    private PlaceID Place = new PlaceID();
     // Choose authentication providers
     List<AuthUI.IdpConfig> providers = Arrays.asList(
             new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
@@ -81,12 +80,15 @@ public class Login extends AppCompatActivity {
                 String email = auth.getCurrentUser().getEmail().toString();
                 String name = auth.getCurrentUser().getDisplayName().toString();
 
+                User user = new User();
+                user.writeNewUser(auth.getUid(),name,email);
+
+
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("Player");
-                myRef.child("User").child(auth.getUid()).child("email").setValue(email);
-                myRef.child("User").child(auth.getUid()).child("name").setValue(name);
                 myRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
-
+                myRef.child("User").child(auth.getUid()).child("HP").setValue("100");
+                myRef.child("User").child(auth.getUid()).child("Money").setValue("10");
 
 
 

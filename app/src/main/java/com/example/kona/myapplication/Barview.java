@@ -34,9 +34,8 @@ public class Barview extends AppCompatActivity{
             setContentView(R.layout.activity_bar);
             final ArrayAdapter <String> adapter  = new ArrayAdapter<String>(this,R.layout.simplerow,PlaceNames);
 
-
-            DatabaseReference myRef = database.getReference("Player");
-            myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference myRef = database.getReference("Player");
+        myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserPlace = dataSnapshot.child(auth.getUid()).child("Place").getValue().toString();
@@ -46,15 +45,16 @@ public class Barview extends AppCompatActivity{
                 for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
                     //Loop 1 to go through all the child nodes of users
                     dbPlace = uniqueKeySnapshot.child("Place").getValue().toString();
-                        String player = uniqueKeySnapshot.child("name").getValue().toString();
-                        Log.d(TAG, "User " + UserPlace);
-                        Log.v(TAG, "Db " + dbPlace);
+                    String player = uniqueKeySnapshot.child("name").getValue().toString();
+                    Log.d(TAG, "User " + UserPlace);
+                    Log.v(TAG, "Db " + dbPlace);
 
-                        if (dbPlace.equals(UserPlace)) {
-                            adapter.add(player);
-                        }
+                    if (dbPlace.equals(UserPlace)) {
+                        adapter.add(player);
+                    }
 
                 }}
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 

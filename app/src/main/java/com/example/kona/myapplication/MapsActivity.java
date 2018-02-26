@@ -2,11 +2,16 @@ package com.example.kona.myapplication;
 
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.location.LocationListener;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -61,6 +66,7 @@ public class MapsActivity extends FragmentActivity
     double koord,koord2;
     GoogleMap mMap;
     Marker locicon;
+    boolean icons;
     double userlongitude,userlatitude;
 
     public double getUserlongitude() {
@@ -83,7 +89,7 @@ public class MapsActivity extends FragmentActivity
     private View mLayout;
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
-    private long FASTEST_INTERVAL = 2000; /* 2 sec */
+    private long FASTEST_INTERVAL = 500; /* 2 sec */
     FirebaseAuth auth = FirebaseAuth.getInstance();
     String userinfo = auth.getUid();
     public FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -103,7 +109,10 @@ public class MapsActivity extends FragmentActivity
 
     }
 
+
+
     protected void startLocationUpdates() {
+
         // Create the location request to start receiving updates
         mLocationRequest = new LocationRequest();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -151,25 +160,27 @@ public class MapsActivity extends FragmentActivity
         }
     }
 
+
+
     public void onLocationChanged(Location location) {
+        if (icons){
+            icons = false;
+        }
+        else{
+            icons = true;
+        }
+
+
+
+
         //set current location to database
-        DatabaseReference userRef = database.getReference("Player");
-        userRef.child("User").child(auth.getUid()).child("latitude").setValue(getUserlatitude());
-        userRef.child("User").child(auth.getUid()).child("longitude").setValue(getUserlongitude());
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String UID = (String)dataSnapshot.child(userinfo).getValue();
+        try {
+            DatabaseReference userRef = database.getReference("Player");
+            userRef.child("User").child(auth.getUid()).child("latitude").setValue(getUserlatitude());
+            userRef.child("User").child(auth.getUid()).child("longitude").setValue(getUserlongitude());
 
 
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
 
 
         if (locicon != null)
@@ -177,19 +188,27 @@ public class MapsActivity extends FragmentActivity
             locicon.remove();
         }
         //oikea sijanti
-        //setUserlatitude(location.getLatitude());
-        //setUserlongitude(location.getLongitude());
+        setUserlatitude(location.getLatitude());
+        setUserlongitude(location.getLongitude());
         // Testisijainti koulu
-        setUserlatitude(60.164380);
-        setUserlongitude(24.933080);
-        LatLng loc = new LatLng(getUserlatitude(), getUserlongitude());
+        //setUserlatitude(60.164380);
+        //setUserlongitude(24.933080);
+       LatLng loc = new LatLng(getUserlatitude(), getUserlongitude());
 
 
-        locicon = mMap.addMarker(new MarkerOptions()
-                .position(loc)
-                .title("You")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
+        if(icons) {
+            locicon = mMap.addMarker(new MarkerOptions()
+                    .position(loc)
+                    .title("You")
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
+        }
+        else {
+            locicon = mMap.addMarker(new MarkerOptions()
+                    .position(loc)
+                    .title("You")
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
 
+        }
         //camera adjustments
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(loc)
@@ -198,6 +217,10 @@ public class MapsActivity extends FragmentActivity
                 .bearing(90)                // Sets the orientation of the camera to east
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
+        }catch (Exception e) {
+        }
 
         // New location has now been determined
 
@@ -374,8 +397,7 @@ public class MapsActivity extends FragmentActivity
     public void TologOut(View view) {
         //Do something in response to button
         Intent logout = new Intent(this, LogOutActivity.class);
-        super.finish();
-        startActivity(logout);
 
+        startActivity(logout);
     }
 }

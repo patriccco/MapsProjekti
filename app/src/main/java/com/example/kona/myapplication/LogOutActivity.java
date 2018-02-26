@@ -1,6 +1,10 @@
 package com.example.kona.myapplication;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,8 +20,10 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static android.support.constraint.Constraints.TAG;
+import static java.security.AccessController.getContext;
 
 public class LogOutActivity extends AppCompatActivity {
 
@@ -79,12 +85,13 @@ public class LogOutActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         // Ask user to log in
                         Intent login = new Intent(LogOutActivity.this, Login.class);
+
                         startActivity(login);
+
 
                     }
                 });
 
-        finish();
     }
 }
 
