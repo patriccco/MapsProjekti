@@ -32,7 +32,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAkB3ImP1Gz7f59N81WGN89R0lkHZJZhKI" />
+            android:value="AIzaSyDBijYUHUfmoIeUULTPZ9VCee9bR-T0gZw" />
 
         <activity
             android:name=".Login"
@@ -51,6 +51,8 @@
         <activity android:name=".Barview"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".ShopView"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
