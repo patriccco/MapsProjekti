@@ -35,9 +35,10 @@ public class Barview extends AppCompatActivity{
             final ArrayAdapter <String> adapter  = new ArrayAdapter<String>(this,R.layout.simplerow,PlaceNames);
 
         DatabaseReference myRef = database.getReference("Player");
-        myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.child("User").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                 UserPlace = dataSnapshot.child(auth.getUid()).child("Place").getValue().toString();
                 Log.d(TAG, UserPlace);
 
@@ -48,8 +49,9 @@ public class Barview extends AppCompatActivity{
                     String player = uniqueKeySnapshot.child("name").getValue().toString();
                     Log.d(TAG, "User " + UserPlace);
                     Log.v(TAG, "Db " + dbPlace);
+                    adapter.remove(player);
 
-                    if (dbPlace.equals(UserPlace)) {
+                    if (dbPlace.equals(UserPlace) && UserPlace != "moving") {
                         adapter.add(player);
                     }
 
