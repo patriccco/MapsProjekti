@@ -1,5 +1,6 @@
 package com.example.kona.myapplication;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -14,6 +15,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -25,71 +28,29 @@ public class ShopView extends AppCompatActivity{
     ArrayList<String> PlaceNames = new ArrayList<>();
     private final static String TAG = "TÄÄ";
     FirebaseAuth auth = FirebaseAuth.getInstance();
-
     public FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private ListView mainListView ;
-    String UserPlace;
-    String dbPlace;
-    int money,price;
 
-    public int getMoney() {
-        return money;
-    }
+    ArrayList <String> products = new ArrayList<>();
 
-    public void setMoney(int money) {
-        this.money = money;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_shop);
-
+        Transaction test = new Transaction();
+        test.checkmoney();
+        test.CheckPrice("Banana");
     }
     @Override
-    protected void onPause() {
+protected void onPause() {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Player");
         myRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
         super.onPause();
-    }
-
-    public void checkmoney(){
-
-        DatabaseReference myRef = database.getReference("Player");
-        myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                setMoney((Integer) dataSnapshot.child(auth.getUid()).child("money").getValue());
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        if (Transaction()){
-
         }
-
-    }
-
-
-
-            public boolean Transaction(){
-
-        if (price <= getMoney()){
-            return true;
 
 
 
         }
-
-
-    }
-
-}

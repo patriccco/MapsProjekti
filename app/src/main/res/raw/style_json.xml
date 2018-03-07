@@ -56,7 +56,7 @@
     "icon": "https://png.icons8.com/material/50/000000/walking.png",
     "stylers": [
     {
-    "visibility": "on"
+    "visibility": "off"
     }
     ]
     },
