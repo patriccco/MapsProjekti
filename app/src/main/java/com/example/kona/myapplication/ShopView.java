@@ -1,9 +1,11 @@
 package com.example.kona.myapplication;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -43,7 +45,7 @@ public class ShopView extends AppCompatActivity{
         test.CheckPrice("Banana");
     }
     @Override
-protected void onPause() {
+    protected void onPause() {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Player");
@@ -51,6 +53,21 @@ protected void onPause() {
         super.onPause();
         }
 
+    /**buttons**/
 
+    public void buy(View view) {
+        Intent intent = new Intent(this, BuyActivity.class);
+        startActivity(intent);
+    }
 
-        }
+    public void sell(View view) {
+        Intent intent = new Intent(this, SellActivity.class);
+        startActivity(intent);
+    }
+
+    public void backToMap(View view) {
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+    }
+
+}

@@ -15,13 +15,13 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <application
+        android:name=".AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="app_maps"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".AppController">
+        android:theme="@style/AppTheme">
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -49,11 +49,16 @@
             android:name=".MapsActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".LogOutActivity" />
-        <activity android:name=".Barview"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".ShopView"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Barview"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ShopView"
+            android:screenOrientation="portrait" />
+        <activity android:name=".MainMenuActivity" />
+        <activity android:name=".SellActivity" />
+        <activity android:name=".BuyActivity" />
+        <activity android:name=".InventoryActivity"></activity>
     </application>
 
 </manifest>
