@@ -6,44 +6,59 @@
     android:layout_height="match_parent"
     android:background="@drawable/kauppa2">
 
-    <TextView
-        android:id="@+id/textView"
+    <Button
+        android:id="@+id/button8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="296dp"
+        android:onClick="backToMap"
+        android:text="leave"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="338dp"
+        android:layout_height="277dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.077" />
+        <!--app:srcCompat="@drawable/snagari" />-->
+
+    <Button
+        android:id="@+id/button9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="296dp"
         android:layout_marginTop="8dp"
-        android:background="@android:drawable/progress_horizontal"
-        android:backgroundTint="@color/common_google_signin_btn_text_light_pressed"
-        android:fontFamily="casual"
-        android:text="DeMarket"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textColor="@android:color/holo_orange_dark"
-        android:textSize="36sp"
-        android:textStyle="bold"
-        android:typeface="monospace"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.914"
+        android:onClick="sell"
+        android:text="sell"
+        app:layout_constraintBottom_toTopOf="@+id/button8"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.943" />
+        app:layout_constraintTop_toBottomOf="@+id/button10" />
 
-    <ListView
-        android:id="@+id/shoplist"
-        android:layout_width="236dp"
-        android:layout_height="295dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.176"
+    <Button
+        android:id="@+id/button10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="296dp"
+        android:layout_marginTop="420dp"
+        android:onClick="buy"
+        android:text="Buy"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.201" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

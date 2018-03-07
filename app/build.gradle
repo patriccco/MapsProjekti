@@ -46,6 +46,9 @@ dependencies {
 
 // FirebaseUI for Cloud Firestore
     implementation 'com.firebaseui:firebase-ui-firestore:3.2.1'
+
+    compile 'com.mcxiaoke.volley:library:1.0.19'
+
 }
 
 
