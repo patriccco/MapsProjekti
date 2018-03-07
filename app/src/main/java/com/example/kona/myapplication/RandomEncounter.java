@@ -125,6 +125,7 @@ public class RandomEncounter extends AppCompatActivity {
 
         //jos random on suurempi kuin todnak, tulee kohtaus
         if (rnd < rndchance) RandomEncounter.this.finish();
+        Log.d("aaa","");
 
         DatabaseReference myRef = database.getReference("Enemies");
         myRef.child("Type").addValueEventListener(new ValueEventListener() {

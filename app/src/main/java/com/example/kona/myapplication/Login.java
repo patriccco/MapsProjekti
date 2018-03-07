@@ -95,7 +95,7 @@ public class Login extends AppCompatActivity {
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                             DatabaseReference myRef = database.getReference("Player");
                             myRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
-                            myRef.child("User").child(auth.getUid()).child("HP").setValue("100");
+                            myRef.child("User").child(auth.getUid()).child("HP").setValue(100);
                             myRef.child("User").child(auth.getUid()).child("Money").setValue(10);
                             myRef.child("User").child(auth.getUid()).child("Quest").child("isQuest").setValue(false);
                             myRef.child("User").child(auth.getUid()).child("Quest").child("Questname").setValue("noquest");

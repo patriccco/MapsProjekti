@@ -2,6 +2,7 @@ package com.example.kona.myapplication;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -40,6 +42,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -47,17 +50,23 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.location.places.*;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
+
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import java.util.List;
 import java.util.Random;
 
+import static android.content.ContentValues.TAG;
 import static com.example.kona.myapplication.AppConfig.GEOMETRY;
 import static com.example.kona.myapplication.AppConfig.GOOGLE_BROWSER_API_KEY;
 import static com.example.kona.myapplication.AppConfig.ICON;
@@ -84,16 +93,16 @@ public class MapsActivity extends FragmentActivity
     protected GeoDataClient mGeoDataClient;
     private LocationManager locationManager;
     private static final String TAG = "MyActivity";
-    double koord,koord2;
+    double koord, koord2;
     LatLng boot;
-    double questlatitude,questlongitude,poilat,poilong;
+    double questlatitude, questlongitude, poilat, poilong;
     GoogleMap mMap;
-    Marker locicon,boothill,questmarker,barmarker,shopmarker;
-    boolean icons,quest;
-    double userlongitude,userlatitude;
-    JSONObject place,questplace;
-    LatLng loc,QLatLng;
-    String QplaceName,Qvicinity;
+    Marker locicon, boothill, questmarker, barmarker, shopmarker;
+    boolean icons, quest;
+    double userlongitude, userlatitude;
+    JSONObject place, questplace;
+    LatLng loc, QLatLng;
+    String QplaceName, Qvicinity;
     Quest Questobject = new Quest();
 
 
@@ -115,6 +124,8 @@ public class MapsActivity extends FragmentActivity
 
     private static final int REQUEST_FINE_LOCATION = 0;
     private View mLayout;
+    private TextView enemytext;
+    Button greenBtn, redBtn, locbutton;
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 500; /* 2 sec */
@@ -133,17 +144,48 @@ public class MapsActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         mLayout = findViewById(R.id.text);
-        final Button button = findViewById(R.id.button4);
-        button.setOnClickListener(new View.OnClickListener() {
+        enemytext = findViewById(R.id.enemytext);
+        greenBtn = findViewById(R.id.fight);
+        redBtn = findViewById(R.id.escape);
+        locbutton = findViewById(R.id.button4);
+
+        greenBtn.setVisibility(View.GONE);
+        redBtn.setVisibility(View.GONE);
+        enemytext.setVisibility(View.GONE);
+
+
+        locbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 startLocationUpdates();
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(loc)
-                        .zoom(18)                    // Sets the orientation of the camera to east
+                        .zoom(19)                    // Sets the orientation of the camera to east
                         .tilt(25)                   // Sets the tilt of the camera to 30 degrees
                         .bearing(90)                // Sets the orientation of the camera to east
                         .build();                   // Creates a CameraPosition from the builder
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
+            }
+        });
+
+        redBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                greenBtn.setVisibility(View.GONE);
+                redBtn.setVisibility(View.GONE);
+                enemytext.setVisibility(View.GONE);
+            }
+        });
+        greenBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                greenBtn.setVisibility(View.GONE);
+                redBtn.setVisibility(View.GONE);
+                enemytext.setVisibility(View.GONE);
+                Intent fightscreen = new Intent(MapsActivity.this, Gridactivity.class);
+                startActivity(fightscreen);
 
             }
         });
@@ -171,10 +213,10 @@ public class MapsActivity extends FragmentActivity
         SettingsClient settingsClient = LocationServices.getSettingsClient(this);
         settingsClient.checkLocationSettings(locationSettingsRequest);
 
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE );
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         boolean statusOfGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-        if (statusOfGPS == false){
+        if (statusOfGPS == false) {
             Snackbar.make(mLayout, "Turn on GPS.",
                     Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
                 @Override
@@ -197,69 +239,92 @@ public class MapsActivity extends FragmentActivity
                         }
                     },
                     Looper.myLooper());
-        }
-        else {
+        } else {
             getLastLocation();
         }
     }
 
     public void onLocationChanged(Location location) {
+        Encounter randdenc = new Encounter();
 
 
+        if (randdenc.Randomize()) {
+            DatabaseReference myRef = database.getReference("Enemies");
+            myRef.child("Type").addValueEventListener(new ValueEventListener() {
 
-        if (icons){
-            icons = false;
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    //Haetaan vihun tiedot, ensin nimi
+
+                    int enemgen = (int) (Math.random() * (4 - 1)) + 1;
+                    String enemID = String.valueOf(enemgen);
+                    String enemy = (String) dataSnapshot.child(enemID).child("Name").getValue();
+                    Log.d(TAG, "" + enemID + " " + enemy);
+                    enemytext.setText("You Encountered " + enemy + "!");
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Getting Post failed, log a message
+                    Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                }
+            });
+
+            enemytext.setVisibility(View.VISIBLE);
+            greenBtn.setVisibility(View.VISIBLE);
+            redBtn.setVisibility(View.VISIBLE);
+
         }
-        else{
+
+
+        if (icons) {
+            icons = false;
+        } else {
             icons = true;
         }
 
         //set current location to database
         try {
 
-            setUserlatitude(location.getLatitude()+0.001);
-            setUserlongitude(location.getLongitude()+0.001);
+            setUserlatitude(location.getLatitude() + 0.001);
+            setUserlongitude(location.getLongitude() + 0.001);
             DatabaseReference userRef = database.getReference("Player");
             userRef.child("User").child(userinfo).child("latitude").setValue(getUserlatitude());
             userRef.child("User").child(userinfo).child("longitude").setValue(getUserlongitude());
 
 
+            if (locicon != null) {
+                locicon.remove();
+            }
+            // Testisijainti koulu
+            //setUserlatitude(60.164380);
+            //setUserlongitude(24.933080);
 
+            this.loc = new LatLng(getUserlatitude(), getUserlongitude());
 
+            loadNearBySupermarket(getUserlatitude(), getUserlongitude(), false);
+            loadNearByshops(getUserlatitude(), getUserlongitude(), false);
+            loadNearByRestaurant(getUserlatitude(), getUserlongitude(), false);
 
-        if (locicon != null)
-        {
-            locicon.remove();
-        }
-        // Testisijainti koulu
-        //setUserlatitude(60.164380);
-        //setUserlongitude(24.933080);
-
-        this.loc = new LatLng(getUserlatitude(), getUserlongitude());
-
-            loadNearBySupermarket(getUserlatitude(),getUserlongitude(),false);
-            loadNearByshops(getUserlatitude(), getUserlongitude(),false);
-            loadNearByRestaurant(getUserlatitude(), getUserlongitude(),false);
-
-            if(Questobject.getisQuest()) {
+            if (Questobject.getisQuest()) {
                 loadNearByQuest(getUserlatitude(), getUserlongitude(), true);
             }
 
 
-        if(icons) {
-            locicon = mMap.addMarker(new MarkerOptions()
-                    .position(loc)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
-        }
-        else {
-            locicon = mMap.addMarker(new MarkerOptions()
-                    .position(loc)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
-        }
+            if (icons) {
+                locicon = mMap.addMarker(new MarkerOptions()
+                        .position(loc)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
+            } else {
+                locicon = mMap.addMarker(new MarkerOptions()
+                        .position(loc)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
+            }
 
-        //camera adjustments
+            //camera adjustments
 
-        }catch (Exception e) {
+        } catch (Exception e) {
         }
 
         // New location has now been determined
@@ -269,42 +334,43 @@ public class MapsActivity extends FragmentActivity
     public void getLastLocation() {
         // Get last known recent location using new Google Play Services SDK (v11+)
         FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
-        if (checkPermission()){
+        if (checkPermission()) {
 
-        locationClient.getLastLocation()
-                .addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // GPS location can be null if GPS is switched off
-                        if (location != null) {
-                            onLocationChanged(location);
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("MapDemoActivity", "Error trying to get last GPS location");
-                        e.printStackTrace();
-
-                        Snackbar.make(mLayout, "Location is required to display the preview.",
-                                Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // Request the permission
-                                ActivityCompat.requestPermissions(MapsActivity.this,
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        REQUEST_FINE_LOCATION);
+            locationClient.getLastLocation()
+                    .addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // GPS location can be null if GPS is switched off
+                            if (location != null) {
+                                onLocationChanged(location);
                             }
-                        }).show();
-                    }
-                });}
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d("MapDemoActivity", "Error trying to get last GPS location");
+                            e.printStackTrace();
+
+                            Snackbar.make(mLayout, "Location is required to display the preview.",
+                                    Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // Request the permission
+                                    ActivityCompat.requestPermissions(MapsActivity.this,
+                                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                            REQUEST_FINE_LOCATION);
+                                }
+                            }).show();
+                        }
+                    });
+        }
     }
 
     private void loadNearByshops(double latitude, double longitude, boolean quest) {
         this.quest = quest;
-        this.poilat =latitude;
-        this.poilong =longitude;
+        this.poilat = latitude;
+        this.poilong = longitude;
         mMap.clear();
 
 //YOU Can change this type at your own will, e.g hospital, cafe, restaurant.... and see how it all works
@@ -323,11 +389,12 @@ public class MapsActivity extends FragmentActivity
                     @Override
                     public void onResponse(JSONObject result) {
 
-                        parseLocationResult(result,"shop");
+                        parseLocationResult(result, "shop");
                     }
                 },
                 new com.android.volley.Response.ErrorListener() {
-                    @Override                    public void onErrorResponse(VolleyError error) {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "onErrorResponse: Error= " + error);
                         Log.e(TAG, "onErrorResponse: Error= " + error.getMessage());
                     }
@@ -335,10 +402,11 @@ public class MapsActivity extends FragmentActivity
 
         AppController.getInstance().addToRequestQueue(request);
     }
+
     private void loadNearBySupermarket(double latitude, double longitude, boolean quest) {
         this.quest = quest;
-        this.poilat =latitude;
-        this.poilong =longitude;
+        this.poilat = latitude;
+        this.poilong = longitude;
         mMap.clear();
 
 //YOU Can change this type at your own will, e.g hospital, cafe, restaurant.... and see how it all works
@@ -357,11 +425,12 @@ public class MapsActivity extends FragmentActivity
                     @Override
                     public void onResponse(JSONObject result) {
 
-                        parseLocationResult(result,"shop");
+                        parseLocationResult(result, "shop");
                     }
                 },
                 new com.android.volley.Response.ErrorListener() {
-                    @Override                    public void onErrorResponse(VolleyError error) {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "onErrorResponse: Error= " + error);
                         Log.e(TAG, "onErrorResponse: Error= " + error.getMessage());
                     }
@@ -373,8 +442,8 @@ public class MapsActivity extends FragmentActivity
     // get points of interests from places web api
     private void loadNearByRestaurant(double latitude, double longitude, boolean quest) {
         this.quest = quest;
-        this.poilat =latitude;
-        this.poilong =longitude;
+        this.poilat = latitude;
+        this.poilong = longitude;
         mMap.clear();
 
 
@@ -397,21 +466,23 @@ public class MapsActivity extends FragmentActivity
                     @Override
                     public void onResponse(JSONObject result) {
 
-                        parseLocationResult(result,"bar");
+                        parseLocationResult(result, "bar");
                     }
                 },
                 new com.android.volley.Response.ErrorListener() {
-                    @Override                    public void onErrorResponse(VolleyError error) {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "onErrorResponse: Error= " + error);
                         Log.e(TAG, "onErrorResponse: Error= " + error.getMessage());
                     }
                 });
         AppController.getInstance().addToRequestQueue(request);
     }
+
     private void loadNearByQuest(double latitude, double longitude, boolean quest) {
         this.quest = quest;
-        this.poilat =latitude;
-        this.poilong =longitude;
+        this.poilat = latitude;
+        this.poilong = longitude;
         mMap.clear();
 
         boothill = mMap.addMarker(new MarkerOptions()
@@ -433,17 +504,19 @@ public class MapsActivity extends FragmentActivity
                     @Override
                     public void onResponse(JSONObject result) {
 
-                        parseLocationResult(result,"bar");
+                        parseLocationResult(result, "bar");
                     }
                 },
                 new com.android.volley.Response.ErrorListener() {
-                    @Override                    public void onErrorResponse(VolleyError error) {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "onErrorResponse: Error= " + error);
                         Log.e(TAG, "onErrorResponse: Error= " + error.getMessage());
                     }
                 });
         AppController.getInstance().addToRequestQueue(request);
     }
+
     //handle result from places web Api
     private void parseLocationResult(JSONObject result, String type) {
 
@@ -455,15 +528,12 @@ public class MapsActivity extends FragmentActivity
             if (result.getString(STATUS).equalsIgnoreCase(OK)) {
 
                 if (quest && type.equals("bar")) {
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            place = jsonArray.getJSONObject(i);
-                            questlist.put(place);
-                        }
-                    // if player has a quest, get the current quest to the map
-                    if(Questobject.getisQuest()){
-
-                        Quest newQuestobject = new Quest();
-
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        place = jsonArray.getJSONObject(i);
+                        questlist.put(place);
+                    }
+                    // if player has a quest, get the current quest (Marker) to the map
+                    if (Questobject.getisQuest()) {
                         DatabaseReference QuestRef = database.getReference("Player");
                         QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -473,6 +543,7 @@ public class MapsActivity extends FragmentActivity
                                 double qlong = (double) dataSnapshot.child("User").child(userinfo).child("Quest").child("longitude").getValue();
                                 LatLng qlatlng = new LatLng(qlat, qlong);
 
+
                                 questmarker = mMap.addMarker(new MarkerOptions()
                                         .title("Quest")
                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.quest))
@@ -480,12 +551,11 @@ public class MapsActivity extends FragmentActivity
                                         .snippet("Get here to reclaim your reward"));
 
                             }
+
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
                             }
                         });
-
-
 
 
                     }
@@ -496,9 +566,6 @@ public class MapsActivity extends FragmentActivity
                         Random rng = new Random();
                         int index = rng.nextInt(questlist.length());
                         questplace = (JSONObject) questlist.get(index);
-
-                        id = questplace.getString(SUPERMARKET_ID);
-                        place_id = questplace.getString(PLACE_ID);
                         if (!questplace.isNull(NAME)) {
                             QplaceName = questplace.getString(NAME);
                         }
@@ -510,10 +577,6 @@ public class MapsActivity extends FragmentActivity
                                 .getDouble(LATITUDE);
                         questlongitude = questplace.getJSONObject(GEOMETRY).getJSONObject(LOCATION)
                                 .getDouble(LONGITUDE);
-
-                        reference = questplace.getString(REFERENCE);
-                        icon = questplace.getString(ICON);
-
                         QLatLng = new LatLng(questlatitude, questlongitude);
 
                         questmarker = mMap.addMarker(new MarkerOptions()
@@ -522,19 +585,18 @@ public class MapsActivity extends FragmentActivity
                                 .position(QLatLng)
                                 .snippet("Get here to reclaim your reward"));
 
-                        Questobject.setQuest(questlatitude,questlongitude,QplaceName,Qvicinity,true);
+                        Questobject.setQuest(questlatitude, questlongitude, QplaceName, Qvicinity, true);
 
 
                     }
 
                     //if user icon is walking, make it running
-                    if(icons) {
+                    if (icons) {
                         locicon.remove();
                         locicon = mMap.addMarker(new MarkerOptions()
                                 .position(loc)
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
-                    }
-                    else {
+                    } else {
                         locicon.remove();
                         locicon = mMap.addMarker(new MarkerOptions()
                                 .position(loc)
@@ -542,13 +604,8 @@ public class MapsActivity extends FragmentActivity
                     }
 
 
-
-
                     for (int i = 0; i < jsonArray.length(); i++) {
                         place = jsonArray.getJSONObject(i);
-
-                        id = place.getString(SUPERMARKET_ID);
-                        place_id = place.getString(PLACE_ID);
                         if (!place.isNull(NAME)) {
                             placeName = place.getString(NAME);
                         }
@@ -559,26 +616,23 @@ public class MapsActivity extends FragmentActivity
                                 .getDouble(LATITUDE);
                         poilong = place.getJSONObject(GEOMETRY).getJSONObject(LOCATION)
                                 .getDouble(LONGITUDE);
-                        reference = place.getString(REFERENCE);
-                        icon = place.getString(ICON);
 
                         //if type is shop, create shopmarker
                         if (type.equals("shop")) {
                             LatLng latLng = new LatLng(poilat, poilong);
-                                shopmarker = mMap.addMarker(new MarkerOptions()
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.shopicon))
-                                        .position(latLng)
-                                        .snippet("You can shop here!")
-                                        .title(placeName + " : " + vicinity));
+                            shopmarker = mMap.addMarker(new MarkerOptions()
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.shopicon))
+                                    .position(latLng)
+                                    .snippet("You can shop here!")
+                                    .title(placeName + " : " + vicinity));
 
 
-                               // if type is bar, create barmarker
+                            // if type is bar, create barmarker
                         } else if (type.equals("bar")) {
                             LatLng latLng = new LatLng(poilat, poilong);
                             //
-                                if (latLng.equals(Questobject.getQuestLatLng())) {
-                                }
-                            else {
+                            if (latLng.equals(Questobject.getQuestLatLng())) {
+                            } else {
                                 barmarker = mMap.addMarker(new MarkerOptions()
                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.beericon))
                                         .position(latLng)
@@ -591,54 +645,52 @@ public class MapsActivity extends FragmentActivity
 
                     }
 
-                } else{
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            place = jsonArray.getJSONObject(i);
-                            id = place.getString(SUPERMARKET_ID);
-                            place_id = place.getString(PLACE_ID);
-                            if (!place.isNull(NAME)) {
-                                placeName = place.getString(NAME);
-                            }
-                            if (!place.isNull(VICINITY)) {
-                                vicinity = place.getString(VICINITY);
-                            }
-                            poilat = place.getJSONObject(GEOMETRY).getJSONObject(LOCATION)
-                                    .getDouble(LATITUDE);
-                            poilong = place.getJSONObject(GEOMETRY).getJSONObject(LOCATION)
-                                    .getDouble(LONGITUDE);
-                            reference = place.getString(REFERENCE);
-                            icon = place.getString(ICON);
-                            if (type.equals("shop")) {
-                                LatLng latLng = new LatLng(poilat, poilong);
+                } else {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        place = jsonArray.getJSONObject(i);
+                        id = place.getString(SUPERMARKET_ID);
+                        place_id = place.getString(PLACE_ID);
+                        if (!place.isNull(NAME)) {
+                            placeName = place.getString(NAME);
+                        }
+                        if (!place.isNull(VICINITY)) {
+                            vicinity = place.getString(VICINITY);
+                        }
+                        poilat = place.getJSONObject(GEOMETRY).getJSONObject(LOCATION)
+                                .getDouble(LATITUDE);
+                        poilong = place.getJSONObject(GEOMETRY).getJSONObject(LOCATION)
+                                .getDouble(LONGITUDE);
+                        if (type.equals("shop")) {
+                            LatLng latLng = new LatLng(poilat, poilong);
 
 
-                                    shopmarker = mMap.addMarker(new MarkerOptions()
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.shopicon))
-                                            .position(latLng)
-                                            .snippet("You can shop here!")
-                                            .title(placeName + " : " + vicinity));
+                            shopmarker = mMap.addMarker(new MarkerOptions()
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.shopicon))
+                                    .position(latLng)
+                                    .snippet("You can shop here!")
+                                    .title(placeName + " : " + vicinity));
 
 
-                            } else if (type.equals("bar")) {
-                                LatLng latLng = new LatLng(poilat, poilong);
-                                if(Questobject.getisQuest()){
+                        } else if (type.equals("bar")) {
+                            LatLng latLng = new LatLng(poilat, poilong);
+                            if (Questobject.getisQuest()) {
                                 if (latLng.equals(Questobject.getQuestLatLng())) {
                                     barmarker = mMap.addMarker(new MarkerOptions()
                                             .position(latLng)
                                             .visible(false));
                                 }
-                                } else {
-                                    barmarker = mMap.addMarker(new MarkerOptions()
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.beericon))
-                                            .position(latLng)
-                                            .snippet("You can find friends and Beer here!")
-                                            .title(placeName + " : " + vicinity));
+                            } else {
+                                barmarker = mMap.addMarker(new MarkerOptions()
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.beericon))
+                                        .position(latLng)
+                                        .snippet("You can find friends and Beer here!")
+                                        .title(placeName + " : " + vicinity));
 
-                                }
                             }
-
                         }
-                     }
+
+                    }
+                }
             }
         } catch (JSONException e) {
 
@@ -684,6 +736,7 @@ public class MapsActivity extends FragmentActivity
                 koord2 = (Double) dataSnapshot.child("K2").getValue();
                 boot = new LatLng(koord, koord2);
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
@@ -695,21 +748,19 @@ public class MapsActivity extends FragmentActivity
 
 
                 //Testmarker
-                if(marker.equals(boothill)) {
-                    loadNearByshops(getUserlatitude(), getUserlongitude(),false);
-                    loadNearBySupermarket(getUserlatitude(),getUserlongitude(),false);
-                    loadNearByRestaurant(getUserlatitude(), getUserlongitude(),false);
-                    loadNearByQuest(getUserlatitude(),getUserlongitude(),true);
+                if (marker.equals(boothill)) {
+                    loadNearByshops(getUserlatitude(), getUserlongitude(), false);
+                    loadNearBySupermarket(getUserlatitude(), getUserlongitude(), false);
+                    loadNearByRestaurant(getUserlatitude(), getUserlongitude(), false);
+                    loadNearByQuest(getUserlatitude(), getUserlongitude(), true);
 
                     return true;
-                }
-
-                else if(marker.equals(locicon)){
+                } else if (marker.equals(locicon)) {
                     return false;
                 }
 
                 //if shop is close enough, enter
-                else if(marker.getSnippet().equals("You can shop here!")){
+                else if (marker.getSnippet().equals("You can shop here!")) {
                     LatLng shoplatlng = marker.getPosition();
                     double latneartop = (getUserlatitude() + 0.00130);
                     double latnearbot = (getUserlatitude() - 0.00130);
@@ -724,9 +775,9 @@ public class MapsActivity extends FragmentActivity
                     }
 
                     return false;
-                    }
-                    //if bar is close enough, enter
-                else if(marker.getSnippet().equals("You can find friends and Beer here!")){
+                }
+                //if bar is close enough, enter
+                else if (marker.getSnippet().equals("You can find friends and Beer here!")) {
                     LatLng Barlatlng = marker.getPosition();
                     double latneartop = (getUserlatitude() + 0.00130);
                     double latnearbot = (getUserlatitude() - 0.00130);
@@ -743,15 +794,14 @@ public class MapsActivity extends FragmentActivity
                         Intent bar = new Intent(MapsActivity.this, Barview.class);
                         startActivity(bar);
                         return true;
-                    }
-                    else{
+                    } else {
                         return false;
                     }
 
-                    }
+                }
 
                 //if quest is close enough, enter
-                else if(marker.getSnippet().equals("Get here to reclaim your reward")){
+                else if (marker.getSnippet().equals("Get here to reclaim your reward")) {
                     LatLng qlatlng = marker.getPosition();
                     double latneartop = (getUserlatitude() + 0.00130);
                     double latnearbot = (getUserlatitude() - 0.00130);
@@ -768,7 +818,7 @@ public class MapsActivity extends FragmentActivity
                         Toast.makeText(getApplicationContext(), "Quest completed!",
                                 Toast.LENGTH_SHORT).show();
                         marker.remove();
-                        Questobject.setQuest(0,0, "noquest", "noquest", false);
+                        Questobject.setQuest(0, 0, "noquest", "noquest", false);
                         startLocationUpdates();
                         return true;
                     }
@@ -782,25 +832,28 @@ public class MapsActivity extends FragmentActivity
         startLocationUpdates();
 
     }
-        private boolean checkPermission() {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                return true;
-            } else {
-                requestPermissions();
-                return false;
-            }
+
+    private boolean checkPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            requestPermissions();
+            return false;
         }
+    }
 
-        private void requestPermissions() {
-                    // Request the permission
-                    ActivityCompat.requestPermissions(MapsActivity.this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            REQUEST_FINE_LOCATION);
-        }
+    private void requestPermissions() {
+        // Request the permission
+        ActivityCompat.requestPermissions(MapsActivity.this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                REQUEST_FINE_LOCATION);
+    }
 
 
-    /** Called when the user taps the Log Out button */
+    /**
+     * Called when the user taps the Log Out button
+     */
     public void TologOut(View view) {
         //Do something in response to button
         Intent logout = new Intent(this, LogOutActivity.class);
