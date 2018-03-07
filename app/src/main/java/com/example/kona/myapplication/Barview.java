@@ -32,6 +32,7 @@ public class Barview extends AppCompatActivity{
             super.onCreate(savedInstanceState);
             this.requestWindowFeature(Window.FEATURE_NO_TITLE);
             setContentView(R.layout.activity_bar);
+
             final ArrayAdapter <String> adapter  = new ArrayAdapter<String>(this,R.layout.simplerow,PlaceNames);
 
         DatabaseReference myRef = database.getReference("Player");

@@ -17,6 +17,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,27 +49,37 @@ public class LogOutActivity extends AppCompatActivity {
                 new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build());
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Get auth credentials from the user for re-authentication.
-        AuthCredential credential = (AuthCredential) providers;
-
+        // Get auth credentials from the user for re-authentication. The example below shows
+        // email and password credentials but there are multiple possible providers,
+        // such as GoogleAuthProvider or FacebookAuthProvider.
+        AuthCredential credential = GoogleAuthProvider.getCredential("email@email.com", "password123");
 
         // Prompt the user to re-provide their sign-in credentials
         user.reauthenticate(credential)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef = database.getReference("Player");
+                        myRef.child("User").child(user.getUid()).setValue(null);
                         user.delete()
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             Log.d(TAG, "User account deleted.");
-                                            Intent login = new Intent(LogOutActivity.this, Login.class);
-                                            startActivity(login);
-                                            finish();
+                                            Intent logout = new Intent(LogOutActivity.this, Login.class);
+                                            //Closing all activities
+                                            logout.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                            //Add new Flag to start new Activity
+                                            logout.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            startActivity(logout);
+
                                         }
                                     }
                                 });
+                        finish();
 
                     }
                 });
@@ -83,15 +96,20 @@ public class LogOutActivity extends AppCompatActivity {
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     public void onComplete(@NonNull Task<Void> task) {
+
                         // Ask user to log in
-                        Intent login = new Intent(LogOutActivity.this, Login.class);
+                        Intent intent = new Intent(LogOutActivity.this, Login.class);
+                        //Closing all activities
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        //Add new Flag to start new Activity
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                        startActivity(login);
-
+                        startActivity(intent);
 
                     }
                 });
 
+        finish();
     }
 }
 
