@@ -79,7 +79,6 @@ public class Transaction {
                 long dbMoney = (long) dataSnapshot.child(auth.getUid()).child("Money").getValue();
                 setMoney((int)dbMoney);
 
-
                 final int totalmoney = getMoney() + money;
                 MoneyRef.child("User").child(auth.getUid()).child("Money").setValue(totalmoney);
 

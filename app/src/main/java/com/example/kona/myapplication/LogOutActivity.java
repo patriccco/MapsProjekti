@@ -111,5 +111,10 @@ public class LogOutActivity extends AppCompatActivity {
 
         finish();
     }
+
+    public void backToMenu(View view) {
+        Intent intent = new Intent(this, MainMenuActivity.class);
+        startActivity(intent);
+    }
 }
 
