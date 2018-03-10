@@ -1,20 +1,38 @@
 package com.example.kona.myapplication;
 
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.graphics.Paint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 import android.graphics.Color;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class PixelGridView extends View {
 
-    private int numColumns, numRows;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private String enemyname;
+
+    private int numColumns, numRows,readycount, redcount;
+
     private int cellWidth, cellHeight;
     private Paint orange = new Paint();
     private Paint cyan = new Paint();
@@ -22,15 +40,22 @@ public class PixelGridView extends View {
     private boolean[][] cellChecked;
     private boolean[][] redChecked ;
     private boolean iscreated = false;
-    long tStart, tStop, drawDuration;
-    private boolean beginDraw;
+    private boolean timestarted = false;
+    long tStop;
+    double start,finaltime;
+    Transaction transaction = new Transaction();
+
+    Context context;
 
     public PixelGridView(Context context) {
         this(context, null);
     }
 
     public PixelGridView(Context context, AttributeSet attrs) {
+
         super(context, attrs);
+        this.context =context;
+
         orange.setStyle(Paint.Style.FILL_AND_STROKE);
         orange.setColor(Color.rgb(255, 102, 0));
         cyan.setColor(Color.CYAN);
@@ -83,7 +108,7 @@ public class PixelGridView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
 
-        canvas.drawColor(Color.rgb(21, 21, 21));
+        canvas.drawColor(getResources().getColor(R.color.gridcolor));
 
         if (numColumns == 0 || numRows == 0) {
             return;
@@ -95,51 +120,84 @@ public class PixelGridView extends View {
         //cyan fill
         for (int i = 0; i < numColumns; i++) {
             for (int j = 0; j < numRows; j++) {
-                if (cellChecked[i][j]) {
 
-                    canvas.drawRect(i * cellWidth, j * cellHeight,
-                            (i + 1) * cellWidth, (j + 1) * cellHeight,
-                            cyan);
+
+                if (cellChecked[i][j]) {
+                    Drawable d = getResources().getDrawable(R.drawable.greenbtn);
+                    d.setBounds(i * cellWidth, j * cellHeight,
+                            (i + 1) * cellWidth, (j + 1) * cellHeight);
+                    d.draw(canvas);
                 }
                 if (redChecked[i][j] && !cellChecked[i][j]) {
 
-                    canvas.drawRect(i * cellWidth, j * cellHeight,
-                            (i + 1) * cellWidth, (j + 1) * cellHeight,
-                            red);
-
-
-            }
-
+                    Drawable d = getResources().getDrawable(R.drawable.redbtn);
+                    d.setBounds(i * cellWidth, j * cellHeight,
+                            (i + 1) * cellWidth, (j + 1) * cellHeight);
+                    d.draw(canvas);
 
             }
+
+            }
         }
 
+        if (!iscreated) {
+            while(redcount < 6) {
+            readycount = 0;
+            redcount = 0;
 
-        //draws grid
-        for (int i = 1; i < numColumns; i++) {
-            canvas.drawLine(i * cellWidth, 0, i * cellWidth, height, orange);
-
-        }
-
-        for (int i = 1; i < numRows; i++) {
-            canvas.drawLine(0, i * cellHeight, width, i * cellHeight, orange);
-        }
-
-        if (!iscreated){
             for (int i = 0; i < numColumns; i++) {
                 for (int j = 0; j < numRows; j++) {
                     Random r2 = new Random();
 
                     redChecked[i][j] = false;
-                    int r2answer = r2.nextInt(59) + 1;
-                    if (r2answer == 1) {
+                    int r2answer = r2.nextInt(15) + 1;
+                    if (r2answer == 1 && redcount < 7) {
+                        redcount++;
                         redChecked[i][j] = true;
                     }
                 }
+            }
+
+
+
+            }
+            iscreated = true;
 
 
         }
-        iscreated = true;}
+
+        if(redcount==readycount && redcount != 0 && readycount !=0 ){
+
+            final DatabaseReference myRef = database.getReference("Enemies");
+            myRef.child("Current").addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    //Haetaan vihun tiedot, ensin nimi
+                    enemyname = dataSnapshot.getValue().toString();
+                    if (finaltime < 3.000) {
+
+
+                        Toast.makeText(getContext(), "You dealt with " + enemyname + " 5 money awarded. ",
+                                Toast.LENGTH_SHORT).show();
+                    }else {
+
+                        Toast.makeText(getContext(), "Too slow, " + enemyname + " beat you ! You lost 10 hp and your dignity",
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+
+            handlevictory();
+        }
+
+
+
 
     }
 
@@ -153,28 +211,73 @@ public class PixelGridView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                //drawPath.moveTo(touchX, touchY);
-                tStart = System.currentTimeMillis();
 
-                cellChecked[column][row] = true;
+                if(iscreated = true && !timestarted) {
+                    Log.d("Start" , " " + start);
+                    start = (double) SystemClock.uptimeMillis();
+                }
+
+
+
+                //drawPath.moveTo(touchX, touchY);
+                if (redChecked[column][row] && cellChecked[column][row] || !redChecked[column][row]){
+                    iscreated = false;
+                    timestarted = true;
+
+                }
+                else {
+
+                    cellChecked[column][row] = true;
+                    readycount++;
+                    if(readycount == redcount){
+                        tStop = SystemClock.uptimeMillis();
+
+                        Log.d("stop" , " " + tStop);
+
+                        finaltime = (((double)tStop - start) / 1000);
+                        if(finaltime < 3.000) {
+                            Log.d("voitto", "ON " + finaltime);
+
+                        }
+
+
+
+                    }
+                }
+
+
                 //cellChecked[column][row] = !cellChecked[column][row];
                 break;
             case MotionEvent.ACTION_MOVE:
                 //drawPath.lineTo(touchX, touchY);
-                cellChecked[column][row] = true;
+                //cellChecked[column][row] = true;
                 //cellChecked[column][row] = !cellChecked[column][row];
                 break;
             case MotionEvent.ACTION_UP:
                 //drawCanvas.drawPath(drawPath, drawPaint);
                 ///drawPath.reset();
-                tStop = System.currentTimeMillis();
                 break;
             default:
                 return false;
         }
-        drawDuration = tStop - tStart;
         invalidate();
         return true;
+
+    }
+    public void handlevictory(){
+
+        if (finaltime < 3.00){
+            transaction.addMoney(5);
+        }
+        else{
+            transaction.addHP((-10));
+        }
+
+
+        redcount = 0;
+        readycount =0;
+        Intent intent = new Intent(context,MapsActivity.class);
+                        context.startActivity(intent);
 
     }
 

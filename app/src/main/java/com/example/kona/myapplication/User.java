@@ -57,8 +57,6 @@ public class User {
 
         mDatabase.child("User").child(userId).setValue(user);
     }
-
-
 }
 
 

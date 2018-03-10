@@ -26,9 +26,20 @@ public class Encounter {
     public String enemyName;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private boolean victory = false;
+    private boolean victory;
     //Money & hp transfer
     Transaction transact = new Transaction();
+
+
+
+    public boolean isVictory() {
+        return victory;
+    }
+
+    public void setVictory(boolean victory) {
+        this.victory = victory;
+    }
+
 
 
 

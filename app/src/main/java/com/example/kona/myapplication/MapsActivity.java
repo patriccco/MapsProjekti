@@ -58,18 +58,14 @@ import com.google.android.gms.location.places.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import java.util.List;
 import java.util.Random;
 
-import static android.content.ContentValues.TAG;
 import static com.example.kona.myapplication.AppConfig.GEOMETRY;
 import static com.example.kona.myapplication.AppConfig.GOOGLE_BROWSER_API_KEY;
-import static com.example.kona.myapplication.AppConfig.ICON;
 import static com.example.kona.myapplication.AppConfig.LATITUDE;
 import static com.example.kona.myapplication.AppConfig.LOCATION;
 import static com.example.kona.myapplication.AppConfig.LONGITUDE;
@@ -98,13 +94,22 @@ public class MapsActivity extends FragmentActivity
     double questlatitude, questlongitude, poilat, poilong;
     GoogleMap mMap;
     Marker locicon, boothill, questmarker, barmarker, shopmarker;
-    boolean icons, quest;
+    boolean icons, quest, randomized;
     double userlongitude, userlatitude;
     JSONObject place, questplace;
     LatLng loc, QLatLng;
     String QplaceName, Qvicinity;
     Quest Questobject = new Quest();
+    Encounter randdenc = new Encounter();
+    public String enemyname;
 
+    public String getEnemyname() {
+        return enemyname;
+    }
+
+    public void setEnemyname(String enemyname) {
+        this.enemyname = enemyname;
+    }
 
     public double getUserlongitude() {
         return userlongitude;
@@ -172,6 +177,7 @@ public class MapsActivity extends FragmentActivity
         redBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                randomized = false;
 
                 greenBtn.setVisibility(View.GONE);
                 redBtn.setVisibility(View.GONE);
@@ -181,6 +187,7 @@ public class MapsActivity extends FragmentActivity
         greenBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                randomized=false;
                 greenBtn.setVisibility(View.GONE);
                 redBtn.setVisibility(View.GONE);
                 enemytext.setVisibility(View.GONE);
@@ -245,11 +252,10 @@ public class MapsActivity extends FragmentActivity
     }
 
     public void onLocationChanged(Location location) {
-        Encounter randdenc = new Encounter();
 
 
-        if (randdenc.Randomize()) {
-            DatabaseReference myRef = database.getReference("Enemies");
+        if (randdenc.Randomize() && !randomized) {
+            final DatabaseReference myRef = database.getReference("Enemies");
             myRef.child("Type").addValueEventListener(new ValueEventListener() {
 
                 @Override
@@ -258,9 +264,11 @@ public class MapsActivity extends FragmentActivity
 
                     int enemgen = (int) (Math.random() * (4 - 1)) + 1;
                     String enemID = String.valueOf(enemgen);
-                    String enemy = (String) dataSnapshot.child(enemID).child("Name").getValue();
-                    Log.d(TAG, "" + enemID + " " + enemy);
-                    enemytext.setText("You Encountered " + enemy + "!");
+                    enemyname = (String) dataSnapshot.child(enemID).child("Name").getValue();
+                    myRef.child("Current").setValue(enemyname);
+                    Log.d(TAG, "" + enemID + " " + enemyname);
+                    enemytext.setText("You Encountered " + enemyname + "!");
+                    randomized = true;
 
                 }
 
@@ -328,6 +336,17 @@ public class MapsActivity extends FragmentActivity
         }
 
         // New location has now been determined
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(randdenc.isVictory()){
+            Toast.makeText(getApplicationContext(), " You dealt with " + randdenc.enemyName + " you got 5 money!",
+                    Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -704,6 +723,9 @@ public class MapsActivity extends FragmentActivity
         boot = new LatLng(60.164685, 24.933300);
         mMap = map;
         mMap.getUiSettings().setMapToolbarEnabled(false);
+
+
+
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(boot)

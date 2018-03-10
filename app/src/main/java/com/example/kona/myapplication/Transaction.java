@@ -97,16 +97,16 @@ public class Transaction {
 
     public void addHP(final int hp) {
 
-        final DatabaseReference MoneyRef = database.getReference("Player");
-        MoneyRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+        final DatabaseReference hpRef = database.getReference("Player");
+        hpRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                long dbMoney = (long) dataSnapshot.child(auth.getUid()).child("HP").getValue();
-                setMoney((int) dbMoney);
+                long dbHP = (long) dataSnapshot.child(auth.getUid()).child("HP").getValue();
+                setUserHP((int) dbHP);
 
 
-                final int totalHP = getMoney() + hp;
-                MoneyRef.child("User").child(auth.getUid()).child("Money").setValue(totalHP);
+                final int totalHP = getUserHP() + hp;
+                hpRef.child("User").child(auth.getUid()).child("HP").setValue(totalHP);
 
             }
 
