@@ -97,9 +97,17 @@ public class Login extends AppCompatActivity {
                             myRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
                             myRef.child("User").child(auth.getUid()).child("HP").setValue(100);
                             myRef.child("User").child(auth.getUid()).child("Money").setValue(10);
+                            myRef.child("User").child(auth.getUid()).child("Quest").child("latitude").setValue(0.01);
+                            myRef.child("User").child(auth.getUid()).child("Quest").child("longitude").setValue(0.01);
+
+                            myRef.child("User").child(auth.getUid()).child("latitude").setValue(0.01);
+                            myRef.child("User").child(auth.getUid()).child("longitude").setValue(0.01);
+
+                            myRef.child("User").child(auth.getUid()).child("Quest").child("newQuest").setValue(false);
                             myRef.child("User").child(auth.getUid()).child("Quest").child("isQuest").setValue(false);
                             myRef.child("User").child(auth.getUid()).child("Quest").child("Questname").setValue("noquest");
                             myRef.child("User").child(auth.getUid()).child("Quest").child("Questvicinity").setValue("noquest");
+
 
                             //IT DOESNT EXISTS
                         }

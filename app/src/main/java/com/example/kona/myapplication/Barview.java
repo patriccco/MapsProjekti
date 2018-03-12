@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +25,7 @@ public class Barview extends AppCompatActivity{
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     private ListView mainListView ;
+    Quest Questobject = new Quest();
     String UserPlace;
     String dbPlace;
 
@@ -34,6 +36,22 @@ public class Barview extends AppCompatActivity{
             super.onCreate(savedInstanceState);
             this.requestWindowFeature(Window.FEATURE_NO_TITLE);
             setContentView(R.layout.activity_bar);
+            Button button = findViewById(R.id.getjob);
+            button.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+
+
+
+                        Intent intent = new Intent(Barview.this, MapsActivity.class);
+                        startActivity(intent);
+                        if (!Questobject.getisQuest())
+                            Questobject.newQuest(true);
+
+
+
+                }
+            });
 
             final ArrayAdapter <String> adapter  = new ArrayAdapter<String>(this,R.layout.simplerow,PlaceNames);
 
@@ -84,8 +102,10 @@ public class Barview extends AppCompatActivity{
         super.onPause();
     }
 
-    /**buttons**/
-
+    /**
+     * Palauttaa kartalle
+     * @param view
+     */
     public void backToMap(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);

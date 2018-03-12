@@ -57,14 +57,13 @@ public class ShopView extends AppCompatActivity{
 
     public void buy(View view) {
         Transaction transaction = new Transaction();
-        transaction.addHP(20);
-        transaction.addMoney(-10);
+        transaction.CheckPrice("Banana");
     }
 
-    public void sell(View view) {
+    /*public void sell(View view) {
         Intent intent = new Intent(this, SellActivity.class);
         startActivity(intent);
-    }
+    }*/
 
     public void backToMap(View view) {
         Intent intent = new Intent(this, MapsActivity.class);

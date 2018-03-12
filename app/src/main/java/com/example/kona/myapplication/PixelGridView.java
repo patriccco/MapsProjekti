@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.graphics.Paint;
 import android.content.Context;
@@ -177,13 +178,15 @@ public class PixelGridView extends View {
                     enemyname = dataSnapshot.getValue().toString();
                     if (finaltime < 3.000) {
 
-
-                        Toast.makeText(getContext(), "You dealt with " + enemyname + " 5 money awarded. ",
-                                Toast.LENGTH_SHORT).show();
+                        Toast toast= Toast.makeText(getContext(),
+                                "You dealt with " + enemyname + ", \n   5 money awarded.", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER_VERTICAL| Gravity.CENTER_HORIZONTAL, 0, 0);
+                        toast.show();
                     }else {
-
-                        Toast.makeText(getContext(), "Too slow, " + enemyname + " beat you ! You lost 10 hp and your dignity",
-                                Toast.LENGTH_SHORT).show();
+                        Toast toast= Toast.makeText(getContext(),
+                                "Too slow,  " + enemyname + " beat you ! \n  You lost 10 hp and your dignity", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER| Gravity.CENTER_HORIZONTAL, 0, 0);
+                        toast.show();
                     }
 
                 }

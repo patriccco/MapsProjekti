@@ -16,13 +16,10 @@ import com.google.firebase.database.ValueEventListener;
 
 public class Quest {
 
-    private static final String TAG = "Quest";
     private String qName,qVicinity;
     private Boolean isquest = false;
     private LatLng qlatlng, questLatLng;
     private double qlat,qlong;
-
-
     FirebaseAuth auth = FirebaseAuth.getInstance();
     String userinfo = auth.getCurrentUser().getUid();
     FirebaseDatabase  mDatabase = FirebaseDatabase.getInstance();
@@ -31,6 +28,23 @@ public class Quest {
 
     }
 
+    /**
+     *Asetetaan tietokantaan tieto uudesta tehtävästä
+     * @param newQ
+     */
+    public void newQuest(Boolean newQ){
+        QuestRef.child("User").child(userinfo).child("Quest").child("newQuest").setValue(newQ);
+
+    }
+
+    /**
+     * Asetetaan tehtävälle muuttujat tietokantaan
+     * @param latitude
+     * @param longitude
+     * @param name
+     * @param vicinity
+     * @param isquest
+     */
     public void setQuest(double latitude, double longitude, String name, String vicinity, Boolean isquest) {
 
             this.questLatLng = new LatLng(latitude,longitude);
@@ -41,15 +55,21 @@ public class Quest {
             MyRef.child("User").child(auth.getUid()).child("Quest").child("Questname").setValue(name);
             MyRef.child("User").child(auth.getUid()).child("Quest").child("Questvicinity").setValue(vicinity);
 
+        QuestRef.child("User").child(userinfo).child("Quest").child("newQuest").setValue(false);
+
 }
 
+    /**
+     * Tehtävän sijainti
+     * @return
+     */
     public LatLng getQuestLatLng() {
             QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     //Test customer marker
-                    qlat = (double) dataSnapshot.child("User").child(userinfo).child("Quest").child("latitude").getValue();
-                    qlong = (double) dataSnapshot.child("User").child(userinfo).child("Quest").child("longitude").getValue();
+                    qlat = (double)dataSnapshot.child("User").child(userinfo).child("Quest").child("latitude").getValue();
+                    qlong = (double)dataSnapshot.child("User").child(userinfo).child("Quest").child("longitude").getValue();
                     qlatlng = new LatLng(qlat, qlong);
                 }
                 @Override
@@ -62,6 +82,10 @@ public class Quest {
         return qlatlng;
     }
 
+    /**
+     * Tehtävän paikan nimi
+     * @return
+     */
     public String getQuestName() {
         QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -77,6 +101,11 @@ public class Quest {
 
         return qName;
     }
+
+    /**
+     * Tehtävän paikan osoite
+     * @return
+     */
     public String getQuestVicinity() {
         QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -93,13 +122,17 @@ public class Quest {
         return qVicinity;
     }
 
+    /**
+     * Palauttaa true jos tehtävä päällä
+     *
+     * @return
+     */
     public boolean getisQuest() {
         QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Test customer marker
                 isquest = (Boolean) dataSnapshot.child("User").child(userinfo).child("Quest").child("isQuest").getValue();
-
 
             }
             @Override
@@ -109,6 +142,7 @@ public class Quest {
 
         return isquest;
     }
+
 
 }
 

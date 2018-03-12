@@ -94,12 +94,13 @@ public class MapsActivity extends FragmentActivity
     double questlatitude, questlongitude, poilat, poilong;
     GoogleMap mMap;
     Marker locicon, boothill, questmarker, barmarker, shopmarker;
-    boolean icons, quest, randomized;
+    public boolean icons, quest, randomized, newquest;
     double userlongitude, userlatitude;
     JSONObject place, questplace;
-    LatLng loc, QLatLng;
+    LatLng loc;
+    LatLng QLatLng;
     String QplaceName, Qvicinity;
-    Quest Questobject = new Quest();
+    public Quest Questobject = new Quest();
     Encounter randdenc = new Encounter();
     public String enemyname;
 
@@ -126,6 +127,7 @@ public class MapsActivity extends FragmentActivity
     public void setUserlatitude(double latitude) {
         this.userlatitude = latitude;
     }
+
 
     private static final int REQUEST_FINE_LOCATION = 0;
     private View mLayout;
@@ -273,7 +275,7 @@ public class MapsActivity extends FragmentActivity
 
         if (randdenc.Randomize() && !randomized) {
             final DatabaseReference myRef = database.getReference("Enemies");
-            myRef.child("Type").addValueEventListener(new ValueEventListener() {
+            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -281,11 +283,12 @@ public class MapsActivity extends FragmentActivity
 
                     int enemgen = (int) (Math.random() * (4 - 1)) + 1;
                     String enemID = String.valueOf(enemgen);
-                    enemyname = (String) dataSnapshot.child(enemID).child("Name").getValue();
+                    enemyname = (String) dataSnapshot.child("Type").child(enemID).child("Name").getValue();
                     myRef.child("Current").setValue(enemyname);
                     Log.d(TAG, "" + enemID + " " + enemyname);
                     enemytext.setText("You Encountered " + enemyname + "!");
                     randomized = true;
+
 
                 }
 
@@ -326,26 +329,42 @@ public class MapsActivity extends FragmentActivity
             //setUserlatitude(60.164380);
             //setUserlongitude(24.933080);
 
-            this.loc = new LatLng(getUserlatitude(), getUserlongitude());
+            loc = new LatLng(location.getLatitude(), location.getLongitude());
 
-            loadNearBySupermarket(getUserlatitude(), getUserlongitude(), false);
-            loadNearByshops(getUserlatitude(), getUserlongitude(), false);
-            loadNearByRestaurant(getUserlatitude(), getUserlongitude(), false);
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    newquest = (Boolean) dataSnapshot.child("User").child(userinfo).child("Quest").child("newQuest").getValue();
+                    loadNearBySupermarket(getUserlatitude(), getUserlongitude(), false);
+                    loadNearByshops(getUserlatitude(), getUserlongitude(), false);
+                    loadNearByRestaurant(getUserlatitude(), getUserlongitude(), false);
+                    Log.d(TAG, "" + newquest);
+                    loadNearByQuest(getUserlatitude(), getUserlongitude(), newquest);
 
-            if (Questobject.getisQuest()) {
-                loadNearByQuest(getUserlatitude(), getUserlongitude(), true);
-            }
+                    if (Questobject.getisQuest()) {
+                        loadNearByQuest(getUserlatitude(), getUserlongitude(), true);
+                    }
 
 
-            if (icons) {
-                locicon = mMap.addMarker(new MarkerOptions()
-                        .position(loc)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
-            } else {
-                locicon = mMap.addMarker(new MarkerOptions()
-                        .position(loc)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
-            }
+                    if (icons) {
+                        locicon = mMap.addMarker(new MarkerOptions()
+                                .position(loc)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
+                    } else {
+                        locicon = mMap.addMarker(new MarkerOptions()
+                                .position(loc)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
+                    }
+
+                }
+
+
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
 
             //camera adjustments
 
@@ -359,6 +378,10 @@ public class MapsActivity extends FragmentActivity
     @Override
     protected void onResume() {
         super.onResume();
+        getLastLocation();
+            LatLng locat = new LatLng(getUserlatitude(),getUserlongitude());
+            Log.d(TAG, "" + locat);
+
 
         if(randdenc.isVictory()){
             Toast.makeText(getApplicationContext(), " You dealt with " + randdenc.enemyName + " you got 5 money!",
@@ -378,8 +401,17 @@ public class MapsActivity extends FragmentActivity
                         public void onSuccess(Location location) {
                             // GPS location can be null if GPS is switched off
                             if (location != null) {
+
+                                CameraPosition cameraPosition = new CameraPosition.Builder()
+                                        .target(new LatLng(location.getLatitude(),location.getLongitude()))
+                                        .zoom(19)                    // Sets the orientation of the camera to east
+                                        .tilt(25)                   // Sets the tilt of the camera to 30 degrees
+                                        .bearing(1)                // Sets the orientation of the camera to east
+                                        .build();                   // Creates a CameraPosition from the builder
+                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                                 onLocationChanged(location);
                             }
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -482,11 +514,6 @@ public class MapsActivity extends FragmentActivity
         this.poilong = longitude;
         mMap.clear();
 
-
-        boothill = mMap.addMarker(new MarkerOptions()
-                .position(boot)
-                .title("Bootyhill")
-                .snippet("Bootyhill"));
 //YOU Can change this type at your own will, e.g hospital, cafe, restaurant.... and see how it all works
         String type = "bar";
         StringBuilder googlePlacesUrl =
@@ -521,10 +548,6 @@ public class MapsActivity extends FragmentActivity
         this.poilong = longitude;
         mMap.clear();
 
-        boothill = mMap.addMarker(new MarkerOptions()
-                .position(boot)
-                .title("Bootyhill")
-                .snippet("Bootyhill"));
 //YOU Can change this type at your own will, e.g hospital, cafe, restaurant.... and see how it all works
         String type = "bar";
         StringBuilder googlePlacesUrl =
@@ -564,12 +587,15 @@ public class MapsActivity extends FragmentActivity
             if (result.getString(STATUS).equalsIgnoreCase(OK)) {
 
                 if (quest && type.equals("bar")) {
+
                     for (int i = 0; i < jsonArray.length(); i++) {
                         place = jsonArray.getJSONObject(i);
                         questlist.put(place);
                     }
                     // if player has a quest, get the current quest (Marker) to the map
                     if (Questobject.getisQuest()) {
+
+                        Log.d(TAG, "on jo" );
                         DatabaseReference QuestRef = database.getReference("Player");
                         QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -599,6 +625,8 @@ public class MapsActivity extends FragmentActivity
                     // random generate new quest
                     else {
 
+                        Log.d(TAG, "Ei vielä" );
+
                         Random rng = new Random();
                         int index = rng.nextInt(questlist.length());
                         questplace = (JSONObject) questlist.get(index);
@@ -621,6 +649,9 @@ public class MapsActivity extends FragmentActivity
                                 .position(QLatLng)
                                 .snippet("Get here to reclaim your reward"));
 
+
+                        Log.d(TAG, "AQWE" );
+                        Questobject.newQuest(false);
                         Questobject.setQuest(questlatitude, questlongitude, QplaceName, Qvicinity, true);
 
 
@@ -709,12 +740,11 @@ public class MapsActivity extends FragmentActivity
 
                         } else if (type.equals("bar")) {
                             LatLng latLng = new LatLng(poilat, poilong);
-                            if (Questobject.getisQuest()) {
                                 if (latLng.equals(Questobject.getQuestLatLng())) {
                                     barmarker = mMap.addMarker(new MarkerOptions()
                                             .position(latLng)
                                             .visible(false));
-                                }
+
                             } else {
                                 barmarker = mMap.addMarker(new MarkerOptions()
                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.beericon))
@@ -737,22 +767,21 @@ public class MapsActivity extends FragmentActivity
 
     @Override
     public void onMapReady(GoogleMap map) {
-        boot = new LatLng(60.164685, 24.933300);
         mMap = map;
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
 
 
+        if (loc!=null) {
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(loc)
+                    .zoom(18)                    // Sets the orientation of the camera to east
+                    .tilt(25)                   // Sets the tilt of the camera to 30 degrees
+                    .bearing(1)                // Sets the orientation of the camera to east
+                    .build();
 
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(boot)
-                .zoom(18)                    // Sets the orientation of the camera to east
-                .tilt(25)                   // Sets the tilt of the camera to 30 degrees
-                .bearing(1)                // Sets the orientation of the camera to east
-                .build();
-
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
         //mMap.setOnPoiClickListener(this);
         try {
             // Customised styling of the base map using a JSON object defined
@@ -765,41 +794,13 @@ public class MapsActivity extends FragmentActivity
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
-        // Write a message to the database
-        DatabaseReference myRef = database.getReference("Koordinaatit");
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                //Test customer marker
-                koord = (Double) dataSnapshot.child("K1").getValue();
-                koord2 = (Double) dataSnapshot.child("K2").getValue();
-                boot = new LatLng(koord, koord2);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
         //A listener to the location icon to get the updates if they stop
         mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
 
-
-                //Testmarker
-                if (marker.equals(boothill)) {
-                    loadNearByshops(getUserlatitude(), getUserlongitude(), false);
-                    loadNearBySupermarket(getUserlatitude(), getUserlongitude(), false);
-                    loadNearByRestaurant(getUserlatitude(), getUserlongitude(), false);
-                    loadNearByQuest(getUserlatitude(), getUserlongitude(), true);
-
-                    return true;
-                } else if (marker.equals(locicon)) {
-                    return false;
-                }
-
                 //if shop is close enough, enter
-                else if (marker.getSnippet().equals("You can shop here!")) {
+                if (marker.getSnippet().equals("You can shop here!")) {
                     LatLng shoplatlng = marker.getPosition();
                     double latneartop = (getUserlatitude() + 0.00130);
                     double latnearbot = (getUserlatitude() - 0.00130);
@@ -844,10 +845,10 @@ public class MapsActivity extends FragmentActivity
                 //if quest is close enough, enter
                 else if (marker.getSnippet().equals("Get here to reclaim your reward")) {
                     LatLng qlatlng = marker.getPosition();
-                    double latneartop = (getUserlatitude() + 0.00130);
-                    double latnearbot = (getUserlatitude() - 0.00130);
-                    double longneartop = (getUserlongitude() + 0.00130);
-                    double longnearbot = (getUserlongitude() - 0.00130);
+                    double latneartop = (getUserlatitude() + 0.00230);
+                    double latnearbot = (getUserlatitude() - 0.00230);
+                    double longneartop = (getUserlongitude() + 0.00230);
+                    double longnearbot = (getUserlongitude() - 0.00230);
 
                     if ((qlatlng.latitude >= latnearbot) &&
                             qlatlng.latitude <= latneartop &&
@@ -859,7 +860,8 @@ public class MapsActivity extends FragmentActivity
                         Toast.makeText(getApplicationContext(), "Quest completed!",
                                 Toast.LENGTH_SHORT).show();
                         marker.remove();
-                        Questobject.setQuest(0, 0, "noquest", "noquest", false);
+                        Questobject.setQuest(0.01, 0.01, "noquest", "noquest", false);
+                        Questobject.newQuest(false);
                         startLocationUpdates();
                         return true;
                     }
@@ -889,6 +891,13 @@ public class MapsActivity extends FragmentActivity
         ActivityCompat.requestPermissions(MapsActivity.this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 REQUEST_FINE_LOCATION);
+    }
+    public void questlines(){
+
+        loadNearByshops(getUserlatitude(), getUserlongitude(), false);
+        loadNearBySupermarket(getUserlatitude(), getUserlongitude(), false);
+        loadNearByRestaurant(getUserlatitude(), getUserlongitude(), false);
+        loadNearByQuest(getUserlatitude(), getUserlongitude(), true);
     }
 
 
