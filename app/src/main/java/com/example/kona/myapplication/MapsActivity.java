@@ -892,7 +892,7 @@ public class MapsActivity extends FragmentActivity
     }
 
 
-    /**buttons**/
+    /**buttonss**/
 
     /**opens main menu view**/
     public void openMenu(View view) {
