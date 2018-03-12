@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="@drawable/boothill"
+    android:background="@drawable/bar"
     android:minHeight="121dp">
 
 
@@ -19,21 +19,23 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@android:drawable/alert_dark_frame"
         android:fontFamily="serif-monospace"
-        android:text="THE BAR"
+        android:text="the bar"
         android:textAlignment="center"
         android:textColor="@color/cardview_light_background"
         android:textSize="40sp"
         android:typeface="monospace"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.047"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.134" />
+        app:layout_constraintVertical_bias="0.016" />
 
     <TextView
         android:id="@+id/textView9"

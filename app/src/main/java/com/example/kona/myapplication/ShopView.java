@@ -56,8 +56,9 @@ public class ShopView extends AppCompatActivity{
     /**buttons**/
 
     public void buy(View view) {
-        Intent intent = new Intent(this, BuyActivity.class);
-        startActivity(intent);
+        Transaction transaction = new Transaction();
+        transaction.addHP(20);
+        transaction.addMoney(-10);
     }
 
     public void sell(View view) {

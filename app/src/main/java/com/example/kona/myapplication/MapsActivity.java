@@ -130,7 +130,7 @@ public class MapsActivity extends FragmentActivity
     private static final int REQUEST_FINE_LOCATION = 0;
     private View mLayout;
     private TextView enemytext;
-    Button greenBtn, redBtn, locbutton;
+    Button greenBtn, redBtn, locbutton, menuBtn, profileBtn, itemBtn, jobBtn;
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 500; /* 2 sec */
@@ -154,6 +154,23 @@ public class MapsActivity extends FragmentActivity
         redBtn = findViewById(R.id.escape);
         locbutton = findViewById(R.id.button4);
 
+        /**opens and hides additional buttons*
+        menuBtn = findViewById(R.id.menu);
+        profileBtn = findViewById(R.id.profile);
+        profileBtn.setVisibility(View.GONE);
+        profileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent profile = new Intent(this, LogOutActivity.class);
+                startActivity(profile);
+            }
+        });
+        itemBtn = findViewById(R.id.items);
+        itemBtn.setVisibility(View.GONE);
+        jobBtn = findViewById(R.id.jobs);
+        jobBtn.setVisibility(View.GONE);
+        **/
+
         greenBtn.setVisibility(View.GONE);
         redBtn.setVisibility(View.GONE);
         enemytext.setVisibility(View.GONE);
@@ -166,7 +183,7 @@ public class MapsActivity extends FragmentActivity
                         .target(loc)
                         .zoom(19)                    // Sets the orientation of the camera to east
                         .tilt(25)                   // Sets the tilt of the camera to 30 degrees
-                        .bearing(90)                // Sets the orientation of the camera to east
+                        .bearing(1)                // Sets the orientation of the camera to east
                         .build();                   // Creates a CameraPosition from the builder
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
@@ -731,7 +748,7 @@ public class MapsActivity extends FragmentActivity
                 .target(boot)
                 .zoom(18)                    // Sets the orientation of the camera to east
                 .tilt(25)                   // Sets the tilt of the camera to 30 degrees
-                .bearing(90)                // Sets the orientation of the camera to east
+                .bearing(1)                // Sets the orientation of the camera to east
                 .build();
 
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -741,7 +758,7 @@ public class MapsActivity extends FragmentActivity
             // Customised styling of the base map using a JSON object defined
             boolean success = mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
-                            MapsActivity.this, R.raw.style_json));
+                            MapsActivity.this, R.raw.new_style));
             if (!success) {
                 Log.e(TAG, "Style parsing failed.");
             }
@@ -793,6 +810,8 @@ public class MapsActivity extends FragmentActivity
                             shoplatlng.latitude <= latneartop &&
                             shoplatlng.longitude >= longnearbot &&
                             shoplatlng.longitude <= longneartop) {
+                        Intent intent = new Intent(MapsActivity.this, ShopView.class);
+                        startActivity(intent);
                         return true;
                     }
 
@@ -873,14 +892,13 @@ public class MapsActivity extends FragmentActivity
     }
 
 
-    /**
-     * Called when the user taps the Log Out button
-     */
-    public void TologOut(View view) {
-        //Do something in response to button
-        Intent logout = new Intent(this, LogOutActivity.class);
+    /**buttons**/
 
-        startActivity(logout);
+    /**opens main menu view**/
+    public void openMenu(View view) {
+        Intent intent = new Intent(this, MainMenuActivity.class);
+        startActivity(intent);
     }
+
 
 }
