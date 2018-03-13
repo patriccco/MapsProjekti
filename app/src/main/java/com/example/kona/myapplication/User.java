@@ -21,6 +21,13 @@ public class User {
 
     }
 
+    /**
+     * Constructor for Userdata that is created on first login.
+     * @param id
+     * @param name
+     * @param email
+     * @param place
+     */
     public User(String id ,String name, String email, String place) {
         this.name = name;
         this.email = email;
@@ -50,6 +57,12 @@ public class User {
         this.email = email;
     }
 
+    /**
+     * Write the users data to the database*
+     * @param userId
+     * @param name
+     * @param email
+     */
     public void writeNewUser(String userId, String name, String email) {
         User user = new User(userId, name, email,"moving");
 

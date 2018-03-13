@@ -1,6 +1,7 @@
 package com.example.kona.myapplication;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,9 +16,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 
+/**
+ * This class creates the barview and shows the players in that bar.
+ */
 
 public class Barview extends AppCompatActivity{
     ArrayList <String> PlaceNames = new ArrayList<>();
@@ -28,7 +31,11 @@ public class Barview extends AppCompatActivity{
     Quest Questobject = new Quest();
     String UserPlace;
     String dbPlace;
+    private MediaPlayer Tune;
 
+    /**
+     * Empty main constructor.
+     */
     public Barview(){
     }
     @Override
@@ -92,10 +99,17 @@ public class Barview extends AppCompatActivity{
         }
 
 
-        //remove player from the bar when exting view.
+
+    /**
+     /**
+     * This method sets MapsActivity to pause.
+     */
+
     @Override
     protected void onPause() {
 
+        Tune.stop();
+        Tune.release();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Player");
         myRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
@@ -103,8 +117,20 @@ public class Barview extends AppCompatActivity{
     }
 
     /**
-     * Palauttaa kartalle
+     * starts musicplayback when entering or coming back to the activity
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Tune = MediaPlayer.create(getApplicationContext(), R.raw.bartune);
+        Tune.start();
+    }
+
+    /**
+     *
      * @param view
+     * When pressing return button in a barview it takes user back to MapsActivity.
      */
     public void backToMap(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
@@ -113,47 +139,3 @@ public class Barview extends AppCompatActivity{
 
 }
 
-
-
-/*
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_bar);
-
-        ListView barListView = findViewById(R.id.lista);
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Player");
-
-        final ArrayAdapter <String> adapter  = new ArrayAdapter<String>(this,R.layout.simplerow,PlaceNames);
-        myRef.child("User").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-
-                for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
-
-                    //Loop 1 to go through all the child nodes of users
-                    for(DataSnapshot placeSnapshot : uniqueKeySnapshot.getChildren()){
-                        //loop 2 to go through all the child nodes of books node
-
-                        String place = placeSnapshot.getValue().toString();
-                        adapter.add(place);
-                    }
-                }}
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        Log.v(TAG, (PlaceNames.toString()));
-
-        barListView.setAdapter(adapter);
-
-
-
-                    }
-
-
-
-
-}*/

@@ -17,36 +17,38 @@ import static android.content.ContentValues.TAG;
  * Created by kona on 7.3.2018.
  */
 
+/**
+ * This class counts the random encounter.
+ */
+
 public class Encounter {
-
-
-    //databasehommat
-
-
     public String enemyName;
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
     private boolean victory;
-    //Money & hp transfer
-    Transaction transact = new Transaction();
-
-
+    /**
+     *
+     * @return
+     * This gets the result from the fight.
+     * boolean: true or false.
+     */
 
     public boolean isVictory() {
         return victory;
     }
 
+    /**
+     *
+     * @param victory
+     * Sets the result from the fight.
+     */
     public void setVictory(boolean victory) {
         this.victory = victory;
     }
 
-
-
-
-
-
-
-
+    /**
+     *
+     * @return
+     * This counts the random encounter.
+     */
     public boolean Randomize() {
         Random rn = new Random();
         int answer = rn.nextInt(20) + 1;

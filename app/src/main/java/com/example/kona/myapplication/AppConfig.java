@@ -18,7 +18,6 @@ public final class AppConfig {
     public static final String LOCATION = "location";
     public static final String LATITUDE = "lat";
     public static final String LONGITUDE = "lng";
-    public static final String ICON = "icon";
     public static final String SUPERMARKET_ID = "id";
     public static final String NAME = "name";
     public static final String PLACE_ID = "place_id";

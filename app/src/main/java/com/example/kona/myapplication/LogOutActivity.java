@@ -1,10 +1,6 @@
 package com.example.kona.myapplication;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +26,9 @@ import static java.security.AccessController.getContext;
 
 public class LogOutActivity extends AppCompatActivity {
 
+    /**
+     * This activity is for the user to log out from the app
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_out);
@@ -111,6 +110,11 @@ public class LogOutActivity extends AppCompatActivity {
 
         finish();
     }
+
+    /**
+     * Called when the user taps the return button
+     * @param view
+     */
 
     public void backToMenu(View view) {
         Intent intent = new Intent(this, MainMenuActivity.class);

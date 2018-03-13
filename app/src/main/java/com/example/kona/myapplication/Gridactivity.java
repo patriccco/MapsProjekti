@@ -1,23 +1,18 @@
 package com.example.kona.myapplication;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.GridLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+/**
+ * This activity triggers when the random encounter is accepted.
+ * This is the battlescreen.
+ */
 
 public class Gridactivity extends AppCompatActivity {
     private TextView text;
+    MediaPlayer fightTune;
 
 
 
@@ -31,6 +26,18 @@ public class Gridactivity extends AppCompatActivity {
         pixelGrid.setNumColumns(7);
         pixelGrid.setNumRows(10);
 
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fightTune = MediaPlayer.create(getApplicationContext(), R.raw.crimson05);
+        fightTune.start();
+    }
+
+    protected void onStop() {
+        super.onStop();
+        fightTune.stop();
+        fightTune.release();
     }
 
 }

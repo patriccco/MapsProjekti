@@ -27,6 +27,9 @@ import java.util.Random;
 
 import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
+/**
+ * Class for the grid minigame
+ */
 public class PixelGridView extends View {
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -52,6 +55,11 @@ public class PixelGridView extends View {
         this(context, null);
     }
 
+    /**
+     * Constuctor for the gridview for the tapping minigame.
+     * @param context
+     * @param attrs
+     */
     public PixelGridView(Context context, AttributeSet attrs) {
 
         super(context, attrs);
@@ -65,6 +73,10 @@ public class PixelGridView extends View {
         cyan.setStyle(Paint.Style.FILL);
     }
 
+    /**
+     * Set the amount of vertical pixels on the screen.
+     * @param numColumns
+     */
     public void setNumColumns(int numColumns) {
         this.numColumns = numColumns;
         calculateDimensions();
@@ -74,6 +86,10 @@ public class PixelGridView extends View {
         return numColumns;
     }
 
+    /**
+     * Set the amount of horizontal pixels on the screen.
+     * @return
+     */
     public void setNumRows(int numRows) {
         this.numRows = numRows;
         calculateDimensions();
@@ -89,6 +105,9 @@ public class PixelGridView extends View {
         calculateDimensions();
     }
 
+    /**
+     * Fit grid to the screen.
+     */
     private void calculateDimensions() {
         if (numColumns < 1 || numRows < 1) {
             return;
@@ -104,8 +123,10 @@ public class PixelGridView extends View {
     }
 
 
-
-
+    /**
+     * Draw objects to the canvas.
+     * @param canvas
+     */
     @Override
     protected void onDraw(Canvas canvas) {
 
@@ -121,7 +142,6 @@ public class PixelGridView extends View {
         //cyan fill
         for (int i = 0; i < numColumns; i++) {
             for (int j = 0; j < numRows; j++) {
-
 
                 if (cellChecked[i][j]) {
                     Drawable d = getResources().getDrawable(R.drawable.greenbtn);
@@ -219,7 +239,6 @@ public class PixelGridView extends View {
                     Log.d("Start" , " " + start);
                     start = (double) SystemClock.uptimeMillis();
                 }
-
 
 
                 //drawPath.moveTo(touchX, touchY);

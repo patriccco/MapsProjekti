@@ -2,18 +2,17 @@ package com.example.kona.myapplication;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.media.MediaPlayer;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -31,18 +30,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PointOfInterest;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -52,18 +47,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.location.places.*;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-
 import java.util.Random;
-
 import static com.example.kona.myapplication.AppConfig.GEOMETRY;
 import static com.example.kona.myapplication.AppConfig.GOOGLE_BROWSER_API_KEY;
 import static com.example.kona.myapplication.AppConfig.LATITUDE;
@@ -74,13 +64,11 @@ import static com.example.kona.myapplication.AppConfig.OK;
 import static com.example.kona.myapplication.AppConfig.PLACE_ID;
 import static com.example.kona.myapplication.AppConfig.PROXIMITY_RADIUS;
 import static com.example.kona.myapplication.AppConfig.QUEST_RADIUS;
-import static com.example.kona.myapplication.AppConfig.REFERENCE;
 import static com.example.kona.myapplication.AppConfig.STATUS;
 import static com.example.kona.myapplication.AppConfig.SUPERMARKET_ID;
 import static com.example.kona.myapplication.AppConfig.VICINITY;
 import static com.example.kona.myapplication.AppConfig.ZERO_RESULTS;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
-
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
@@ -89,11 +77,9 @@ public class MapsActivity extends FragmentActivity
     protected GeoDataClient mGeoDataClient;
     private LocationManager locationManager;
     private static final String TAG = "MyActivity";
-    double koord, koord2;
-    LatLng boot;
     double questlatitude, questlongitude, poilat, poilong;
     GoogleMap mMap;
-    Marker locicon, boothill, questmarker, barmarker, shopmarker;
+    Marker locicon,questmarker, barmarker, shopmarker;
     public boolean icons, quest, randomized, newquest;
     double userlongitude, userlatitude;
     JSONObject place, questplace;
@@ -103,15 +89,7 @@ public class MapsActivity extends FragmentActivity
     public Quest Questobject = new Quest();
     Encounter randdenc = new Encounter();
     public String enemyname;
-
-    public String getEnemyname() {
-        return enemyname;
-    }
-
-    public void setEnemyname(String enemyname) {
-        this.enemyname = enemyname;
-    }
-
+    MediaPlayer Tune;
     public double getUserlongitude() {
         return userlongitude;
     }
@@ -128,11 +106,10 @@ public class MapsActivity extends FragmentActivity
         this.userlatitude = latitude;
     }
 
-
     private static final int REQUEST_FINE_LOCATION = 0;
     private View mLayout;
     private TextView enemytext;
-    Button greenBtn, redBtn, locbutton, menuBtn, profileBtn, itemBtn, jobBtn;
+    Button greenBtn, redBtn, locbutton;
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 500; /* 2 sec */
@@ -221,6 +198,9 @@ public class MapsActivity extends FragmentActivity
 
     }
 
+    /**
+     * Start the location update requests from the system
+     */
     protected void startLocationUpdates() {
 
         // Create the location request to start receiving updates
@@ -270,6 +250,10 @@ public class MapsActivity extends FragmentActivity
         }
     }
 
+    /**
+     *Update database when users location changes
+     * @param location
+     */
     public void onLocationChanged(Location location) {
 
 
@@ -288,8 +272,6 @@ public class MapsActivity extends FragmentActivity
                     Log.d(TAG, "" + enemID + " " + enemyname);
                     enemytext.setText("You Encountered " + enemyname + "!");
                     randomized = true;
-
-
                 }
 
                 @Override
@@ -298,20 +280,16 @@ public class MapsActivity extends FragmentActivity
                     Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
                 }
             });
-
             enemytext.setVisibility(View.VISIBLE);
             greenBtn.setVisibility(View.VISIBLE);
             redBtn.setVisibility(View.VISIBLE);
-
         }
-
 
         if (icons) {
             icons = false;
         } else {
             icons = true;
         }
-
         //set current location to database
         try {
 
@@ -320,7 +298,6 @@ public class MapsActivity extends FragmentActivity
             DatabaseReference userRef = database.getReference("Player");
             userRef.child("User").child(userinfo).child("latitude").setValue(getUserlatitude());
             userRef.child("User").child(userinfo).child("longitude").setValue(getUserlongitude());
-
 
             if (locicon != null) {
                 locicon.remove();
@@ -345,7 +322,6 @@ public class MapsActivity extends FragmentActivity
                         loadNearByQuest(getUserlatitude(), getUserlongitude(), true);
                     }
 
-
                     if (icons) {
                         locicon = mMap.addMarker(new MarkerOptions()
                                 .position(loc)
@@ -358,8 +334,6 @@ public class MapsActivity extends FragmentActivity
 
                 }
 
-
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
 
@@ -367,7 +341,6 @@ public class MapsActivity extends FragmentActivity
             });
 
             //camera adjustments
-
         } catch (Exception e) {
         }
 
@@ -375,9 +348,20 @@ public class MapsActivity extends FragmentActivity
 
     }
 
+    protected void onStop() {
+        super.onStop();
+        Tune.stop();
+        Tune.release();
+
+
+}
+
     @Override
     protected void onResume() {
         super.onResume();
+
+        Tune = MediaPlayer.create(getApplicationContext(), R.raw.crimson_idle);
+        Tune.start();
         getLastLocation();
             LatLng locat = new LatLng(getUserlatitude(),getUserlongitude());
             Log.d(TAG, "" + locat);
@@ -390,8 +374,12 @@ public class MapsActivity extends FragmentActivity
 
     }
 
+    /**
+     *
+     // Get last known recent location using new Google Play Services SDK (v11+)
+     */
     public void getLastLocation() {
-        // Get last known recent location using new Google Play Services SDK (v11+)
+
         FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
         if (checkPermission()) {
 
@@ -435,6 +423,12 @@ public class MapsActivity extends FragmentActivity
         }
     }
 
+    /**
+     * Get the nearby shops
+     * @param latitude
+     * @param longitude
+     * @param quest = false
+     */
     private void loadNearByshops(double latitude, double longitude, boolean quest) {
         this.quest = quest;
         this.poilat = latitude;
@@ -471,6 +465,12 @@ public class MapsActivity extends FragmentActivity
         AppController.getInstance().addToRequestQueue(request);
     }
 
+    /**
+     * Get the nearby supermarkets
+     * @param latitude
+     * @param longitude
+     * @param quest =  false
+     */
     private void loadNearBySupermarket(double latitude, double longitude, boolean quest) {
         this.quest = quest;
         this.poilat = latitude;
@@ -507,7 +507,12 @@ public class MapsActivity extends FragmentActivity
         AppController.getInstance().addToRequestQueue(request);
     }
 
-    // get points of interests from places web api
+    /**
+     * Get the nearby Restaurants
+     * @param latitude
+     * @param longitude
+     * @param quest = false
+     */
     private void loadNearByRestaurant(double latitude, double longitude, boolean quest) {
         this.quest = quest;
         this.poilat = latitude;
@@ -542,6 +547,12 @@ public class MapsActivity extends FragmentActivity
         AppController.getInstance().addToRequestQueue(request);
     }
 
+    /**
+     * Get nearby restaurants, and make it to a Quest
+     * @param latitude
+     * @param longitude
+     * @param quest determines, if player already has a quest.
+     */
     private void loadNearByQuest(double latitude, double longitude, boolean quest) {
         this.quest = quest;
         this.poilat = latitude;
@@ -576,7 +587,10 @@ public class MapsActivity extends FragmentActivity
         AppController.getInstance().addToRequestQueue(request);
     }
 
-    //handle result from places web Api
+    /**
+     *
+     handle result from places web Api
+     */
     private void parseLocationResult(JSONObject result, String type) {
 
         String id, place_id, placeName = null, reference, icon, vicinity = null;
@@ -876,6 +890,10 @@ public class MapsActivity extends FragmentActivity
 
     }
 
+    /**
+     * Check if location permission is granted.
+     * @return
+     */
     private boolean checkPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -886,24 +904,20 @@ public class MapsActivity extends FragmentActivity
         }
     }
 
+    /**
+     * Request the system to grant permission for location.
+     */
     private void requestPermissions() {
         // Request the permission
         ActivityCompat.requestPermissions(MapsActivity.this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 REQUEST_FINE_LOCATION);
     }
-    public void questlines(){
 
-        loadNearByshops(getUserlatitude(), getUserlongitude(), false);
-        loadNearBySupermarket(getUserlatitude(), getUserlongitude(), false);
-        loadNearByRestaurant(getUserlatitude(), getUserlongitude(), false);
-        loadNearByQuest(getUserlatitude(), getUserlongitude(), true);
-    }
-
-
-    /**buttonss**/
-
-    /**opens main menu view**/
+    /**
+     *
+     * @param view
+     */
     public void openMenu(View view) {
         Intent intent = new Intent(this, MainMenuActivity.class);
         startActivity(intent);

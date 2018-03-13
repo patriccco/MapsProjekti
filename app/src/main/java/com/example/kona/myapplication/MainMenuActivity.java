@@ -13,14 +13,20 @@ public class MainMenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_menu);
     }
 
-    /** Called when the user taps the Log Out button */
+    /**
+     * Called when the user taps the Log Out button
+     * @param view
+     */
     public void profileView(View view) {
         Intent logout = new Intent(this, LogOutActivity.class);
 
         startActivity(logout);
     }
 
-    /**return to map view**/
+    /**
+     * return to map view
+     * @param view
+     */
     public void backToMap(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);

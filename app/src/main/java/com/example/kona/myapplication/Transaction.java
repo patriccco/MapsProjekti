@@ -53,6 +53,10 @@ public class Transaction {
         this.money = money;
     }
 
+
+    /**
+     * Request users HP from database.
+     */
     public void checkHP(){
         DatabaseReference HPRef = database.getReference("Player");
         HPRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -70,6 +74,11 @@ public class Transaction {
         });
 
     }
+
+    /**
+     * update users money to database
+     * @param money
+     */
     public void addMoney(final int money){
 
         final DatabaseReference MoneyRef = database.getReference("Player");
@@ -94,6 +103,10 @@ public class Transaction {
 
     }
 
+    /**
+     * Update Users HP to database.
+     * @param hp
+     */
     public void addHP(final int hp) {
 
         final DatabaseReference hpRef = database.getReference("Player");
@@ -116,7 +129,9 @@ public class Transaction {
         });
     }
 
-    // Check the current amount of money
+    /**
+     * Return users Money amount from database.
+     */
     public void checkmoney() {
         DatabaseReference MoneyRef = database.getReference("Player");
         MoneyRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -137,7 +152,13 @@ public class Transaction {
     }
 
             // check the price of selected item
-            public void CheckPrice(String item){
+
+    /**
+     * Check price of a item from database, and perform the transaction.
+     * On success, move the items attributes to user, and decrease users money.
+     * @param item
+     */
+    public void CheckPrice(String item){
                 final String dbItem = item;
 
                 DatabaseReference ItemRef = database.getReference("Items");
@@ -185,7 +206,11 @@ public class Transaction {
                     }
                 });
     }
-    //Validate that the player has enough money for the product.
+
+    /**
+     * Validate that user has enough money.
+     * @return
+     */
     public boolean valid(){
         if (price <= money){
             return true;

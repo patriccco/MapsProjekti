@@ -2,6 +2,7 @@ package com.example.kona.myapplication;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -31,6 +32,7 @@ public class ShopView extends AppCompatActivity{
     private final static String TAG = "TÄÄ";
     FirebaseAuth auth = FirebaseAuth.getInstance();
     public FirebaseDatabase database = FirebaseDatabase.getInstance();
+    MediaPlayer Tune;
 
     ArrayList <String> products = new ArrayList<>();
 
@@ -44,8 +46,20 @@ public class ShopView extends AppCompatActivity{
         test.checkmoney();
         test.CheckPrice("Banana");
     }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        Tune = MediaPlayer.create(getApplicationContext(), R.raw.kauppatune);
+        Tune.start();
+
+
+    }
     @Override
     protected void onPause() {
+        Tune.stop();
+        Tune.release();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Player");
@@ -53,7 +67,10 @@ public class ShopView extends AppCompatActivity{
         super.onPause();
         }
 
-    /**buttons**/
+    /**
+     * Buy from the shop
+     * @param view
+     */
 
     public void buy(View view) {
         Transaction transaction = new Transaction();
@@ -65,6 +82,10 @@ public class ShopView extends AppCompatActivity{
         startActivity(intent);
     }*/
 
+    /**
+     * Switch the activity by view
+     * @param view
+     */
     public void backToMap(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);

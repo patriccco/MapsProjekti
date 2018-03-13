@@ -29,8 +29,8 @@ public class Quest {
     }
 
     /**
-     *Asetetaan tietokantaan tieto uudesta tehtävästä
-     * @param newQ
+     *Push the data of quest taken to the database
+     * @param newQ true if new quest was taken
      */
     public void newQuest(Boolean newQ){
         QuestRef.child("User").child(userinfo).child("Quest").child("newQuest").setValue(newQ);
@@ -38,7 +38,7 @@ public class Quest {
     }
 
     /**
-     * Asetetaan tehtävälle muuttujat tietokantaan
+     * Set all the required variables for a quest to the database
      * @param latitude
      * @param longitude
      * @param name
@@ -60,7 +60,7 @@ public class Quest {
 }
 
     /**
-     * Tehtävän sijainti
+     * Getter for the quest location
      * @return
      */
     public LatLng getQuestLatLng() {
@@ -83,7 +83,7 @@ public class Quest {
     }
 
     /**
-     * Tehtävän paikan nimi
+     * getter for the name of the quest
      * @return
      */
     public String getQuestName() {
@@ -103,7 +103,7 @@ public class Quest {
     }
 
     /**
-     * Tehtävän paikan osoite
+     * Getter for the vicinity of the Quest
      * @return
      */
     public String getQuestVicinity() {
@@ -123,7 +123,7 @@ public class Quest {
     }
 
     /**
-     * Palauttaa true jos tehtävä päällä
+     * Returns true if quest is on
      *
      * @return
      */

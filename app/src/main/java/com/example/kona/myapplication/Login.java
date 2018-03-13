@@ -32,16 +32,26 @@ import java.util.List;
  * Created by kona on 1.2.2018.
  */
 
+
+
+/**
+ * This activity asks user to log in
+ * with 2 options:
+ * 1. Google account
+ * 2. Email & password
+ * This activity is the activity that starts the app.
+ * It is also ran after the user logs out or deletes its profile.
+ *
+ */
+
 public class Login extends AppCompatActivity {
 
 
     // Choose an arbitrary request code value
     private static final int RC_SIGN_IN = 123;
     FirebaseAuth auth = FirebaseAuth.getInstance();
-    String dBUID;
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-
     // Choose authentication providers
     List<AuthUI.IdpConfig> providers = Arrays.asList(
             new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
@@ -51,9 +61,7 @@ public class Login extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         if (auth.getCurrentUser() != null) {
-
             // already signed in
             DatabaseReference myRef = database.getReference("Player");
             startActivity(new Intent(Login.this, MapsActivity.class));
@@ -70,6 +78,14 @@ public class Login extends AppCompatActivity {
 
         }
     }
+    /**
+     * This is the database process that goes trough log in.
+     * Checks if user has an account. If not inserts needed info to database.
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
@@ -112,17 +128,12 @@ public class Login extends AppCompatActivity {
                             //IT DOESNT EXISTS
                         }
                     }
-
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 
                     }
                 });
                 // Write a message to the database
-
-
-
-
 
                 startActivity(new Intent(Login.this,MapsActivity.class));
                 finish();
