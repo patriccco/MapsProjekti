@@ -17,7 +17,7 @@
     <application
         android:name=".AppController"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/mirtsu"
         android:label="app_maps"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -37,7 +37,7 @@
 
         <activity
             android:name=".Login"
-            android:label="@string/title_activity_maps"
+            android:label="ElämämPeli"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
