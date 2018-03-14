@@ -167,13 +167,15 @@ public class Transaction {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         long dbPrice = (long) dataSnapshot.child(dbItem).child("Price").getValue();
                         long dbHP = (long) dataSnapshot.child(dbItem).child("HP").getValue();
+
                         setPrice((int)dbPrice);
                         setItemhp((int)dbHP);
                         Log.d(TAG, "Price: " + price);
                         Log.d(TAG, "itemhp: " + itemhp);
+                        checkmoney();
 
 
-                        if (valid()){
+                        if (price <= money){
                             checkHP();
                             final DatabaseReference PlayerRef = database.getReference("Player");
                             PlayerRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {

@@ -6,10 +6,12 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -43,8 +45,6 @@ public class ShopView extends AppCompatActivity{
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_shop);
         Transaction test = new Transaction();
-        test.checkmoney();
-        test.CheckPrice("Banana");
     }
 
     @Override
@@ -80,6 +80,12 @@ public class ShopView extends AppCompatActivity{
     public void buy(View view) {
         Transaction transaction = new Transaction();
         transaction.CheckPrice("Banana");
+
+
+        Toast toast= Toast.makeText(getApplicationContext(),
+                "You Bought 5 hp  !" + "\n cost 10 money", Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER_VERTICAL| Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.show();
     }
 
     /*public void sell(View view) {

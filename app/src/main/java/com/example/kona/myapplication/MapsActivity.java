@@ -308,8 +308,12 @@ public class MapsActivity extends FragmentActivity
         //set current location to database
         try {
 
-            setUserlatitude(location.getLatitude() + 0.001);
-            setUserlongitude(location.getLongitude() + 0.001);
+            // Testisijainti Boothill
+            setUserlatitude(60.164457);
+            setUserlongitude(24.933092);
+
+            //setUserlatitude(location.getLatitude() + 0.001);
+            //setUserlongitude(location.getLongitude() + 0.001);
             DatabaseReference userRef = database.getReference("Player");
             userRef.child("User").child(userinfo).child("latitude").setValue(getUserlatitude());
             userRef.child("User").child(userinfo).child("longitude").setValue(getUserlongitude());
@@ -317,11 +321,8 @@ public class MapsActivity extends FragmentActivity
             if (locicon != null) {
                 locicon.remove();
             }
-            // Testisijainti koulu
-            //setUserlatitude(60.164380);
-            //setUserlongitude(24.933080);
-
-            loc = new LatLng(location.getLatitude(), location.getLongitude());
+            //loc = new LatLng(location.getLatitude(), location.getLongitude());
+            loc = new LatLng(getUserlatitude(), getUserlongitude());
 
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -340,11 +341,11 @@ public class MapsActivity extends FragmentActivity
                     if (icons) {
                         locicon = mMap.addMarker(new MarkerOptions()
                                 .position(loc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.runner1)));
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
                     } else {
                         locicon = mMap.addMarker(new MarkerOptions()
                                 .position(loc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.runner2)));
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
                     }
 
                 }
@@ -388,11 +389,12 @@ public class MapsActivity extends FragmentActivity
         }
 
         /**piilottaa status barin**/
+        /*
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
-
+*/
     }
 
     /**
@@ -404,6 +406,9 @@ public class MapsActivity extends FragmentActivity
         FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
         if (checkPermission()) {
 
+            setUserlatitude(60.164457);
+            setUserlongitude(24.933092);
+
             locationClient.getLastLocation()
                     .addOnSuccessListener(new OnSuccessListener<Location>() {
                         @Override
@@ -411,8 +416,11 @@ public class MapsActivity extends FragmentActivity
                             // GPS location can be null if GPS is switched off
                             if (location != null) {
 
+                                setUserlatitude(60.164457);
+                                setUserlongitude(24.933092);
+
                                 CameraPosition cameraPosition = new CameraPosition.Builder()
-                                        .target(new LatLng(location.getLatitude(),location.getLongitude()))
+                                        .target(new LatLng(getUserlatitude(),getUserlongitude()))
                                         .zoom(19)                    // Sets the orientation of the camera to east
                                         .tilt(25)                   // Sets the tilt of the camera to 30 degrees
                                         .bearing(1)                // Sets the orientation of the camera to east
@@ -697,12 +705,12 @@ public class MapsActivity extends FragmentActivity
                         locicon.remove();
                         locicon = mMap.addMarker(new MarkerOptions()
                                 .position(loc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
                     } else {
                         locicon.remove();
                         locicon = mMap.addMarker(new MarkerOptions()
                                 .position(loc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
                     }
 
 

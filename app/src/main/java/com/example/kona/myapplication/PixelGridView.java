@@ -261,9 +261,6 @@ public class PixelGridView extends View {
                             Log.d("voitto", "ON " + finaltime);
 
                         }
-
-
-
                     }
                 }
 
