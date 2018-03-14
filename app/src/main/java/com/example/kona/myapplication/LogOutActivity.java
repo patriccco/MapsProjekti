@@ -32,7 +32,17 @@ public class LogOutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_out);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        /**piilottaa status barin**/
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
     /**
@@ -117,7 +127,7 @@ public class LogOutActivity extends AppCompatActivity {
      */
 
     public void backToMenu(View view) {
-        Intent intent = new Intent(this, MainMenuActivity.class);
+        Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
 }

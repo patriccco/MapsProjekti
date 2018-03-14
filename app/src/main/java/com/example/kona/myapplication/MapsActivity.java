@@ -45,6 +45,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.location.places.*;
@@ -109,8 +110,8 @@ public class MapsActivity extends FragmentActivity
     private static final int REQUEST_FINE_LOCATION = 0;
     private View mLayout;
     private TextView enemytext;
-    Button greenBtn, redBtn, locbutton;
     private LocationRequest mLocationRequest;
+    Button greenBtn, redBtn, locbutton;
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 500; /* 2 sec */
     private long DISTANCE_CHANGE_FOR_UPDATES = 8;
@@ -118,6 +119,15 @@ public class MapsActivity extends FragmentActivity
     String userinfo = auth.getUid();
     JSONArray questlist = new JSONArray();
     public FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    //nää hommat
+    ProgressBar healthbar;
+    View menuView;
+    boolean menuVisible;
+    private int health;
+
+    /**used for setting the player's health for the health bar**/
+    public void setHealth(int health) { this.health = health; }
 
 
     @Override
@@ -133,22 +143,26 @@ public class MapsActivity extends FragmentActivity
         redBtn = findViewById(R.id.escape);
         locbutton = findViewById(R.id.button4);
 
-        /**opens and hides additional buttons*
-        menuBtn = findViewById(R.id.menu);
-        profileBtn = findViewById(R.id.profile);
-        profileBtn.setVisibility(View.GONE);
-        profileBtn.setOnClickListener(new View.OnClickListener() {
+        /**get player's current health for the healthbar**/
+        final DatabaseReference hpRef = database.getReference("Player");
+        hpRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                Intent profile = new Intent(this, LogOutActivity.class);
-                startActivity(profile);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long currHealth = (long) dataSnapshot.child(auth.getUid()).child("HP").getValue();
+                setHealth((int)currHealth);
+
+                final ProgressBar healthBar = findViewById(R.id.healthbar);
+                healthBar.setMax(100);
+                healthBar.setProgress(health);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
             }
         });
-        itemBtn = findViewById(R.id.items);
-        itemBtn.setVisibility(View.GONE);
-        jobBtn = findViewById(R.id.jobs);
-        jobBtn.setVisibility(View.GONE);
-        **/
+
+        /**menu overlay**/
+        menuView = findViewById(R.id.menuOverlay);
+        menuView.setVisibility(View.GONE);
 
         greenBtn.setVisibility(View.GONE);
         redBtn.setVisibility(View.GONE);
@@ -197,6 +211,7 @@ public class MapsActivity extends FragmentActivity
         mapFragment.getMapAsync(this);
 
     }
+
 
     /**
      * Start the location update requests from the system
@@ -325,11 +340,11 @@ public class MapsActivity extends FragmentActivity
                     if (icons) {
                         locicon = mMap.addMarker(new MarkerOptions()
                                 .position(loc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.runner1)));
                     } else {
                         locicon = mMap.addMarker(new MarkerOptions()
                                 .position(loc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.runner2)));
                     }
 
                 }
@@ -371,6 +386,12 @@ public class MapsActivity extends FragmentActivity
             Toast.makeText(getApplicationContext(), " You dealt with " + randdenc.enemyName + " you got 5 money!",
                     Toast.LENGTH_SHORT).show();
         }
+
+        /**piilottaa status barin**/
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
 
     }
 
@@ -918,9 +939,22 @@ public class MapsActivity extends FragmentActivity
      *
      * @param view
      */
-    public void openMenu(View view) {
-        Intent intent = new Intent(this, MainMenuActivity.class);
-        startActivity(intent);
+    //toggles menu overlay on
+    public void toggleMenu(View view) {
+        if (!menuVisible) {
+            menuView.setVisibility(View.VISIBLE);
+            menuVisible = true;
+        } else {
+            menuView.setVisibility(View.GONE);
+            menuVisible = false;
+        }
+    }
+
+    //opens user profile
+    public void profileView(View view) {
+        Intent logout = new Intent(this, LogOutActivity.class);
+
+        startActivity(logout);
     }
 
 

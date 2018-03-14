@@ -96,6 +96,7 @@ public class Barview extends AppCompatActivity{
             Log.d(TAG, PlaceNames.toString());
             // Set the ArrayAdapter as the ListView's adapter.
             mainListView.setAdapter(adapter);
+
         }
 
 
@@ -125,6 +126,12 @@ public class Barview extends AppCompatActivity{
 
         Tune = MediaPlayer.create(getApplicationContext(), R.raw.bartune);
         Tune.start();
+
+        /**piilottaa status barin**/
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
     /**

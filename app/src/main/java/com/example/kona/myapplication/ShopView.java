@@ -54,8 +54,13 @@ public class ShopView extends AppCompatActivity{
         Tune = MediaPlayer.create(getApplicationContext(), R.raw.kauppatune);
         Tune.start();
 
-
+        /**piilottaa status barin**/
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
+
     @Override
     protected void onPause() {
         Tune.stop();

@@ -4,7 +4,7 @@
     "elementType": "labels.text.fill",
     "stylers": [
       {
-        "color": "#c00d0d"
+        "color": "#00FFFF"
       },
       {
         "visibility": "off"
@@ -19,7 +19,7 @@
         "visibility": "on"
       },
       {
-        "color": "#ca0000"
+        "color": "#00FFFF"
       }
     ]
   },

@@ -1,31 +1,13 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fui_transparent"
     android:orientation="vertical"
     tools:alpha="10">
 
-
-    <com.example.kona.myapplication.MovableFloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="110dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:onClick="TologOut"
-        map:layout_constraintBottom_toBottomOf="parent"
-        map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintLeft_toLeftOf="parent"
-        map:layout_constraintRight_toRightOf="parent"
-        map:layout_constraintStart_toStartOf="parent"
-        map:layout_constraintTop_toTopOf="parent"
-        map:layout_constraintVertical_bias="0.954"
-        map:srcCompat="@android:drawable/ic_input_add" />
 
     <fragment
         android:id="@+id/map"
@@ -51,13 +33,13 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/locbtn"
+        android:background="@drawable/target2"
         map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.023"
+        map:layout_constraintHorizontal_bias="0.075"
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toTopOf="parent"
-        map:layout_constraintVertical_bias="0.954" />
+        map:layout_constraintVertical_bias="0.956" />
 
 
     <Button
@@ -119,76 +101,164 @@
 
     <Button
         android:id="@+id/menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="53dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:onClick="openMenu"
-        android:text="MENU"
+        android:background="@drawable/menu2"
+        android:onClick="toggleMenu"
         map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.971"
+        map:layout_constraintHorizontal_bias="0.939"
         map:layout_constraintRight_toRightOf="parent"
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toTopOf="parent"
-        map:layout_constraintVertical_bias="0.97" />
+        map:layout_constraintVertical_bias="0.957" />
 
-    <Button
-        android:id="@+id/jobs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="JOBS"
-        map:layout_constraintBottom_toBottomOf="parent"
-        map:layout_constraintEnd_toEndOf="@+id/map"
-        map:layout_constraintHorizontal_bias="0.971"
-        map:layout_constraintRight_toRightOf="parent"
-        map:layout_constraintStart_toStartOf="parent"
-        map:layout_constraintTop_toTopOf="parent"
-        map:layout_constraintVertical_bias="0.838" />
+    <RelativeLayout android:id="@+id/menuOverlay" android:background="#77000000"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/items"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="ITEMS"
-        map:layout_constraintBottom_toBottomOf="parent"
-        map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.971"
-        map:layout_constraintRight_toRightOf="parent"
-        map:layout_constraintStart_toStartOf="parent"
-        map:layout_constraintTop_toTopOf="parent"
-        map:layout_constraintVertical_bias="0.719" />
+        <ProgressBar
+            android:id="@+id/healthbar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="200dp"
+            android:layout_height="43dp"
+            android:layout_alignBottom="@+id/avatar"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@+id/avatar"
+            android:max="100"
+            android:progress="50"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.825"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.122" />
 
-    <Button
-        android:id="@+id/profile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="PROFILE"
-        map:layout_constraintBottom_toBottomOf="parent"
-        map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.971"
-        map:layout_constraintRight_toRightOf="parent"
-        map:layout_constraintStart_toStartOf="parent"
-        map:layout_constraintTop_toTopOf="parent"
-        map:layout_constraintVertical_bias="0.592" />
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_alignBottom="@+id/healthbar"
+            android:layout_alignStart="@+id/healthbar"
+            android:layout_marginBottom="20dp"
+            android:text="SWAGKILLA"
+            android:textColor="#0ddfd8"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.073" />
+
+        <ImageButton
+            android:id="@+id/avatar"
+            android:layout_width="136dp"
+            android:layout_height="131dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="42dp"
+            android:layout_marginTop="33dp"
+            android:background="@drawable/avatar_s2"
+            android:onClick="profileView"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            map:srcCompat="@drawable/avatar_s2" />
+
+        <Button
+            android:id="@+id/profile"
+            android:layout_width="50dp"
+            android:layout_height="53dp"
+            android:layout_above="@+id/quests"
+            android:layout_alignStart="@+id/quests"
+            android:layout_marginBottom="26dp"
+            android:background="@drawable/profile2"
+            android:onClick="profileView"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.939"
+            map:layout_constraintRight_toRightOf="parent"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintVertical_bias="0.957" />
+
+        <Button
+            android:id="@+id/quests"
+            android:layout_width="50dp"
+            android:layout_height="53dp"
+            android:layout_above="@+id/inventory"
+            android:layout_alignStart="@+id/inventory"
+            android:layout_marginBottom="28dp"
+            android:background="@drawable/menu2"
+            android:onClick="toggleMenu"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.939"
+            map:layout_constraintRight_toRightOf="parent"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintVertical_bias="0.957" />
+
+        <Button
+            android:id="@+id/inventory"
+            android:layout_width="50dp"
+            android:layout_height="53dp"
+            android:layout_alignEnd="@+id/healthbar"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="118dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/menu2"
+            android:onClick="toggleMenu"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.939"
+            map:layout_constraintRight_toRightOf="parent"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintVertical_bias="0.957" />
+
+        <TextView
+            android:id="@+id/profileText"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:layout_alignBaseline="@+id/profile"
+            android:layout_alignBottom="@+id/profile"
+            android:layout_marginEnd="10dp"
+            android:layout_toStartOf="@+id/quests"
+            android:text=" profile"
+            android:textColor="#def9f8"
+            android:textSize="25sp" />
+
+        <TextView
+            android:id="@+id/questText"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:layout_alignBaseline="@+id/quests"
+            android:layout_alignBottom="@+id/quests"
+            android:layout_alignStart="@+id/profileText"
+            android:text="    jobs"
+            android:textColor="#def9f8"
+            android:textSize="25sp" />
+
+        <TextView
+            android:id="@+id/inventoryText"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:layout_alignBaseline="@+id/inventory"
+            android:layout_alignBottom="@+id/inventory"
+            android:layout_alignStart="@+id/questText"
+            android:text="  items"
+            android:textColor="#def9f8"
+            android:textSize="25sp" />
+
+    </RelativeLayout>
 
 
 </android.support.constraint.ConstraintLayout>
