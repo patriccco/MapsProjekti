@@ -56,7 +56,7 @@
             android:name=".ShopView"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".RandomEncounter"
+            android:name=".ArmGameActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Gridactivity"

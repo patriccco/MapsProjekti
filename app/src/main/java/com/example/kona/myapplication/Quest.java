@@ -1,5 +1,6 @@
 package com.example.kona.myapplication;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -8,6 +9,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 /**
@@ -16,10 +18,11 @@ import com.google.firebase.database.ValueEventListener;
 
 public class Quest {
 
-    private String qName,qVicinity;
+    private String name,vicinity;
     private Boolean isquest = false;
     private LatLng qlatlng, questLatLng;
     private double qlat,qlong;
+    long Qtime, QendTime;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     String userinfo = auth.getCurrentUser().getUid();
     FirebaseDatabase  mDatabase = FirebaseDatabase.getInstance();
@@ -45,17 +48,27 @@ public class Quest {
      * @param vicinity
      * @param isquest
      */
-    public void setQuest(double latitude, double longitude, String name, String vicinity, Boolean isquest) {
+    public void setQuest(double latitude, double longitude, String name, String vicinity, long Qtime, Boolean isquest) {
 
-            this.questLatLng = new LatLng(latitude,longitude);
-            DatabaseReference MyRef = mDatabase.getReference("Player");
-            Log.d("aa", questLatLng.toString());
-            MyRef.child("User").child(auth.getUid()).child("Quest").setValue(questLatLng);
-            MyRef.child("User").child(auth.getUid()).child("Quest").child("isQuest").setValue(isquest);
-            MyRef.child("User").child(auth.getUid()).child("Quest").child("Questname").setValue(name);
-            MyRef.child("User").child(auth.getUid()).child("Quest").child("Questvicinity").setValue(vicinity);
+        this.questLatLng = new LatLng(latitude, longitude);
 
-        QuestRef.child("User").child(userinfo).child("Quest").child("newQuest").setValue(false);
+            try {
+                DatabaseReference MyRef = mDatabase.getReference("Player");
+                MyRef.child("User").child(auth.getUid()).child("Quest").setValue(questLatLng);
+                MyRef.child("User").child(auth.getUid()).child("Quest").child("isQuest").setValue(isquest);
+                MyRef.child("User").child(auth.getUid()).child("Quest").child("Questname").setValue(name);
+
+                MyRef.child("User").child(auth.getUid()).child("Quest").child("QuestTimeEnd").setValue(SystemClock.uptimeMillis() + Qtime);
+                MyRef.child("User").child(auth.getUid()).child("Quest").child("QuestTimeStart").setValue(SystemClock.uptimeMillis());
+                this.Qtime = SystemClock.uptimeMillis();
+                this.QendTime = SystemClock.uptimeMillis() + Qtime;
+
+                MyRef.child("User").child(auth.getUid()).child("Quest").child("Questvicinity").setValue(vicinity);
+
+                MyRef.child("User").child(userinfo).child("Quest").child("newQuest").setValue(false);
+
+
+            } catch (Exception e){}
 
 }
 
@@ -91,7 +104,7 @@ public class Quest {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Test customer marker
-                qName = dataSnapshot.child("User").child(userinfo).child("Quest").child("Questname").getValue().toString();
+                name = dataSnapshot.child("User").child(userinfo).child("Quest").child("Questname").getValue().toString();
 
             }
             @Override
@@ -99,7 +112,7 @@ public class Quest {
             }
         });
 
-        return qName;
+        return name;
     }
 
     /**
@@ -111,7 +124,7 @@ public class Quest {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Test customer marker
-                qVicinity = dataSnapshot.child("User").child(userinfo).child("Quest").child("Questvicinity").getValue().toString();
+                vicinity = dataSnapshot.child("User").child(userinfo).child("Quest").child("Questvicinity").getValue().toString();
 
             }
             @Override
@@ -119,7 +132,7 @@ public class Quest {
             }
         });
 
-        return qVicinity;
+        return vicinity;
     }
 
     /**
@@ -142,6 +155,16 @@ public class Quest {
 
         return isquest;
     }
+
+    public long getQuestTime() {
+        Qtime = SystemClock.uptimeMillis();
+        return Qtime;
+    }
+    public long getQuestEndtTime() {
+        return QendTime;
+    }
+
+
 
 
 }

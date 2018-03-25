@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
+import android.os.CountDownTimer;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -37,6 +39,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import android.location.Location;
 import android.location.LocationManager;
@@ -55,6 +58,8 @@ import org.json.JSONObject;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
 import static com.example.kona.myapplication.AppConfig.GEOMETRY;
 import static com.example.kona.myapplication.AppConfig.GOOGLE_BROWSER_API_KEY;
 import static com.example.kona.myapplication.AppConfig.LATITUDE;
@@ -84,12 +89,11 @@ public class MapsActivity extends FragmentActivity
     public boolean icons, quest, randomized, newquest;
     double userlongitude, userlatitude;
     JSONObject place, questplace;
-    LatLng loc;
-    LatLng QLatLng;
-    String QplaceName, Qvicinity;
+    LatLng QLatLng, loc;
+    public long Qtime;
     public Quest Questobject = new Quest();
-    Encounter randdenc = new Encounter();
-    public String enemyname;
+    public Encounter randdenc = new Encounter();
+    public String enemyname, QplaceName, Qvicinity;
     MediaPlayer Tune;
     public double getUserlongitude() {
         return userlongitude;
@@ -107,9 +111,17 @@ public class MapsActivity extends FragmentActivity
         this.userlatitude = latitude;
     }
 
+    public long getQtime() {
+        return Qtime;
+    }
+
+    public void setQtime(long qtime) {
+        Qtime = qtime;
+    }
+
     private static final int REQUEST_FINE_LOCATION = 0;
     private View mLayout;
-    private TextView enemytext;
+    private TextView enemytext, mTextField;
     private LocationRequest mLocationRequest;
     Button greenBtn, redBtn, locbutton;
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
@@ -142,6 +154,7 @@ public class MapsActivity extends FragmentActivity
         greenBtn = findViewById(R.id.fight);
         redBtn = findViewById(R.id.escape);
         locbutton = findViewById(R.id.button4);
+        mTextField = findViewById(R.id.Qtimer);
 
         /**get player's current health for the healthbar**/
         final DatabaseReference hpRef = database.getReference("Player");
@@ -167,6 +180,7 @@ public class MapsActivity extends FragmentActivity
         greenBtn.setVisibility(View.GONE);
         redBtn.setVisibility(View.GONE);
         enemytext.setVisibility(View.GONE);
+        mTextField.setVisibility(View.GONE);
 
 
         locbutton.setOnClickListener(new View.OnClickListener() {
@@ -206,6 +220,7 @@ public class MapsActivity extends FragmentActivity
 
             }
         });
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -284,7 +299,6 @@ public class MapsActivity extends FragmentActivity
                     String enemID = String.valueOf(enemgen);
                     enemyname = (String) dataSnapshot.child("Type").child(enemID).child("Name").getValue();
                     myRef.child("Current").setValue(enemyname);
-                    Log.d(TAG, "" + enemID + " " + enemyname);
                     enemytext.setText("You Encountered " + enemyname + "!");
                     randomized = true;
                 }
@@ -307,20 +321,14 @@ public class MapsActivity extends FragmentActivity
         }
         //set current location to database
         try {
-
-            // Testisijainti Boothill
             setUserlatitude(60.164457);
             setUserlongitude(24.933092);
-
             //setUserlatitude(location.getLatitude() + 0.001);
             //setUserlongitude(location.getLongitude() + 0.001);
             DatabaseReference userRef = database.getReference("Player");
             userRef.child("User").child(userinfo).child("latitude").setValue(getUserlatitude());
             userRef.child("User").child(userinfo).child("longitude").setValue(getUserlongitude());
 
-            if (locicon != null) {
-                locicon.remove();
-            }
             //loc = new LatLng(location.getLatitude(), location.getLongitude());
             loc = new LatLng(getUserlatitude(), getUserlongitude());
 
@@ -328,15 +336,12 @@ public class MapsActivity extends FragmentActivity
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     newquest = (Boolean) dataSnapshot.child("User").child(userinfo).child("Quest").child("newQuest").getValue();
+
                     loadNearBySupermarket(getUserlatitude(), getUserlongitude(), false);
                     loadNearByshops(getUserlatitude(), getUserlongitude(), false);
                     loadNearByRestaurant(getUserlatitude(), getUserlongitude(), false);
-                    Log.d(TAG, "" + newquest);
                     loadNearByQuest(getUserlatitude(), getUserlongitude(), newquest);
 
-                    if (Questobject.getisQuest()) {
-                        loadNearByQuest(getUserlatitude(), getUserlongitude(), true);
-                    }
 
                     if (icons) {
                         locicon = mMap.addMarker(new MarkerOptions()
@@ -378,6 +383,8 @@ public class MapsActivity extends FragmentActivity
 
         Tune = MediaPlayer.create(getApplicationContext(), R.raw.crimson_idle);
         Tune.start();
+
+
         getLastLocation();
             LatLng locat = new LatLng(getUserlatitude(),getUserlongitude());
             Log.d(TAG, "" + locat);
@@ -470,7 +477,7 @@ public class MapsActivity extends FragmentActivity
         StringBuilder googlePlacesUrl =
                 new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude);
-        googlePlacesUrl.append("&radius=").append(PROXIMITY_RADIUS);
+        googlePlacesUrl.append("&radius=").append(QUEST_RADIUS);
         googlePlacesUrl.append("&types=").append(type);
         googlePlacesUrl.append("&sensor=true");
         googlePlacesUrl.append("&key=").append(GOOGLE_BROWSER_API_KEY);
@@ -512,7 +519,7 @@ public class MapsActivity extends FragmentActivity
         StringBuilder googlePlacesUrl =
                 new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude);
-        googlePlacesUrl.append("&radius=").append(PROXIMITY_RADIUS);
+        googlePlacesUrl.append("&radius=").append(QUEST_RADIUS);
         googlePlacesUrl.append("&types=").append(type);
         googlePlacesUrl.append("&sensor=true");
         googlePlacesUrl.append("&key=AIzaSyCjnCj2kRnT5SPL4AsyEld_3yFPUTjHdMM");
@@ -548,7 +555,39 @@ public class MapsActivity extends FragmentActivity
         this.poilong = longitude;
         mMap.clear();
 
-//YOU Can change this type at your own will, e.g hospital, cafe, restaurant.... and see how it all works
+        String type = "bar";
+        StringBuilder googlePlacesUrl =
+                new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude);
+        googlePlacesUrl.append("&radius=").append(QUEST_RADIUS);
+        googlePlacesUrl.append("&types=").append(type);
+        googlePlacesUrl.append("&sensor=true");
+        googlePlacesUrl.append("&key=AIzaSyCjnCj2kRnT5SPL4AsyEld_3yFPUTjHdMM");
+
+        JsonObjectRequest request = new JsonObjectRequest(googlePlacesUrl.toString(),
+                new com.android.volley.Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject result) {
+
+                        parseLocationResult(result, "bar");
+                    }
+                },
+                new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, "onErrorResponse: Error= " + error);
+                        Log.e(TAG, "onErrorResponse: Error= " + error.getMessage());
+                    }
+                });
+        AppController.getInstance().addToRequestQueue(request);
+    }
+
+    private void loadNearByQuest(double latitude, double longitude, boolean quest) {
+        this.quest = quest;
+        this.poilat = latitude;
+        this.poilong = longitude;
+        mMap.clear();
+
         String type = "bar";
         StringBuilder googlePlacesUrl =
                 new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
@@ -582,39 +621,6 @@ public class MapsActivity extends FragmentActivity
      * @param longitude
      * @param quest determines, if player already has a quest.
      */
-    private void loadNearByQuest(double latitude, double longitude, boolean quest) {
-        this.quest = quest;
-        this.poilat = latitude;
-        this.poilong = longitude;
-        mMap.clear();
-
-//YOU Can change this type at your own will, e.g hospital, cafe, restaurant.... and see how it all works
-        String type = "bar";
-        StringBuilder googlePlacesUrl =
-                new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude);
-        googlePlacesUrl.append("&radius=").append(QUEST_RADIUS);
-        googlePlacesUrl.append("&types=").append(type);
-        googlePlacesUrl.append("&sensor=true");
-        googlePlacesUrl.append("&key=AIzaSyCjnCj2kRnT5SPL4AsyEld_3yFPUTjHdMM");
-
-        JsonObjectRequest request = new JsonObjectRequest(googlePlacesUrl.toString(),
-                new com.android.volley.Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject result) {
-
-                        parseLocationResult(result, "bar");
-                    }
-                },
-                new com.android.volley.Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "onErrorResponse: Error= " + error);
-                        Log.e(TAG, "onErrorResponse: Error= " + error.getMessage());
-                    }
-                });
-        AppController.getInstance().addToRequestQueue(request);
-    }
 
     /**
      *
@@ -628,6 +634,30 @@ public class MapsActivity extends FragmentActivity
             JSONArray jsonArray = result.getJSONArray("results");
 
             if (result.getString(STATUS).equalsIgnoreCase(OK)) {
+                if (Questobject.getisQuest()) {
+
+                    Log.d("s", "on jo");
+                    DatabaseReference QuestRef = database.getReference("Player");
+                    QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            double qlat = (double) dataSnapshot.child("User").child(userinfo).child("Quest").child("latitude").getValue();
+                            double qlong = (double) dataSnapshot.child("User").child(userinfo).child("Quest").child("longitude").getValue();
+                            LatLng qlatlng = new LatLng(qlat, qlong);
+
+                            questmarker = mMap.addMarker(new MarkerOptions()
+                                    .title("Quest")
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.quest))
+                                    .position(qlatlng)
+                                    .snippet("Get here to reclaim your reward"));
+
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+
+                }
 
                 if (quest && type.equals("bar")) {
 
@@ -636,40 +666,12 @@ public class MapsActivity extends FragmentActivity
                         questlist.put(place);
                     }
                     // if player has a quest, get the current quest (Marker) to the map
-                    if (Questobject.getisQuest()) {
 
-                        Log.d(TAG, "on jo" );
-                        DatabaseReference QuestRef = database.getReference("Player");
-                        QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                //Test customer marker
-                                double qlat = (double) dataSnapshot.child("User").child(userinfo).child("Quest").child("latitude").getValue();
-                                double qlong = (double) dataSnapshot.child("User").child(userinfo).child("Quest").child("longitude").getValue();
-                                LatLng qlatlng = new LatLng(qlat, qlong);
-
-
-                                questmarker = mMap.addMarker(new MarkerOptions()
-                                        .title("Quest")
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.quest))
-                                        .position(qlatlng)
-                                        .snippet("Get here to reclaim your reward"));
-
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                            }
-                        });
-
-
-                    }
 
                     // random generate new quest
-                    else {
 
-                        Log.d(TAG, "Ei vielä" );
-
+                        try{
+                        Log.d("s", "1");
                         Random rng = new Random();
                         int index = rng.nextInt(questlist.length());
                         questplace = (JSONObject) questlist.get(index);
@@ -692,26 +694,21 @@ public class MapsActivity extends FragmentActivity
                                 .position(QLatLng)
                                 .snippet("Get here to reclaim your reward"));
 
-
-                        Log.d(TAG, "AQWE" );
                         Questobject.newQuest(false);
-                        Questobject.setQuest(questlatitude, questlongitude, QplaceName, Qvicinity, true);
+
+                            Questobject.setQuest(questlatitude, questlongitude, QplaceName, Qvicinity, 90000, true);
+                            quest = false;
+
+                        }
+                        catch (Exception e){
+
+
 
 
                     }
 
                     //if user icon is walking, make it running
-                    if (icons) {
-                        locicon.remove();
-                        locicon = mMap.addMarker(new MarkerOptions()
-                                .position(loc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
-                    } else {
-                        locicon.remove();
-                        locicon = mMap.addMarker(new MarkerOptions()
-                                .position(loc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
-                    }
+                 iconanimate();
 
 
                     for (int i = 0; i < jsonArray.length(); i++) {
@@ -806,10 +803,33 @@ public class MapsActivity extends FragmentActivity
             e.printStackTrace();
             Log.e(TAG, "parseLocationResult: Error=" + e.getMessage());
         }
+
+        DatabaseReference MyRef = database.getReference("Player");
+        MyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Test customer marker
+
+                long QendTime = (long) dataSnapshot.child("User").child(userinfo).child("Quest").child("QuestTimeEnd").getValue();
+                long resTime = (QendTime)- Questobject.getQuestTime() ;
+
+                timer(resTime);
+
+                Log.d(TAG , "AAAAAAA1 " + QendTime);
+
+                Log.d(TAG , "AAAAAAA 2" + Questobject.getQuestTime());
+                Log.d(TAG , "AAAAAAA3 " + resTime);
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
+
         mMap = map;
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
@@ -825,7 +845,6 @@ public class MapsActivity extends FragmentActivity
 
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
-        //mMap.setOnPoiClickListener(this);
         try {
             // Customised styling of the base map using a JSON object defined
             boolean success = mMap.setMapStyle(
@@ -903,7 +922,7 @@ public class MapsActivity extends FragmentActivity
                         Toast.makeText(getApplicationContext(), "Quest completed!",
                                 Toast.LENGTH_SHORT).show();
                         marker.remove();
-                        Questobject.setQuest(0.01, 0.01, "noquest", "noquest", false);
+                        Questobject.setQuest(0.01, 0.01, "noquest", "noquest", 0, false);
                         Questobject.newQuest(false);
                         startLocationUpdates();
                         return true;
@@ -957,12 +976,88 @@ public class MapsActivity extends FragmentActivity
             menuVisible = false;
         }
     }
+    public void showJob(View view){
+
+        if(Questobject.getQuestLatLng().latitude > (0.01)) {
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(Questobject.getQuestLatLng())
+                    .zoom(18)                    // Sets the orientation of the camera to east
+                    .tilt(25)                   // Sets the tilt of the camera to 30 degrees
+                    .bearing(1)                // Sets the orientation of the camera to east
+                    .build();
+
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+        }
+
+        try {
+            if (!menuVisible) {
+                mTextField.setVisibility(View.VISIBLE);
+                menuVisible = true;
+            } else {
+                mTextField.setVisibility(View.GONE);
+                menuVisible = false;
+            }
+
+        } catch (Exception e){
+
+        }
+
+
+
+    }
 
     //opens user profile
     public void profileView(View view) {
         Intent logout = new Intent(this, LogOutActivity.class);
 
         startActivity(logout);
+    }
+
+    public void iconanimate (){
+        if (icons) {
+            locicon.remove();
+            locicon = mMap.addMarker(new MarkerOptions()
+                    .position(loc)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
+        } else {
+            locicon.remove();
+            locicon = mMap.addMarker(new MarkerOptions()
+                    .position(loc)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
+        }
+    }
+
+    public void timer(long time) {
+
+        if (time > 0) {
+                new CountDownTimer(time, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+
+                    mTextField.setText(""+String.format("0%d : %d",
+                            TimeUnit.MILLISECONDS.toMinutes( millisUntilFinished),
+                            TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
+                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
+
+                    DatabaseReference myRef = database.getReference("Player");
+                    myRef.child("User").child(userinfo).child("Quest").child("QuestTimeStart").setValue(SystemClock.uptimeMillis());
+                }
+
+
+                public void onFinish() {
+                    mTextField.setText("");
+
+                    Toast.makeText(getApplicationContext(), "You ran out of time!",
+                            Toast.LENGTH_SHORT).show();
+                    setQtime(0);
+                    Questobject.setQuest(0.01, 0.01, "noquest", "noquest", (0), false);
+                    Questobject.newQuest(false);
+
+
+                }
+            }.start();
+        }
     }
 
 

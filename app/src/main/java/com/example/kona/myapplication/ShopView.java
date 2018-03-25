@@ -102,4 +102,10 @@ public class ShopView extends AppCompatActivity{
         startActivity(intent);
     }
 
+    public void toArmGame(View view){
+        Intent in = new Intent(this, ArmGameActivity.class);
+        startActivity(in);
+
+    }
+
 }

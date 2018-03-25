@@ -1,5 +1,6 @@
 package com.example.kona.myapplication;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -48,13 +50,10 @@ public class Barview extends AppCompatActivity{
                 @Override
                 public void onClick(View view) {
 
-
-
                         Intent intent = new Intent(Barview.this, MapsActivity.class);
                         startActivity(intent);
                         if (!Questobject.getisQuest())
                             Questobject.newQuest(true);
-
 
 
                 }
@@ -62,28 +61,43 @@ public class Barview extends AppCompatActivity{
 
             final ArrayAdapter <String> adapter  = new ArrayAdapter<String>(this,R.layout.simplerow,PlaceNames);
 
-        DatabaseReference myRef = database.getReference("Player");
+        final DatabaseReference myRef = database.getReference("Player");
         myRef.child("User").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 UserPlace = dataSnapshot.child(auth.getUid()).child("Place").getValue().toString();
-                Log.d(TAG, UserPlace);
 
 
                 for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
                     //Loop 1 to go through all the child nodes of users
                     dbPlace = uniqueKeySnapshot.child("Place").getValue().toString();
                     String player = uniqueKeySnapshot.child("name").getValue().toString();
-                    Log.d(TAG, "User " + UserPlace);
-                    Log.v(TAG, "Db " + dbPlace);
                     adapter.remove(player);
 
                     if (dbPlace.equals(UserPlace) && UserPlace != "moving") {
                         adapter.add(player);
                     }
 
-                }}
+                }
+
+                // Find the ListView resource.
+                mainListView = findViewById( R.id.lista);
+                Log.d(TAG, PlaceNames.toString());
+                // Set the ArrayAdapter as the ListView's adapter.
+                mainListView.setAdapter(adapter);
+
+                mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        String item = adapter.getItem(i);
+                        Log.e("User", "" + item);
+
+
+                    }
+
+                });
+            }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -91,13 +105,9 @@ public class Barview extends AppCompatActivity{
             }
         });
 
-            // Find the ListView resource.
-            mainListView = findViewById( R.id.lista);
-            Log.d(TAG, PlaceNames.toString());
-            // Set the ArrayAdapter as the ListView's adapter.
-            mainListView.setAdapter(adapter);
 
         }
+
 
 
 
@@ -142,6 +152,12 @@ public class Barview extends AppCompatActivity{
     public void backToMap(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
+    }
+
+    public void toArmGame(View view){
+        Intent in = new Intent(this, ArmGameActivity.class);
+        startActivity(in);
+
     }
 
 }
