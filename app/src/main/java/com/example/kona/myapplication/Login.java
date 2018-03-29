@@ -109,7 +109,7 @@ public class Login extends AppCompatActivity {
                             User user = new User();
                             Quest qData = new Quest();
                             user.writeNewUser(auth.getUid(), name, email);
-                            qData.setQuest(0.00,0.01, "noquest", "noquest", 0, false);
+                            qData.setQuest(0.01,0.01, "noquest", "noquest", 0, false);
 
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                             DatabaseReference myRef = database.getReference("Player");

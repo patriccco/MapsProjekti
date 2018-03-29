@@ -12,6 +12,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,6 +32,10 @@ public class Barview extends AppCompatActivity{
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     private ListView mainListView ;
+
+    Button armchal;
+    TextView playertext;
+
     Quest Questobject = new Quest();
     String UserPlace;
     String dbPlace;
@@ -92,6 +98,7 @@ public class Barview extends AppCompatActivity{
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         String item = adapter.getItem(i);
                         Log.e("User", "" + item);
+                        challengewindow(item);
 
 
                     }
@@ -115,7 +122,36 @@ public class Barview extends AppCompatActivity{
      /**
      * This method sets MapsActivity to pause.
      */
+    public void challengewindow(String player){
+        armchal = findViewById(R.id.armchallenge);
+        playertext = findViewById(R.id.challengedplayer);
+        playertext.setText("Challenge " + "\n" + player);
+        playertext.setVisibility(View.VISIBLE);
+        armchal.setVisibility(View.VISIBLE);
 
+
+    }
+
+    public void betButtons(View view){
+        armchal.setVisibility(View.GONE);
+        Button bet20 = findViewById(R.id.bet20);
+        Button bet30 = findViewById(R.id.bet30);
+        bet20.setVisibility(View.VISIBLE);
+        bet30.setVisibility(View.VISIBLE);
+    }
+
+    public void setBet(View view){
+
+        if(view == findViewById(R.id.bet30)){
+            toArmGame();
+
+        }
+        else if (view == findViewById(R.id.bet20)){
+            toArmGame();
+
+        }
+
+    }
     @Override
     protected void onPause() {
 
@@ -154,7 +190,7 @@ public class Barview extends AppCompatActivity{
         startActivity(intent);
     }
 
-    public void toArmGame(View view){
+    public void toArmGame(){
         Intent in = new Intent(this, ArmGameActivity.class);
         startActivity(in);
 

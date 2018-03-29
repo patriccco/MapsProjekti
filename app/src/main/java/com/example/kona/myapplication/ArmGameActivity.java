@@ -12,7 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Random;
 import java.util.Timer;
@@ -34,6 +39,9 @@ public class ArmGameActivity extends AppCompatActivity{
         int points = 0;
         ImageView red,green,blue,yellow;
         TextView mTextField;
+
+        FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference MyRef = mDatabase.getReference("Player");
 
 
 
@@ -57,80 +65,106 @@ public class ArmGameActivity extends AppCompatActivity{
 
         }
 
+        public void CreateGame(String player1,String player2){
+        DatabaseReference GameRef = mDatabase.getReference("Game");
+            GameRef.child("Score").setValue(0);
+            GameRef.child("1").setValue(player1);
+            GameRef.child("2").setValue(player2);
+
+            GameRef.child(player1).child("clicks").setValue(player1);
+            GameRef.child(player2).child("clicks").setValue(player2);
+
+        }
+
 
 
         public void gameOn(){
 
-            mTextField.setText("START!");
+                MyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        mTextField.setText("START!");
 
 
-                if(points > -20) {
-                    Random rng = new Random();
-                    int rngRes = rng.nextInt(4) + 1;
+                        if(points > -20) {
+                            Random rng = new Random();
+                            int rngRes = rng.nextInt(4) + 1;
 
-                    switch (rngRes) {
-                        case 1:
-                            mTextField.setVisibility(GONE);
-                            red.setVisibility(View.VISIBLE);
-                            red.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    points--;
-                                    red.setVisibility(GONE);
-                                    Rotate();
-                                    gameOn();
+                            switch (rngRes) {
+                                case 1:
+                                    mTextField.setVisibility(GONE);
+                                    red.setVisibility(View.VISIBLE);
+                                    red.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            points--;
+                                            red.setVisibility(GONE);
+                                            Rotate();
+                                            gameOn();
 
-                                }
-                            });
-                            break;
-                        case 2:
+                                        }
+                                    });
+                                    break;
+                                case 2:
 
-                            mTextField.setVisibility(GONE);
-                            blue.setVisibility(View.VISIBLE);
-                            blue.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    points--;
-                                    blue.setVisibility(GONE);
-                                    Rotate();
-                                    gameOn();
-                                }
-                            });
-                            break;
-                        case 3:
+                                    mTextField.setVisibility(GONE);
+                                    blue.setVisibility(View.VISIBLE);
+                                    blue.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            points--;
+                                            blue.setVisibility(GONE);
+                                            Rotate();
+                                            gameOn();
+                                        }
+                                    });
+                                    break;
+                                case 3:
 
-                            mTextField.setVisibility(GONE);
-                            green.setVisibility(View.VISIBLE);
-                            green.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    points--;
-                                    green.setVisibility(GONE);
-                                    Rotate();
-                                    gameOn();
-                                }
-                            });
-                            break;
+                                    mTextField.setVisibility(GONE);
+                                    green.setVisibility(View.VISIBLE);
+                                    green.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            points--;
+                                            green.setVisibility(GONE);
+                                            Rotate();
+                                            gameOn();
+                                        }
+                                    });
+                                    break;
 
-                        case 4:
-                            mTextField.setVisibility(GONE);
-                            yellow.setVisibility(View.VISIBLE);
-                            yellow.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    points--;
-                                    yellow.setVisibility(GONE);
-                                    Rotate();
-                                    gameOn();
-                                }
-                            });
-                            break;
+                                case 4:
+                                    mTextField.setVisibility(GONE);
+                                    yellow.setVisibility(View.VISIBLE);
+                                    yellow.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            points--;
+                                            yellow.setVisibility(GONE);
+                                            Rotate();
+                                            gameOn();
+                                        }
+                                    });
+                                    break;
 
+                            }
+                        }
+                        else{
+
+                        }
                     }
-                }
-                else{
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
 
-                }
+
+
+
+
+
+
 
 
             }
