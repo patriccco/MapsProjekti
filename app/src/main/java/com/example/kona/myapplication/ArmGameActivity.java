@@ -67,6 +67,7 @@ public class ArmGameActivity extends AppCompatActivity{
 
         public void CreateGame(String player1,String player2){
         DatabaseReference GameRef = mDatabase.getReference("Game");
+        GameRef.push();
             GameRef.child("Score").setValue(0);
             GameRef.child("1").setValue(player1);
             GameRef.child("2").setValue(player2);
