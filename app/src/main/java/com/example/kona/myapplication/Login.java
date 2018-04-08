@@ -1,11 +1,14 @@
 package com.example.kona.myapplication;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
@@ -72,6 +75,8 @@ public class Login extends AppCompatActivity {
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
+                            .setTheme(R.style.CustomTheme)
+                            .setLogo(R.drawable.benderlogo)
                             .setAvailableProviders(providers)
                             .build(),
                     RC_SIGN_IN);
