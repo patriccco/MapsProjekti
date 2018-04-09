@@ -166,6 +166,7 @@ public class Barview extends AppCompatActivity{
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference chlngRef = database.getReference(challengedplayer);
             chlngRef.child("challenged").setValue(curUser);
+            toArmGame(30,curUser,player);
 
 
         }

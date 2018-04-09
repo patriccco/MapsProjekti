@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,12 +38,14 @@ public class ArmGameActivity extends AppCompatActivity{
      */
         private TextView text;
         MediaPlayer fightTune;
-        int points = 0;
+        long points = 0;
         ImageView red,green,blue,yellow;
         TextView mTextField;
 
         FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference MyRef = mDatabase.getReference("Player");
+        DatabaseReference MyRef = mDatabase.getReference("Game");
+
+         FirebaseAuth auth = FirebaseAuth.getInstance();
 
 
 
@@ -81,26 +85,53 @@ public class ArmGameActivity extends AppCompatActivity{
 
         public void gameOn(){
 
-                MyRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                MyRef.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onDataChange(final DataSnapshot dataSnapshot) {
                         mTextField.setText("START!");
 
+                        String player = auth.getCurrentUser().getDisplayName();
+                        points = (long)dataSnapshot.child(player).child("clicks").getValue();
+                        Log.d(" ", "points" + points);
 
-                        if(points > -20) {
+
+                        if(points > -20 && points <20) {
+                            if(points>0){
+                                RotateRight();
+                            }
+                            else{
+
+                                Rotateleft();
+                            }
+
+                           player = auth.getCurrentUser().getDisplayName();
+                            points = (long)dataSnapshot.child(player).child("clicks").getValue();
+                            Log.d(" ", "points" + points);
                             Random rng = new Random();
                             int rngRes = rng.nextInt(4) + 1;
+
+
+                            player = auth.getCurrentUser().getDisplayName();
+                            points = (long)dataSnapshot.child(player).child("clicks").getValue();
 
                             switch (rngRes) {
                                 case 1:
                                     mTextField.setVisibility(GONE);
                                     red.setVisibility(View.VISIBLE);
+
+                                    blue.setVisibility(GONE);
+                                    yellow.setVisibility(GONE);
+                                    green.setVisibility(GONE);
                                     red.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            points--;
+                                            String player = auth.getCurrentUser().getDisplayName();
+                                            points = (long)dataSnapshot.child(player).child("clicks").getValue();
+
+                                            points = points-1;
+                                            MyRef.child(player).child("clicks").setValue(points);
                                             red.setVisibility(GONE);
-                                            Rotate();
+
                                             gameOn();
 
                                         }
@@ -110,12 +141,21 @@ public class ArmGameActivity extends AppCompatActivity{
 
                                     mTextField.setVisibility(GONE);
                                     blue.setVisibility(View.VISIBLE);
+
+                                    yellow.setVisibility(GONE);
+                                    red.setVisibility(GONE);
+                                    green.setVisibility(GONE);
                                     blue.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            points--;
+
+                                            String player = auth.getCurrentUser().getDisplayName();
+                                            points = (long)dataSnapshot.child(player).child("clicks").getValue();
+
+                                            points = points-1;
+                                            MyRef.child(player).child("clicks").setValue(points);
                                             blue.setVisibility(GONE);
-                                            Rotate();
+
                                             gameOn();
                                         }
                                     });
@@ -124,12 +164,20 @@ public class ArmGameActivity extends AppCompatActivity{
 
                                     mTextField.setVisibility(GONE);
                                     green.setVisibility(View.VISIBLE);
+                                    blue.setVisibility(GONE);
+                                    red.setVisibility(GONE);
+                                    yellow.setVisibility(GONE);
                                     green.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            points--;
+
+                                            String player = auth.getCurrentUser().getDisplayName();
+                                            points = (long)dataSnapshot.child(player).child("clicks").getValue();
+
+                                            points = points-1;
+                                            MyRef.child(player).child("clicks").setValue(points);
                                             green.setVisibility(GONE);
-                                            Rotate();
+
                                             gameOn();
                                         }
                                     });
@@ -138,12 +186,20 @@ public class ArmGameActivity extends AppCompatActivity{
                                 case 4:
                                     mTextField.setVisibility(GONE);
                                     yellow.setVisibility(View.VISIBLE);
+                                    blue.setVisibility(GONE);
+                                    red.setVisibility(GONE);
+                                    green.setVisibility(GONE);
                                     yellow.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            points--;
+
+                                            String player = auth.getCurrentUser().getDisplayName();
+                                            points = (long)dataSnapshot.child(player).child("clicks").getValue();
+
+                                            points = points-1;
+                                            MyRef.child(player).child("clicks").setValue(points);
                                             yellow.setVisibility(GONE);
-                                            Rotate();
+
                                             gameOn();
                                         }
                                     });
@@ -191,7 +247,7 @@ public class ArmGameActivity extends AppCompatActivity{
 
 
 
-        public void Rotate(){
+        public void Rotateleft(){
 
             ImageView imageView = findViewById(R.id.käsiview);
             imageView.setRotation(points*4);
@@ -201,6 +257,16 @@ public class ArmGameActivity extends AppCompatActivity{
             imageView.setTranslationX(points*18);
             imageView.setTranslationY(points* - 10);
         }
+    public void RotateRight(){
+
+        ImageView imageView = findViewById(R.id.käsiview);
+        imageView.setRotation(points*4);
+        imageView.getLeft();
+        imageView.getRight();
+        imageView.setLeft(imageView.getLeft() + 100);
+        imageView.setTranslationX(points* 18);
+        imageView.setTranslationY(points*  10);
+    }
 
 
 
