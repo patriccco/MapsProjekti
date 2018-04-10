@@ -33,7 +33,7 @@ public class Barview extends AppCompatActivity{
     private ListView mainListView ;
 
 
-    Button armchal,accept,decline;
+    Button armchal,accept,decline, turnChallenge, acceptTurn, declineTurn;
     TextView playertext,challenger;
 
     Quest Questobject = new Quest();
@@ -64,7 +64,7 @@ public class Barview extends AppCompatActivity{
 
                 }
             });
-
+//TODO Tämä lista pitää vaihtaa semmoseks et saadaan sieltä samalla se userID(HashMap?), jota voidaan käyttää jatkossa kun jaetaan peleissä pisteitä yms.
             final ArrayAdapter <String> adapter  = new ArrayAdapter<String>(this,R.layout.simplerow,PlaceNames);
 
         final DatabaseReference myRef = database.getReference("Player");
@@ -136,10 +136,14 @@ public class Barview extends AppCompatActivity{
         playertext.setText("Challenge " + "\n" + player);
         playertext.setVisibility(View.VISIBLE);
         armchal.setVisibility(View.VISIBLE);
-
+        //TODO tehdäänkö molemmille peleille omat challengit vai käytetäänkö if/switch
+        //BUTTON TO TURN BASED GAME
+        turnChallenge = findViewById(R.id.turnchallenge);
+        turnChallenge.setVisibility(View.VISIBLE);
 
     }
     public void ChallengedYouWindow() {
+
         accept = findViewById(R.id.acceptarm);
         decline= findViewById(R.id.declinearm);
         challenger = findViewById(R.id.armchallenger);
@@ -147,6 +151,13 @@ public class Barview extends AppCompatActivity{
         challenger.setVisibility(View.VISIBLE);
         accept.setVisibility(View.VISIBLE);
         decline.setVisibility(View.VISIBLE);
+        //TODO tehdäänkö molemmille peleille omat challengit vai käytetäänkö if/switch
+        //BUTTONS TO TURN BASED GAME
+        acceptTurn = findViewById(R.id.acceptTurn);
+        declineTurn = findViewById(R.id.declinTurn);
+        acceptTurn.setVisibility(View.VISIBLE);
+        declineTurn.setVisibility(View.VISIBLE);
+
 
 
     }
@@ -216,6 +227,17 @@ public class Barview extends AppCompatActivity{
         startActivity(intent);
     }
 
+    /**
+     * This method is the entry to turn based game
+     * @param curplayer current user
+     * @param Opponent challenged user
+     */
+    public void toTurnGame(String curplayer, String Opponent){
+        //TODO tämä metodi pitää saada oikeeseen kohtaan käyttöön ja tarvitaan myös se userID
+    TurnBasedGame turnGame = new TurnBasedGame();
+    turnGame.CreateGame(curplayer, Opponent);
+
+}
     public void toArmGame(int bet ,String curplayer, String opponent){
 
         DatabaseReference GameRef = database.getReference("Game");
