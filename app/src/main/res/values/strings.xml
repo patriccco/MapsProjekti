@@ -2,4 +2,16 @@
     <string name="app_name">My Application</string>
     <string name="title_activity_maps">KARTTA</string>
     <string name="title_activity_buy">BuyActivity</string>
+    <string name="textview">TextView</string>
+    <string name="EventText">Lets kick some ass!</string>
+    <string name="Player">Player:</string>
+    <string name="turn"> turn!</string>
+    <string name="hope">I hope</string>
+    <string name="banana">  slips on this banana!</string>
+    <string name="UseItem">Use one of your items</string>
+    <string name="printWinner">And the winner is:</string>
+    <string name="turnchallenge">TurnChallenge</string>
+    <string name="points">Gained 10 points</string>
+    <string name="decline">Decline</string>
+    <string name="accept">Accept</string>
 </resources>
