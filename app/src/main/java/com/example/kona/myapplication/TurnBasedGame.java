@@ -31,7 +31,7 @@ private Boolean click;
      * @param player this is tells whos turn it is
      */
     @Override
-    void makePlay(String player) {
+    void makePlay(final String player) {
         //Info about whos turn it is
         final TextView EventText = (TextView) ((Activity) context).findViewById(R.id.EventText);
         //EventText: Player "player" turn!
