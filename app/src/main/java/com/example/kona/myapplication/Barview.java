@@ -31,6 +31,7 @@ public class Barview extends AppCompatActivity{
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     private ListView mainListView ;
+    String playeruid;
 
 
     Button armchal,accept,decline, turnChallenge, acceptTurn, declineTurn;
@@ -52,6 +53,8 @@ public class Barview extends AppCompatActivity{
             this.requestWindowFeature(Window.FEATURE_NO_TITLE);
             setContentView(R.layout.activity_bar);
             Button button = findViewById(R.id.getjob);
+            accept = findViewById(R.id.acceptarm);
+
             button.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view) {
@@ -64,6 +67,12 @@ public class Barview extends AppCompatActivity{
 
                 }
             });
+        accept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+
 //TODO Tämä lista pitää vaihtaa semmoseks et saadaan sieltä samalla se userID(HashMap?), jota voidaan käyttää jatkossa kun jaetaan peleissä pisteitä yms.
             final ArrayAdapter <String> adapter  = new ArrayAdapter<String>(this,R.layout.simplerow,PlaceNames);
 
@@ -78,24 +87,25 @@ public class Barview extends AppCompatActivity{
                 for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
                     //Loop 1 to go through all the child nodes of users
                     dbPlace = uniqueKeySnapshot.child("Place").getValue().toString();
-                    player = uniqueKeySnapshot.child("name").getValue().toString();
-                    Object playerUid = uniqueKeySnapshot.getChildren();
+                    String name = uniqueKeySnapshot.child("name").getValue().toString();
+                    playeruid = uniqueKeySnapshot.child("id").getValue().toString();
+                    String email = uniqueKeySnapshot.child("email").getValue().toString();
+                    User player = new User(playeruid,name,email,dbPlace);
 
-                    adapter.remove(player);
-                    adapter.remove(curUser);
 
-                    if (dbPlace.equals(UserPlace) && UserPlace != "moving") {
-                        adapter.add(player);
+                    adapter.remove(player.getName());
 
+                    if (dbPlace.equals(UserPlace) && UserPlace != "moving" && !name.equals(curUser)) {
+                        adapter.add(player.getName());
                     }
-
                 }
-
                 String challengeOn = dataSnapshot.child(auth.getUid()).child("challenged").getValue().toString();
                 if(!challengeOn.equals("no")){
-                    ChallengedYouWindow();
+                    ChallengedYouWindow(challengeOn, playeruid);
+                    if(challengeOn.equals("start")){
+                        ChallengertoArmGame();
+                    }
                 }
-
                 // Find the ListView resource.
                 mainListView = findViewById( R.id.lista);
                 // Set the ArrayAdapter as the ListView's adapter.
@@ -120,11 +130,7 @@ public class Barview extends AppCompatActivity{
             }
         });
 
-
         }
-
-
-
 
     /**
      /**
@@ -142,15 +148,26 @@ public class Barview extends AppCompatActivity{
         turnChallenge.setVisibility(View.VISIBLE);
 
     }
-    public void ChallengedYouWindow() {
+    public void ChallengedYouWindow(final String opponent , final String id) {
+        final DatabaseReference myRef = database.getReference("Player");
+        myRef.child("User").addValueEventListener(new ValueEventListener(){
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final long bet = (long)dataSnapshot.child(auth.getUid()).child("challengedBet").getValue();
 
-        accept = findViewById(R.id.acceptarm);
-        decline= findViewById(R.id.declinearm);
-        challenger = findViewById(R.id.armchallenger);
-        challenger.setText("Challenge " + "\n" + player);
-        challenger.setVisibility(View.VISIBLE);
-        accept.setVisibility(View.VISIBLE);
-        decline.setVisibility(View.VISIBLE);
+                decline= findViewById(R.id.declinearm);
+                challenger = findViewById(R.id.armchallenger);
+                challenger.setText( opponent + "Challenged " + "\n" + "You" + " for " + bet + "!");
+                challenger.setVisibility(View.VISIBLE);
+                accept.setVisibility(View.VISIBLE);
+                decline.setVisibility(View.VISIBLE);
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         //TODO tehdäänkö molemmille peleille omat challengit vai käytetäänkö if/switch
         //BUTTONS TO TURN BASED GAME
         acceptTurn = findViewById(R.id.acceptTurn);
@@ -159,6 +176,9 @@ public class Barview extends AppCompatActivity{
         declineTurn.setVisibility(View.VISIBLE);
 
 
+
+    }
+    public void challengeaccepted(){
 
     }
 
@@ -173,18 +193,40 @@ public class Barview extends AppCompatActivity{
     public void setBet(View view){
 
         if(view == findViewById(R.id.bet30)){
+            final DatabaseReference myRef = database.getReference("Player");
+            myRef.child("User").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
+                    for(DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()){
+                        //Loop 1 to go through all the child nodes of users
+                        String challengedName = uniqueKeySnapshot.child("name").getValue().toString();
+                        String challengedid = uniqueKeySnapshot.child("id").getValue().toString();
+
+                        String ischallenged = uniqueKeySnapshot.child("challenged").getValue().toString();
+                        if(challengedName.equals(challengedplayer)){
+                            myRef.child("User").child(challengedid).child("challenged").setValue(curUser);
+
+
+                        }
+                        }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference chlngRef = database.getReference(challengedplayer);
             chlngRef.child("challenged").setValue(curUser);
-            toArmGame(30,curUser,player);
 
 
         }
         else if (view == findViewById(R.id.bet20)){
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference chlngRef = database.getReference(challengedplayer);
-
             chlngRef.child("challenged").setValue(curUser);
         }
 
@@ -238,10 +280,10 @@ public class Barview extends AppCompatActivity{
     turnGame.CreateGame(curplayer, Opponent);
 
 }
-    public void toArmGame(int bet ,String curplayer, String opponent){
+    public void ChallengedtoArmGame(long bet ,String curplayer, String opponent){
 
         DatabaseReference GameRef = database.getReference("Game");
-        DatabaseReference newGameRef = GameRef.push();
+        GameRef.child(curplayer);
         GameRef.child("Score").setValue(0);
         GameRef.child("bet").setValue(bet);
         GameRef.child("1").setValue(curplayer);
@@ -249,6 +291,11 @@ public class Barview extends AppCompatActivity{
 
         GameRef.child(curplayer).child("clicks").setValue(0);
         GameRef.child(opponent).child("clicks").setValue(0);
+
+        Intent in = new Intent(this, ArmGameActivity.class);
+        startActivity(in);
+    }
+    public void ChallengertoArmGame(){
 
         Intent in = new Intent(this, ArmGameActivity.class);
         startActivity(in);

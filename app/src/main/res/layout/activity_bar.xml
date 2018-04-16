@@ -112,10 +112,9 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.215"
+        app:layout_constraintHorizontal_bias="0.141"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.401" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/challengedplayer"
@@ -253,6 +252,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="PLAYER"
+        android:textColor="@color/cardview_light_background"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
