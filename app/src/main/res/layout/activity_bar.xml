@@ -198,6 +198,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/greenbtn"
+        android:onClick="directarmgame"
         android:text="Accept"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"

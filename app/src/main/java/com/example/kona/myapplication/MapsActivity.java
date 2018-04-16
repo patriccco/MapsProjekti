@@ -220,6 +220,18 @@ public class MapsActivity extends FragmentActivity
 
             }
         });
+        final DatabaseReference nameRef = database.getReference("Player");
+        nameRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String screenname = (String) dataSnapshot.child(auth.getUid()).child("name").getValue();
+                TextView pelaajanimi = (TextView) findViewById(R.id.username);
+                pelaajanimi.setText(screenname);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -1010,7 +1022,6 @@ public class MapsActivity extends FragmentActivity
     //opens user profile
     public void profileView(View view) {
         Intent logout = new Intent(this, LogOutActivity.class);
-
         startActivity(logout);
     }
 

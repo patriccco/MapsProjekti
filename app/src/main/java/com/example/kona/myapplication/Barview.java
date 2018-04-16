@@ -30,8 +30,9 @@ public class Barview extends AppCompatActivity{
     private final static String TAG = "TÄÄ";
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private ListView mainListView ;
-    String playeruid;
+    private ListView mainListView;
+    long bet;
+    private ValueEventListener mListener;
 
 
     Button armchal,accept,decline, turnChallenge, acceptTurn, declineTurn;
@@ -39,7 +40,7 @@ public class Barview extends AppCompatActivity{
 
     Quest Questobject = new Quest();
     String UserPlace;
-    String dbPlace, curUser, player,challengedplayer;
+    String dbPlace, curUser, player,challengedplayer,opponent,opponentid;
     private MediaPlayer Tune;
 
     /**
@@ -67,17 +68,12 @@ public class Barview extends AppCompatActivity{
 
                 }
             });
-        accept.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
 
 //TODO Tämä lista pitää vaihtaa semmoseks et saadaan sieltä samalla se userID(HashMap?), jota voidaan käyttää jatkossa kun jaetaan peleissä pisteitä yms.
             final ArrayAdapter <String> adapter  = new ArrayAdapter<String>(this,R.layout.simplerow,PlaceNames);
 
         final DatabaseReference myRef = database.getReference("Player");
-        myRef.child("User").addValueEventListener(new ValueEventListener() {
+        mListener = myRef.child("User").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -88,12 +84,10 @@ public class Barview extends AppCompatActivity{
                     //Loop 1 to go through all the child nodes of users
                     dbPlace = uniqueKeySnapshot.child("Place").getValue().toString();
                     String name = uniqueKeySnapshot.child("name").getValue().toString();
-                    playeruid = uniqueKeySnapshot.child("id").getValue().toString();
+                    opponentid = uniqueKeySnapshot.child("id").getValue().toString();
                     String email = uniqueKeySnapshot.child("email").getValue().toString();
-                    User player = new User(playeruid,name,email,dbPlace);
+                    User player = new User(opponentid,name,email,dbPlace);
 
-
-                    adapter.remove(player.getName());
 
                     if (dbPlace.equals(UserPlace) && UserPlace != "moving" && !name.equals(curUser)) {
                         adapter.add(player.getName());
@@ -101,7 +95,9 @@ public class Barview extends AppCompatActivity{
                 }
                 String challengeOn = dataSnapshot.child(auth.getUid()).child("challenged").getValue().toString();
                 if(!challengeOn.equals("no")){
-                    ChallengedYouWindow(challengeOn, playeruid);
+                    ChallengedYouWindow(challengeOn, opponentid);
+                    myRef.child(auth.getUid()).child("challenged").removeEventListener(mListener);
+
                     if(challengeOn.equals("start")){
                         ChallengertoArmGame();
                     }
@@ -153,7 +149,7 @@ public class Barview extends AppCompatActivity{
         myRef.child("User").addValueEventListener(new ValueEventListener(){
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                final long bet = (long)dataSnapshot.child(auth.getUid()).child("challengedBet").getValue();
+                bet = (long)dataSnapshot.child(auth.getUid()).child("challengedBet").getValue();
 
                 decline= findViewById(R.id.declinearm);
                 challenger = findViewById(R.id.armchallenger);
@@ -281,7 +277,7 @@ public class Barview extends AppCompatActivity{
 
 }
     public void ChallengedtoArmGame(long bet ,String curplayer, String opponent){
-
+        this.opponent = opponent;
         DatabaseReference GameRef = database.getReference("Game");
         GameRef.child(curplayer);
         GameRef.child("Score").setValue(0);
@@ -299,6 +295,18 @@ public class Barview extends AppCompatActivity{
 
         Intent in = new Intent(this, ArmGameActivity.class);
         startActivity(in);
+
+    }
+    public void directarmgame(View view){
+
+        DatabaseReference myRef = database.getReference("Player");
+        myRef.child("User").child(opponentid).child("challenged").setValue("start");
+        Log.d("" , "AA" + opponentid);
+
+
+
+        //ChallengedtoArmGame(bet,curUser,opponent);
+
 
     }
 

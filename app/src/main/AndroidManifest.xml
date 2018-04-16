@@ -48,7 +48,6 @@
         <activity
             android:name=".MapsActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".LogOutActivity" />
         <activity
             android:name=".Barview"
             android:screenOrientation="portrait" />
@@ -60,6 +59,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".Gridactivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LogOutActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".MainMenuActivity" />
         <activity android:name=".BuyActivity" />
