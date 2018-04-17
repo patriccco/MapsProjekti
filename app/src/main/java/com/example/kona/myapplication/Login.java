@@ -96,6 +96,9 @@ public class Login extends AppCompatActivity {
 
                         if(dataSnapshot.hasChild("id")){
                             //IT EXISTS
+
+                            startActivity(new Intent(Login.this,MapsActivity.class));
+                            finish();
                         }
                         else{
                             //Alustetaan tarvittavat tiedot uudelle pelaajalle
@@ -131,7 +134,6 @@ public class Login extends AppCompatActivity {
 
                     }
                 });
-                // Write a message to the database
 
                 startActivity(new Intent(Login.this,ProfileActivity.class));
                 finish();
