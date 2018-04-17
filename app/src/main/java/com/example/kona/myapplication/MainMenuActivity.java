@@ -18,7 +18,7 @@ public class MainMenuActivity extends AppCompatActivity {
      * @param view
      */
     public void profileView(View view) {
-        Intent logout = new Intent(this, LogOutActivity.class);
+        Intent logout = new Intent(this, ProfileActivity.class);
 
         startActivity(logout);
     }

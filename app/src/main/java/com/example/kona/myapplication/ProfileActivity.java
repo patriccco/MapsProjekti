@@ -1,8 +1,10 @@
 package com.example.kona.myapplication;
 
+import android.*;
 import android.content.Intent;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,40 +30,49 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import static android.support.constraint.Constraints.TAG;
-import static java.security.AccessController.getContext;
-public class LogOutActivity extends AppCompatActivity {
 
-    ArrayList <String> names = new ArrayList<>();
+public class ProfileActivity extends AppCompatActivity {
 
+    private static final int REQUEST_FINE_LOCATION = 0;
+    public FirebaseDatabase database = FirebaseDatabase.getInstance();
+    final DatabaseReference nameref = database.getReference("Player");
+    ArrayList<String> names = new ArrayList<>();
     /**
-     * This activity is for the user to log out from the app
+     * This activity is for the user modify profile settings
      */
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
-    public FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-    final DatabaseReference nameref = database.getReference("Player");
-
+    final String username = auth.getCurrentUser().getDisplayName();
     EditText newName;
+    TextView namePlease;
     Button changeName;
 
+
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_out);
         newName = findViewById(R.id.newName);
         changeName = findViewById(R.id.changeName);
-
+        namePlease = findViewById(R.id.changeplease);
         nameref.child("User").child(auth.getUid()).child("Place").setValue("moving");
+
+        getDatabaseName();
+
+
+        ActivityCompat.requestPermissions(ProfileActivity.this,
+                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                REQUEST_FINE_LOCATION);
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        /**piilottaa status barin**/
+        /**Hide statusbar**/
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -99,18 +111,15 @@ public class LogOutActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
-                                            Log.d(TAG, "User account deleted.");
-                                            Intent logout = new Intent(LogOutActivity.this, Login.class);
+                                            Intent logout = new Intent(ProfileActivity.this, Login.class);
                                             //Closing all activities
                                             logout.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                            //Add new Flag to start new Activity
-                                            logout.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            finishAffinity();
                                             startActivity(logout);
 
                                         }
                                     }
                                 });
-                        finish();
 
                     }
                 });
@@ -129,12 +138,10 @@ public class LogOutActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
 
                         // Ask user to log in
-                        Intent intent = new Intent(LogOutActivity.this, Login.class);
+                        Intent intent = new Intent(ProfileActivity.this, Login.class);
                         //Closing all activities
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        //Add new Flag to start new Activity
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
+                        finishAffinity();
                         startActivity(intent);
 
                     }
@@ -144,16 +151,19 @@ public class LogOutActivity extends AppCompatActivity {
     }
 
     /**
-     * Pelaaja painaa tekstikenttää ja muuttaa nimeään
-     *
-     *
-     *
+     * Method for changing display name
+     * validates the name to be unique
      */
 
-    public void nameChange(View view){
-
+    public void nameChange(View view) {
         final String name = newName.getText().toString();
+        if (name.equals(username)) {
+            namePlease.setVisibility(View.VISIBLE);
 
+            ActivityCompat.requestPermissions(ProfileActivity.this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_FINE_LOCATION);
+        }
 
         nameref.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
 
@@ -163,37 +173,43 @@ public class LogOutActivity extends AppCompatActivity {
                 for (DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()) {
                     String databaseName = uniqueKeySnapshot.child("name").getValue().toString();
                     names.add(databaseName);
-                    }
+                }
 
                 if (names.contains(name)) {
-                    Log.e("AAA", "" + name);
                     newName.setText("Name not available!");
 
+                    Toast.makeText(getApplicationContext(), "Name not available, try again",
+                            Toast.LENGTH_SHORT).show();
+
                 }
 
-                if(name.length() < 15 && !names.contains(name)){
+                if (name.length() < 15 && !names.contains(name)) {
                     nameref.child("User").child(auth.getUid()).child("name").setValue(name);
-                    newName.setText("Name changed!");
+
+                    namePlease.setVisibility(View.GONE);
+
+                    Toast.makeText(getApplicationContext(), "Name changed succesfully",
+                            Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(ProfileActivity.this, MapsActivity.class);
+                    startActivity(intent);
 
                 }
-
 
 
                 if (name.length() > 15) {
                     newName.setText("Name is too long!");
 
+                    Toast.makeText(getApplicationContext(), "Name is Too long! (15)",
+                            Toast.LENGTH_SHORT).show();
+
                 }
-
-
-
-
 
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {}
-
-
+            public void onCancelled(DatabaseError databaseError) {
+            }
 
         });
 
@@ -203,6 +219,7 @@ public class LogOutActivity extends AppCompatActivity {
 
     /**
      * Called when the user taps the return button
+     *
      * @param view
      */
 
@@ -210,5 +227,32 @@ public class LogOutActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
+
+    /**
+     * Get the display name from database
+     */
+    public void getDatabaseName() {
+        nameref.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String databasename = dataSnapshot.child(auth.getUid()).child("name").getValue().toString();
+                newName.setText(databasename);
+                if (databasename.equals(auth.getCurrentUser().getDisplayName())) {
+                    namePlease.setVisibility(View.VISIBLE);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+
+        });
+
+
+    }
+
+
 }
 

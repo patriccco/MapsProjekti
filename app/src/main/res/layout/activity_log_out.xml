@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.kona.myapplication.LogOutActivity"
-    android:background="@drawable/homebase">
+    android:background="@drawable/homebase"
+    tools:context="com.example.kona.myapplication.ProfileActivity">
 
 
     <Button
@@ -48,7 +48,7 @@
         android:layout_height="50dp"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/back"
+        android:background="@drawable/deleteprofile"
         android:onClick="DeleteProfile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -92,10 +92,10 @@
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.61"
+        app:layout_constraintHorizontal_bias="0.654"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.685" />
+        app:layout_constraintVertical_bias="0.697" />
 
     <TextView
         android:id="@+id/textView2"
@@ -111,10 +111,10 @@
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.584"
+        app:layout_constraintHorizontal_bias="0.62"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.825" />
+        app:layout_constraintVertical_bias="0.849" />
 
     <EditText
         android:id="@+id/newName"
@@ -125,13 +125,36 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:textColor="#ffffff"
         android:inputType="textPersonName"
-        android:text="Name"
+        android:textColor="#ffffff"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toStartOf="@+id/changeName"
-        app:layout_constraintHorizontal_bias="0.59"
+        app:layout_constraintHorizontal_bias="0.583"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.946" />
+        app:layout_constraintVertical_bias="0.854" />
+
+    <TextView
+        android:id="@+id/changeplease"
+        android:layout_width="343dp"
+        android:layout_height="87dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:drawable/menu_full_frame"
+        android:fontFamily="monospace"
+        android:text="Please, change your display name"
+        android:textAlignment="center"
+        android:textColor="@color/cardview_light_background"
+        android:textIsSelectable="false"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.358"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.394" />
 </android.support.constraint.ConstraintLayout>

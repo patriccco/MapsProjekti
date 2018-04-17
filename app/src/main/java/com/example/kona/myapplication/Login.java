@@ -1,25 +1,15 @@
 package com.example.kona.myapplication;
 
 import android.content.Intent;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.ResultCodes;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -108,14 +98,15 @@ public class Login extends AppCompatActivity {
                             //IT EXISTS
                         }
                         else{
+                            //Alustetaan tarvittavat tiedot uudelle pelaajalle
+
+
                             String email = auth.getCurrentUser().getEmail().toString();
                             String name = auth.getCurrentUser().getDisplayName().toString();
-
                             User user = new User();
                             Quest qData = new Quest();
                             user.writeNewUser(auth.getUid(), name, email);
                             qData.setQuest(0.01,0.01, "noquest", "noquest", 0, false);
-
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                             DatabaseReference myRef = database.getReference("Player");
                             myRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
@@ -142,7 +133,7 @@ public class Login extends AppCompatActivity {
                 });
                 // Write a message to the database
 
-                startActivity(new Intent(Login.this,MapsActivity.class));
+                startActivity(new Intent(Login.this,ProfileActivity.class));
                 finish();
                 return;
             } else {

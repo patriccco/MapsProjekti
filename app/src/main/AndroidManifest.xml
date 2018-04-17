@@ -61,7 +61,7 @@
             android:name=".Gridactivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".LogOutActivity"
+            android:name=".ProfileActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".MainMenuActivity" />
         <activity android:name=".BuyActivity" />
