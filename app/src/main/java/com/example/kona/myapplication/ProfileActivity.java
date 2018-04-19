@@ -39,8 +39,44 @@ public class ProfileActivity extends AppCompatActivity {
     public FirebaseDatabase database = FirebaseDatabase.getInstance();
     final DatabaseReference nameref = database.getReference("Player");
     ArrayList<String> names = new ArrayList<>();
+
     /**
-     * This activity is for the user modify profile settings
+     *  This list contains banned words and symbols
+     */
+    public static ArrayList<String> naughtylist = new ArrayList<>();
+
+    static {
+        naughtylist.add("!");   naughtylist.add("/");   naughtylist.add("?");   naughtylist.add("'");
+        naughtylist.add("@");   naughtylist.add("{");   naughtylist.add("+");   naughtylist.add("-");
+        naughtylist.add("#");   naughtylist.add("}");   naughtylist.add("´");   naughtylist.add("_");
+        naughtylist.add("£");   naughtylist.add("(");   naughtylist.add("`");   naughtylist.add(".");
+        naughtylist.add("¤");   naughtylist.add(")");   naughtylist.add("^");   naughtylist.add(":");
+        naughtylist.add("$");   naughtylist.add("[");   naughtylist.add("¨");   naughtylist.add(",");
+        naughtylist.add("%");   naughtylist.add("]");   naughtylist.add("~");   naughtylist.add(";");
+        naughtylist.add("&");   naughtylist.add("=");   naughtylist.add("*");   naughtylist.add("<");
+        naughtylist.add("½");   naughtylist.add("§");   naughtylist.add("|");   naughtylist.add(">");
+        naughtylist.add(" ");
+
+        naughtylist.add("vittu");       naughtylist.add("jumalauta");   naughtylist.add("hintti");
+        naughtylist.add("saatana");     naughtylist.add("neekeri");     naughtylist.add("kulli");
+        naughtylist.add("perkele");     naughtylist.add("nekru");       naughtylist.add("kyrpä");
+        naughtylist.add("helvetti");    naughtylist.add("homo");        naughtylist.add("pillu");
+
+        naughtylist.add("fuck");        naughtylist.add("nigga");       naughtylist.add("piss");
+        naughtylist.add("shit");        naughtylist.add("nigger");      naughtylist.add("cum");
+        naughtylist.add("bitch");       naughtylist.add("damn");        naughtylist.add("pussy");
+        naughtylist.add("ass");         naughtylist.add("hitler");      naughtylist.add("kike");
+
+        naughtylist.add("poo");         naughtylist.add("cyka");
+        naughtylist.add("pee");         naughtylist.add("blyat");
+        naughtylist.add("sperm");       naughtylist.add("gook");
+        naughtylist.add("smegma");      naughtylist.add("perv");
+    }
+
+
+
+    /**
+     * This activity is for the user to modify profile settings
      */
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -151,11 +187,31 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     /**
+     *  Method for checking if a String contains a string form naughtylist
+     * @return
+     */
+
+    public boolean checkNaughty(String word) {
+
+        String naughty;
+        int i;
+        for (i = 0; i < naughtylist.size(); i++) {
+            naughty = naughtylist.get(i);
+            if (word.toLowerCase().contains(naughty.toLowerCase())){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Method for changing display name
      * validates the name to be unique
      */
 
+
     public void nameChange(View view) {
+
         final String name = newName.getText().toString();
         if (name.equals(username)) {
             namePlease.setVisibility(View.VISIBLE);
@@ -183,19 +239,12 @@ public class ProfileActivity extends AppCompatActivity {
 
                 }
 
-                if (name.length() < 15 && !names.contains(name)) {
-                    nameref.child("User").child(auth.getUid()).child("name").setValue(name);
+                if (checkNaughty(name) == false) {
+                    newName.setText("That's not allowed!");
 
-                    namePlease.setVisibility(View.GONE);
-
-                    Toast.makeText(getApplicationContext(), "Name changed succesfully",
+                    Toast.makeText(getApplicationContext(), "Name can't have symbols or curses!",
                             Toast.LENGTH_SHORT).show();
-
-                    Intent intent = new Intent(ProfileActivity.this, MapsActivity.class);
-                    startActivity(intent);
-
                 }
-
 
                 if (name.length() > 15) {
                     newName.setText("Name is too long!");
@@ -204,6 +253,28 @@ public class ProfileActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
 
                 }
+
+                if (name.length() < 3) {
+                    newName.setText("Name is too short!");
+
+                    Toast.makeText(getApplicationContext(), "Name is Too short! (3)",
+                            Toast.LENGTH_SHORT).show();
+
+                }
+
+                if (name.length() < 15 && name.length() > 3 && !names.contains(name) && checkNaughty(name)) {
+                    nameref.child("User").child(auth.getUid()).child("name").setValue(name);
+
+                    namePlease.setVisibility(View.GONE);
+
+                    Toast.makeText(getApplicationContext(), "Name changed successfully",
+                            Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(ProfileActivity.this, MapsActivity.class);
+                    startActivity(intent);
+
+                }
+
 
             }
 
