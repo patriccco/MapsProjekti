@@ -2,6 +2,7 @@ package com.example.kona.myapplication;
 
 import android.*;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static android.support.constraint.Constraints.TAG;
+import static com.example.kona.myapplication.R.drawable.avatar_s2;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -85,6 +88,11 @@ public class ProfileActivity extends AppCompatActivity {
     TextView namePlease;
     Button changeName;
 
+    ImageButton avatar;
+    ImageButton choice1;
+    ImageButton choice2;
+    ImageButton choice3;
+
 
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -93,10 +101,15 @@ public class ProfileActivity extends AppCompatActivity {
         newName = findViewById(R.id.newName);
         changeName = findViewById(R.id.changeName);
         namePlease = findViewById(R.id.changeplease);
+        avatar = findViewById(R.id.avatar);
         nameref.child("User").child(auth.getUid()).child("Place").setValue("moving");
 
-        getDatabaseName();
+        choice1 = findViewById(R.id.imageButton2);
+        choice2 = findViewById(R.id.imageButton3);
+        choice3 = findViewById(R.id.imageButton4);
 
+        getDatabaseName();
+        getDatabaseAvatar();
 
         ActivityCompat.requestPermissions(ProfileActivity.this,
                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -285,6 +298,109 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    /**
+     * Method for changing the users avatar from few default ones
+     * @param view
+     */
+
+    public void showAvatars(View view){
+
+        if (choice1.getVisibility() == View.GONE) {
+            choice1.setVisibility(View.VISIBLE);
+            choice2.setVisibility(View.VISIBLE);
+            choice3.setVisibility(View.VISIBLE);
+        } else {
+            choice1.setVisibility(View.GONE);
+            choice2.setVisibility(View.GONE);
+            choice3.setVisibility(View.GONE);
+        }
+    }
+
+    public void changeAvatar(final View view){
+
+        choice1.setVisibility(View.GONE);
+        choice2.setVisibility(View.GONE);
+        choice3.setVisibility(View.GONE);
+
+        nameref.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                int chosen;
+                String avatarname = null;
+
+                if (view.equals(choice1)) {
+                    chosen = 1;
+                } else if (view.equals(choice2)) {
+                    chosen = 2;
+                } else if (view.equals(choice3)){
+                    chosen = 3;
+                } else {
+                    chosen = 0;
+                }
+
+                switch (chosen) {
+                    case 0:
+                        avatarname = "avatar_s2";
+                        break;
+                    case 1:
+                        avatarname = "animepic1";
+                        break;
+                    case 2:
+                        avatarname = "animepic2";
+                        break;
+                    case 3:
+                        avatarname = "animepic3";
+                        break;
+
+                }
+
+                nameref.child("User").child(auth.getUid()).child("Avatar").setValue(avatarname);
+                getDatabaseAvatar();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+
+        });
+
+    }
+
+    public void getDatabaseAvatar(){
+
+        nameref.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String dbavatar = dataSnapshot.child(auth.getUid()).child("Avatar").getValue().toString();
+
+                Drawable d = null;
+
+                switch (dbavatar) {
+                    case "animepic1":
+                        d = getResources().getDrawable(R.drawable.animepic1);
+                        break;
+                    case "animepic2":
+                        d = getResources().getDrawable(R.drawable.animepic2);
+                        break;
+                    case "animepic3":
+                        d = getResources().getDrawable(R.drawable.animepic3);
+                        break;
+                }
+
+                avatar.setBackground(d);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+
+        });
     }
 
 
