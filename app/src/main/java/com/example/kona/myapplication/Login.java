@@ -119,6 +119,8 @@ public class Login extends AppCompatActivity {
                             myRef.child("User").child(auth.getUid()).child("longitude").setValue(0.01);
                             myRef.child("User").child(auth.getUid()).child("challenged").setValue("no");
 
+                            myRef.child("User").child(auth.getUid()).child("inarmgame").setValue(false);
+
                             myRef.child("User").child(auth.getUid()).child("challengedBet").setValue(0);
 
 
