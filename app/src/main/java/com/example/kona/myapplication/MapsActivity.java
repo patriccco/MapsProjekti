@@ -330,8 +330,6 @@ public class MapsActivity extends FragmentActivity
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    // Getting Post failed, log a message
-                    Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
                 }
             });
             enemytext.setVisibility(View.VISIBLE);
@@ -412,7 +410,6 @@ public class MapsActivity extends FragmentActivity
 
         getLastLocation();
         LatLng locat = new LatLng(getUserlatitude(), getUserlongitude());
-        Log.d(TAG, "" + locat);
 
 
         if (randdenc.isVictory()) {
@@ -467,7 +464,6 @@ public class MapsActivity extends FragmentActivity
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.d("MapDemoActivity", "Error trying to get last GPS location");
                             e.printStackTrace();
 
                             Snackbar.make(mLayout, "Location is required to display the preview.",
@@ -663,8 +659,6 @@ public class MapsActivity extends FragmentActivity
 
             if (result.getString(STATUS).equalsIgnoreCase(OK)) {
                 if (Questobject.getisQuest()) {
-
-                    Log.d("s", "on jo");
                     DatabaseReference QuestRef = database.getReference("Player");
                     QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -700,7 +694,6 @@ public class MapsActivity extends FragmentActivity
                     // random generate new quest
 
                     try {
-                        Log.d("s", "1");
                         Random rng = new Random();
                         int index = rng.nextInt(questlist.length());
                         questplace = (JSONObject) questlist.get(index);
@@ -716,15 +709,14 @@ public class MapsActivity extends FragmentActivity
                         questlongitude = questplace.getJSONObject(GEOMETRY).getJSONObject(LOCATION)
                                 .getDouble(LONGITUDE);
                         QLatLng = new LatLng(questlatitude, questlongitude);
-
                         questmarker = mMap.addMarker(new MarkerOptions()
                                 .title(QplaceName + ": " + Qvicinity)
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.quest))
                                 .position(QLatLng)
                                 .snippet("Get here to reclaim your reward"));
 
-                        Questobject.newQuest(false);
 
+                        Questobject.newQuest(false);
                         Questobject.setQuest(questlatitude, questlongitude, QplaceName, Qvicinity, 90000, true);
                         quest = false;
 
@@ -735,8 +727,6 @@ public class MapsActivity extends FragmentActivity
 
                     //if user icon is walking, make it running
                     iconanimate();
-
-
                     for (int i = 0; i < jsonArray.length(); i++) {
                         place = jsonArray.getJSONObject(i);
                         if (!place.isNull(NAME)) {
@@ -939,8 +929,11 @@ public class MapsActivity extends FragmentActivity
                             qlatlng.longitude >= longnearbot &&
                             qlatlng.longitude <= longneartop) {
 
+                        Intent fightscreen = new Intent(MapsActivity.this, Gridactivity.class);
+                        startActivity(fightscreen);
+
                         Transaction questmoney = new Transaction();
-                        questmoney.addMoney(15);
+                        questmoney.addMoney(20);
                         Toast.makeText(getApplicationContext(), "Quest completed!",
                                 Toast.LENGTH_SHORT).show();
                         marker.remove();

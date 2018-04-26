@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
@@ -100,154 +101,166 @@ public class ArmGameActivity extends AppCompatActivity{
         MyRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(final DataSnapshot dataSnapshot) {
-                if(hand>0){
-                    RotateRight();}
-                else{
-                    Rotateleft();
-                }
+
+
                 mTextField.setText("START!");
-                long betDB = (long)dataSnapshot.child(player).child("bet").getValue();
-                bet = (int)betDB;
-                playerstatus = (long)dataSnapshot.child(player).child(curUser).getValue();
+                long betDB = (long) dataSnapshot.child(player).child("bet").getValue();
+                bet = (int) betDB;
+                playerstatus = (long) dataSnapshot.child(player).child(curUser).getValue();
+                points = (long) dataSnapshot.child(player).child("Score").getValue();
 
 
-                points = (long)dataSnapshot.child(player).child("Score").getValue();
-                Log.d(" ", "points" + points);
 
-
-                if(hand > -20 && hand <20) {
-
-
-                    points = (long)dataSnapshot.child(player).child("Score").getValue();
-                    Log.d(" ", "points" + points);
-                    Random rng = new Random();
-                    int rngRes = rng.nextInt(4) + 1;
-
-                    points = (long)dataSnapshot.child(player).child("Score").getValue();
-
-                    switch (rngRes) {
-                        case 1:
-                            mTextField.setVisibility(GONE);
-                            red.setVisibility(View.VISIBLE);
-
-                            blue.setVisibility(GONE);
-                            yellow.setVisibility(GONE);
-                            green.setVisibility(GONE);
-                            red.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    points = (long)dataSnapshot.child(player).child("Score").getValue();
-
-                                    if (playerstatus == 1){
-                                        points = points-1;
-                                        hand = points;
-
-                                    }else {
-                                        points = points + 1;
-                                        hand = points*(-1);
-                                    }
-
-                                    MyRef.child(player).child("Score").setValue(points);
-                                    red.setVisibility(GONE);
-
-                                    gameOn();
-
-                                }
-                            });
-                            break;
-                        case 2:
-
-                            mTextField.setVisibility(GONE);
-                            blue.setVisibility(View.VISIBLE);
-
-                            yellow.setVisibility(GONE);
-                            red.setVisibility(GONE);
-                            green.setVisibility(GONE);
-                            blue.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    points = (long)dataSnapshot.child(player).child("Score").getValue();
-                                    if (playerstatus == 1){
-                                        points = points-1;
-                                        hand = points;
-                                    }else {
-                                        points = points + 1;
-                                        hand = points*(-1);
-                                    }
-                                    MyRef.child(player).child("Score").setValue(points);
-                                    blue.setVisibility(GONE);
-
-                                    gameOn();
-                                }
-                            });
-                            break;
-                        case 3:
-
-                            mTextField.setVisibility(GONE);
-                            green.setVisibility(View.VISIBLE);
-                            blue.setVisibility(GONE);
-                            red.setVisibility(GONE);
-                            yellow.setVisibility(GONE);
-                            green.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    points = (long)dataSnapshot.child(player).child("Score").getValue();
-
-                                    if (playerstatus == 1){
-                                        points = points-1;
-                                        hand = points;
-
-                                    }else {
-                                        points = points + 1;
-                                        hand = points*(-1);
-                                    }
-                                    MyRef.child(player).child("Score").setValue(points);
-                                    green.setVisibility(GONE);
-
-                                    gameOn();
-                                }
-                            });
-                            break;
-
-                        case 4:
-                            mTextField.setVisibility(GONE);
-                            yellow.setVisibility(View.VISIBLE);
-                            blue.setVisibility(GONE);
-                            red.setVisibility(GONE);
-                            green.setVisibility(GONE);
-                            yellow.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    points = (long)dataSnapshot.child(player).child("Score").getValue();
-
-                                    if (playerstatus == 1){
-                                        points = points-1;
-                                        hand = points;
-
-                                    }else {
-                                        points = points + 1;
-                                        hand = points*(-1);
-                                    }
-                                    MyRef.child(player).child("Score").setValue(points);
-                                    yellow.setVisibility(GONE);
-
-                                    gameOn();
-                                }
-                            });
-                            break;
-
+                    if (hand > -20 && hand < 20) {
+                        if (points >= 19 || points <= -19){
+                            HandleVictory(points);
                     }
-                }
-                else{
 
-                    HandleVictory(points);
+                        Random rng = new Random();
+                        int rngRes = rng.nextInt(4) + 1;
+
+                        switch (rngRes) {
+                            case 1:
+                                mTextField.setVisibility(GONE);
+                                red.setVisibility(View.VISIBLE);
+
+                                blue.setVisibility(View.INVISIBLE);
+                                yellow.setVisibility(View.INVISIBLE);
+                                green.setVisibility(View.INVISIBLE);
+                                red.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        points = (long) dataSnapshot.child(player).child("Score").getValue();
+
+                                        if (playerstatus == 1) {
+                                            points = points - 1;
+                                            hand = points;
+                                        } else {
+                                            points = points + 1;
+                                            hand = points * (-1);
+                                        }
+
+                                        MyRef.child(player).child("Score").setValue(points);
+                                        red.setVisibility(View.INVISIBLE);
+                                        if (hand > 0) {
+                                            RotateRight();
+                                        } else {
+                                            Rotateleft();
+
+                                        }
 
 
+                                    }
+                                });
+                                break;
+                            case 2:
 
-                }
+                                mTextField.setVisibility(GONE);
+                                blue.setVisibility(View.VISIBLE);
+
+                                yellow.setVisibility(View.INVISIBLE);
+                                red.setVisibility(View.INVISIBLE);
+                                green.setVisibility(View.INVISIBLE);
+                                blue.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        points = (long) dataSnapshot.child(player).child("Score").getValue();
+
+                                        if (playerstatus == 1) {
+                                            points = points - 1;
+                                            hand = points;
+                                        } else {
+                                            points = points + 1;
+                                            hand = points * (-1);
+                                        }
+
+                                        MyRef.child(player).child("Score").setValue(points);
+                                        blue.setVisibility(View.INVISIBLE);
+                                        if (hand > 0) {
+                                            RotateRight();
+                                        } else {
+                                            Rotateleft();
+
+                                        }
+
+                                    }
+                                });
+                                break;
+                            case 3:
+
+                                mTextField.setVisibility(GONE);
+                                green.setVisibility(View.VISIBLE);
+                                blue.setVisibility(View.INVISIBLE);
+                                red.setVisibility(View.INVISIBLE);
+                                yellow.setVisibility(View.INVISIBLE);
+                                green.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        Log.e("", "" + hand);
+
+                                        points = (long) dataSnapshot.child(player).child("Score").getValue();
+
+                                        if (playerstatus == 1) {
+                                            points = points - 1;
+                                            hand = points;
+
+                                        } else {
+                                            points = points + 1;
+                                            hand = points * (-1);
+                                        }
+
+                                        MyRef.child(player).child("Score").setValue(points);
+                                        green.setVisibility(View.INVISIBLE);
+                                        if (hand > 0) {
+                                            RotateRight();
+                                        } else {
+                                            Rotateleft();
+
+                                        }
+                                    }
+                                });
+                                break;
+
+                            case 4:
+                                mTextField.setVisibility(GONE);
+                                yellow.setVisibility(View.VISIBLE);
+                                blue.setVisibility(View.INVISIBLE);
+                                red.setVisibility(View.INVISIBLE);
+                                green.setVisibility(View.INVISIBLE);
+                                yellow.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        Log.e("", "" + hand);
+
+                                        points = (long) dataSnapshot.child(player).child("Score").getValue();
+
+                                        if (playerstatus == 1) {
+                                            points = points - 1;
+                                            hand = points;
+
+                                        } else {
+                                            points = points + 1;
+                                            hand = points * (-1);
+                                        }
+                                        MyRef.child(player).child("Score").setValue(points);
+                                        yellow.setVisibility(View.INVISIBLE);
+                                        if (hand > 0) {
+                                            RotateRight();
+                                        } else {
+                                            Rotateleft();
+
+                                        }
+                                    }
+                                });
+                                break;
+
+                        }
+                    }
+
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -288,44 +301,47 @@ public class ArmGameActivity extends AppCompatActivity{
     public void Rotateleft(){
 
         ImageView imageView = findViewById(R.id.käsiview);
-        imageView.setRotation(hand*4);
-        imageView.getLeft();
+        imageView.setRotation(hand*5);
         imageView.getRight();
-        imageView.setLeft(imageView.getLeft() + 100);
+
+        Log.e("", "" + hand);
         imageView.setTranslationX(hand*18);
         imageView.setTranslationY(hand* - 10);
     }
     public void RotateRight(){
 
         ImageView imageView = findViewById(R.id.käsiview);
-        imageView.setRotation(hand*4);
-        imageView.getLeft();
+        imageView.setRotation(hand*5);
         imageView.getRight();
-        imageView.setLeft(imageView.getLeft() + 100);
+        Log.e("", "" + hand);
         imageView.setTranslationX(hand* 18);
         imageView.setTranslationY(hand*  10);
     }
 
     public void HandleVictory(long score){
 
-        if(score == -20 && playerstatus == 1){
-            transaction.addMoney(bet);
+        if(score <= -19 && playerstatus == 1){
+            transaction.addMoney(bet*2);
+            Toast.makeText(getApplicationContext(), "You Won!" + "You got " + bet*2 + "Money!",
+                    Toast.LENGTH_SHORT).show();
 
         }
-        else if(score == 20 && playerstatus == 2){
-            transaction.addMoney(bet);
+        else if(score >= 19 && playerstatus == 2){
+            transaction.addMoney(bet*2);
 
         }
         else {
-
-
-            Log.e("","" + "LOST");
+            Toast.makeText(getApplicationContext(), "You Lost!",
+                    Toast.LENGTH_SHORT).show();
 
         }
+
+
 
 
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
+        finish();
 
     }
 

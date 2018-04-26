@@ -38,10 +38,11 @@ public class Barview extends AppCompatActivity {
     private ListView mainListView;
     long bet;
     private ValueEventListener mListener;
-
+    Transaction transaction = new Transaction();
 
     Button armchal, accept, decline, turnChallenge, acceptTurn, declineTurn,bet20,bet30;
-    TextView playertext, challenger;
+    TextView playertext, challengerTextView,TimeTextView;
+    Boolean inarmgame;
 
     Quest Questobject = new Quest();
     String UserPlace;
@@ -62,6 +63,9 @@ public class Barview extends AppCompatActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_bar);
         Button button = findViewById(R.id.getjob);
+        final TextView barName = findViewById(R.id.barname);
+
+        barName.setText(UserPlace);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,10 +84,20 @@ public class Barview extends AppCompatActivity {
         mListener = myRef.child("User").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                challengeOn = dataSnapshot.child(auth.getUid()).child("challenged").getValue().toString();
                 adapter.clear();
 
                 UserPlace = dataSnapshot.child(auth.getUid()).child("Place").getValue().toString();
                 curUser = dataSnapshot.child(auth.getUid()).child("name").getValue().toString();
+
+
+                inarmgame = (Boolean)dataSnapshot.child(auth.getUid()).child("inarmgame").getValue();
+
+                if (inarmgame == true && challengeOn.equals("start")) {
+                    ChallengertoArmGame();
+                    myRef.removeEventListener(mListener);
+                    return;
+                }
 
                 for (DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()) {
                     //Loop 1 to go through all the child nodes of users
@@ -98,19 +112,17 @@ public class Barview extends AppCompatActivity {
                         adapter.add(player.getName());
                     }
                 }
-                final Boolean inarmgame = (Boolean)dataSnapshot.child(auth.getUid()).child("inarmgame").getValue();
-                challengeOn = dataSnapshot.child(auth.getUid()).child("challenged").getValue().toString();
-                if (inarmgame == true) {
-                    ChallengertoArmGame();
-                }
-                if (!challengeOn.equals("no")) {
+                if (!challengeOn.equals("no")&&!challengeOn.equals("start")&&inarmgame==false) {
                     ChallengedYouWindow(challengeOn);
 
                 }
+
+
                 // Find the ListView resource.
                 mainListView = findViewById(R.id.lista);
                 // Set the ArrayAdapter as the ListView's adapter.
                 mainListView.setAdapter(adapter);
+                barName.setText(UserPlace);
 
                 mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -123,7 +135,15 @@ public class Barview extends AppCompatActivity {
                     }
 
                 });
+
+                //in case of false entry to the bar direct back to map.
+                if(UserPlace.equals("moving") && challengeOn.equals("no")){
+                    Intent intent = new Intent(Barview.this, MapsActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
+
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -151,23 +171,28 @@ public class Barview extends AppCompatActivity {
     }
 
     /**
-     * Shows optons for challenged player after challenger sets the bet
+     * Shows options for challenged player after challenger sets the bet
      * @param opponent displayname of the opponent
      */
     public void ChallengedYouWindow(final String opponent) {
+
+
+
         final DatabaseReference myRef = database.getReference("Player");
-        myRef.child("User").addValueEventListener(new ValueEventListener() {
+        myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 bet = (long) dataSnapshot.child(auth.getUid()).child("challengedBet").getValue();
                 accept = findViewById(R.id.acceptarm);
                 decline = findViewById(R.id.declinearm);
-                challenger = findViewById(R.id.armchallenger);
-                challenger.setText(opponent + " Challenged " + "\n" + "You" + " for " + bet + "!");
-                challenger.setVisibility(View.VISIBLE);
+                challengerTextView = findViewById(R.id.armchallenger);
+                TimeTextView = findViewById(R.id.time);
+                challengerTextView.setText(opponent + " Challenged " + "\n" + "You" + " for " + bet + "!");
+                challengerTextView.setVisibility(View.VISIBLE);
                 accept.setVisibility(View.VISIBLE);
                 decline.setVisibility(View.VISIBLE);
-                opponenttimer(10000);
+
+
 
             }
 
@@ -176,17 +201,13 @@ public class Barview extends AppCompatActivity {
 
             }
         });
+        opponenttimer.start();
         //TODO tehdäänkö molemmille peleille omat challengit vai käytetäänkö if/switch
         //BUTTONS TO TURN BASED GAME
         /*acceptTurn = findViewById(R.id.acceptTurn);
         declineTurn = findViewById(R.id.declinTurn);
         acceptTurn.setVisibility(View.VISIBLE);
         declineTurn.setVisibility(View.VISIBLE);*/
-
-
-    }
-
-    public void challengeaccepted() {
 
     }
 
@@ -212,24 +233,19 @@ public class Barview extends AppCompatActivity {
         if (view == findViewById(R.id.bet20)){
             bet = 20;
     }
-
             final DatabaseReference myRef = database.getReference("Player");
             myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-
                     for (DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()) {
                         //Loop 1 to go through all the child nodes of users
                         String challengedName = uniqueKeySnapshot.child("name").getValue().toString();
-
-                        String ischallenged = uniqueKeySnapshot.child("challenged").getValue().toString();
                         if (challengedName.equals(challengedplayer)) {
-
-                            challengedId= uniqueKeySnapshot.child("id").getValue().toString();
+                            challengedId = uniqueKeySnapshot.child("id").getValue().toString();
                             myRef.child("User").child(challengedId).child("challenged").setValue(curUser);
-
                             myRef.child("User").child(challengedId).child("challengedBet").setValue(bet);
-                            challengertimer(10000);
+
+                            challengertimer.start();
                         }
                     }
 
@@ -308,7 +324,10 @@ public class Barview extends AppCompatActivity {
         GameRef.child(curplayer).child("bet").setValue(bet);
         GameRef.child(curplayer).child(curplayer).setValue(1);
         GameRef.child(curplayer).child(opponent).setValue(2);
+        int betint = (int)bet*-1;
+        transaction.addMoney(betint);
 
+        myRef.removeEventListener(mListener);
 
         Intent in = new Intent(this, ArmGameActivity.class);
         startActivity(in);
@@ -317,11 +336,18 @@ public class Barview extends AppCompatActivity {
     /**
      * directs challlenger user to the acticity for the armgame
      */
-    public void ChallengertoArmGame() {
+    public void ChallengertoArmGame(){
 
+        myRef.child("User").child(auth.getUid()).child("challenged").setValue(challengedplayer);
+
+
+        int betint = (int)bet*-1;
+        transaction.addMoney(betint);
 
         Intent in = new Intent(this, ArmGameActivity.class);
         startActivity(in);
+
+        challengertimer.cancel();
 
     }
 
@@ -330,6 +356,7 @@ public class Barview extends AppCompatActivity {
      * @param view the accept button
      */
     public void directarmgame(View view) {
+        opponenttimer.cancel();
         final DatabaseReference myRef = database.getReference("Player");
         myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -341,9 +368,14 @@ public class Barview extends AppCompatActivity {
                     if(challengedName.equals(challengeOn)) {
                         challengedId = uniqueKeySnapshot.child("id").getValue().toString();
 
-                        myRef.child("User").child(challengedId).child("challenged").setValue(curUser);
+                        myRef.child("User").child(challengedId).child("challenged").setValue("start");
                         myRef.child("User").child(auth.getUid()).child("challenged").setValue(curUser);
                         myRef.child("User").child(challengedId).child("inarmgame").setValue(true);
+                        myRef.child("User").child(auth.getUid()).child("inarmgame").setValue(true);
+                        myRef.removeEventListener(mListener);
+
+
+
                         ChallengedtoArmGame(bet,curUser,challengeOn);
                         break;
                     }
@@ -359,14 +391,8 @@ public class Barview extends AppCompatActivity {
 
 
     }
-    public void challengertimer(long time) {
-
-        new CountDownTimer(time, 10000) {
-
-            public void onTick(long millisUntilFinished) {
-
-            }
-
+        CountDownTimer challengertimer = new CountDownTimer(3000, 1000) {
+            public void onTick(long millisUntilFinished) {}
             public void onFinish() {
                 Toast.makeText(getApplicationContext(), "Opponent did not accept",
                         Toast.LENGTH_SHORT).show();
@@ -374,41 +400,36 @@ public class Barview extends AppCompatActivity {
                 myRef.child("User").child(auth.getUid()).child("challenged").setValue("no");
                 myRef.child("User").child(challengedId).child("inarmgame").setValue(false);
                 myRef.child("User").child(challengedId).child("inarmgame").setValue(false);
-
                 playertext.setVisibility(View.GONE);
                 armchal.setVisibility(View.GONE);
                 turnChallenge.setVisibility(View.GONE);
-
                 bet20.setVisibility(View.GONE);
                 bet30.setVisibility(View.GONE);
-
-
-
-
             }
-        }.start();
-    }
+        };
 
-    public void opponenttimer(long time) {
-
-        new CountDownTimer(time, 1000) {
+        CountDownTimer opponenttimer =  new CountDownTimer(10000, 1000) {
 
             public void onTick(long millisUntilFinished) {
+                challengerTextView = findViewById(R.id.armchallenger);
+                challengerTextView.setVisibility(View.VISIBLE);
+                TimeTextView = findViewById(R.id.time);
+                TimeTextView.setText("" + String.format("0%d : %d",
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
 
+                TimeTextView.setVisibility(View.VISIBLE);
             }
-
             public void onFinish() {
-                Toast.makeText(getApplicationContext(), "Time ran out, abort game",
-                        Toast.LENGTH_SHORT).show();
                 accept.setVisibility(View.GONE);
                 decline.setVisibility(View.GONE);
-                challenger.setVisibility(View.GONE);
-
-
-
+                challengerTextView.setVisibility(View.GONE);
+                TimeTextView.setVisibility(View.GONE);
             }
-        }.start();
-    }
+
+        };
+
 
 
 
