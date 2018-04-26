@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +88,7 @@ public class ProfileActivity extends AppCompatActivity {
     EditText newName;
     TextView namePlease;
     Button changeName;
+    RelativeLayout RL;
 
     ImageButton avatar;
     ImageButton choice1;
@@ -103,7 +105,7 @@ public class ProfileActivity extends AppCompatActivity {
         namePlease = findViewById(R.id.changeplease);
         avatar = findViewById(R.id.avatar);
         nameref.child("User").child(auth.getUid()).child("Place").setValue("moving");
-
+        RL = findViewById(R.id.relativeavatar);
         choice1 = findViewById(R.id.imageButton2);
         choice2 = findViewById(R.id.imageButton3);
         choice3 = findViewById(R.id.imageButton4);
@@ -308,10 +310,14 @@ public class ProfileActivity extends AppCompatActivity {
     public void showAvatars(View view){
 
         if (choice1.getVisibility() == View.GONE) {
+
+            RL.setVisibility(View.VISIBLE);
             choice1.setVisibility(View.VISIBLE);
             choice2.setVisibility(View.VISIBLE);
             choice3.setVisibility(View.VISIBLE);
         } else {
+
+            RL.setVisibility(View.GONE);
             choice1.setVisibility(View.GONE);
             choice2.setVisibility(View.GONE);
             choice3.setVisibility(View.GONE);
@@ -341,6 +347,8 @@ public class ProfileActivity extends AppCompatActivity {
                 } else {
                     chosen = 0;
                 }
+
+                RL.setVisibility(View.GONE);
 
                 switch (chosen) {
                     case 0:

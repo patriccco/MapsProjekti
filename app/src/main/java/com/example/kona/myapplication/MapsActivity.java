@@ -366,15 +366,11 @@ public class MapsActivity extends FragmentActivity
                     loadNearByQuest(getUserlatitude(), getUserlongitude(), newquest);
 
 
-                    if (icons) {
                         locicon = mMap.addMarker(new MarkerOptions()
                                 .position(loc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
-                    } else {
-                        locicon = mMap.addMarker(new MarkerOptions()
-                                .position(loc)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
-                    }
+                                .snippet("")
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.locpic2)));
+
 
                 }
 
@@ -725,8 +721,6 @@ public class MapsActivity extends FragmentActivity
 
                     }
 
-                    //if user icon is walking, make it running
-                    iconanimate();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         place = jsonArray.getJSONObject(i);
                         if (!place.isNull(NAME)) {
@@ -1028,19 +1022,6 @@ public class MapsActivity extends FragmentActivity
         startActivity(logout);
     }
 
-    public void iconanimate() {
-        if (icons) {
-            locicon.remove();
-            locicon = mMap.addMarker(new MarkerOptions()
-                    .position(loc)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon2)));
-        } else {
-            locicon.remove();
-            locicon = mMap.addMarker(new MarkerOptions()
-                    .position(loc)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)));
-        }
-    }
 
     public void timer(long time) {
 
