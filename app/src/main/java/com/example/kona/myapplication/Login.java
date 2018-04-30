@@ -112,8 +112,10 @@ public class Login extends AppCompatActivity {
                             qData.setQuest(0.01,0.01, "noquest", "noquest", 0, false);
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                             DatabaseReference myRef = database.getReference("Player");
+                            myRef.child("User").child(auth.getUid()).child("name").setValue("newPlayer");
                             myRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
                             myRef.child("User").child(auth.getUid()).child("HP").setValue(100);
+                            myRef.child("User").child(auth.getUid()).child("Avatar").setValue("animepic1");
                             myRef.child("User").child(auth.getUid()).child("Money").setValue(10);
                             myRef.child("User").child(auth.getUid()).child("latitude").setValue(0.01);
                             myRef.child("User").child(auth.getUid()).child("longitude").setValue(0.01);

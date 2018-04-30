@@ -99,7 +99,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log_out);
+        setContentView(R.layout.activity_profile);
         newName = findViewById(R.id.newName);
         changeName = findViewById(R.id.changeName);
         namePlease = findViewById(R.id.changeplease);

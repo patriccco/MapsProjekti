@@ -78,14 +78,8 @@ public class ShopView extends AppCompatActivity{
      */
 
     public void buy(View view) {
-        Transaction transaction = new Transaction();
-        transaction.CheckPrice("Banana");
-
-
-        Toast toast= Toast.makeText(getApplicationContext(),
-                "You Bought 5 hp  !" + "\n cost 10 money", Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER_VERTICAL| Gravity.CENTER_HORIZONTAL, 0, 0);
-        toast.show();
+        Intent intent = new Intent(this, BuyActivity.class);
+        startActivity(intent);
     }
 
     /*public void sell(View view) {

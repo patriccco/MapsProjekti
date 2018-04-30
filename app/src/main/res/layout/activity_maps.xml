@@ -118,47 +118,15 @@
         map:layout_constraintTop_toTopOf="parent"
         map:layout_constraintVertical_bias="0.939" />
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/menuOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#77000000"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="33dp">
-
-        <ProgressBar
-            android:id="@+id/healthbar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="200dp"
-            android:layout_height="43dp"
-            android:layout_alignBottom="@+id/avatar"
-            android:layout_alignParentEnd="true"
-            android:max="100"
-            android:progress="50"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.825"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.122" />
-
-        <TextView
-            android:id="@+id/username"
-            android:layout_width="200dp"
-            android:layout_height="50dp"
-            android:layout_above="@+id/healthbar"
-            android:layout_alignParentEnd="true"
-            android:text="SWAGKILLA"
-            android:textColor="#0ddfd8"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.073" />
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:background="#BF000000">
 
         <ImageButton
             android:id="@+id/avatar"
@@ -174,22 +142,57 @@
             app:layout_constraintTop_toTopOf="parent"
             map:srcCompat="@drawable/avatar_s2" />
 
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_above="@+id/healthbar"
+            android:text=""
+            android:textColor="#0ddfd8"
+            android:fontFamily="monospace"
+            android:textSize="30sp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@id/avatar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.073"
+            map:layout_constraintRight_toRightOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/healthbar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="180dp"
+            android:layout_height="50dp"
+            android:max="100"
+            android:progress="50"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/avatar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.122"
+            map:layout_constraintHorizontal_bias="0.913" />
+
         <Button
             android:id="@+id/profile"
             android:layout_width="50dp"
             android:layout_height="53dp"
             android:layout_above="@+id/quests"
             android:layout_alignStart="@+id/quests"
-            android:layout_marginBottom="26dp"
+            android:layout_marginBottom="32dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/profile2"
             android:onClick="profileView"
             map:layout_constraintBottom_toBottomOf="parent"
             map:layout_constraintEnd_toEndOf="parent"
-            map:layout_constraintHorizontal_bias="0.939"
+            map:layout_constraintHorizontal_bias="0.94"
             map:layout_constraintRight_toRightOf="parent"
             map:layout_constraintStart_toStartOf="parent"
             map:layout_constraintTop_toTopOf="parent"
-            map:layout_constraintVertical_bias="0.957" />
+            map:layout_constraintVertical_bias="0.58" />
 
         <Button
             android:id="@+id/quests"
@@ -197,16 +200,19 @@
             android:layout_height="53dp"
             android:layout_above="@+id/inventory"
             android:layout_alignStart="@+id/inventory"
-            android:layout_marginBottom="28dp"
+            android:layout_marginBottom="24dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/menu2"
             android:onClick="showJob"
             map:layout_constraintBottom_toBottomOf="parent"
             map:layout_constraintEnd_toEndOf="parent"
-            map:layout_constraintHorizontal_bias="0.939"
+            map:layout_constraintHorizontal_bias="0.94"
             map:layout_constraintRight_toRightOf="parent"
             map:layout_constraintStart_toStartOf="parent"
             map:layout_constraintTop_toTopOf="parent"
-            map:layout_constraintVertical_bias="0.957" />
+            map:layout_constraintVertical_bias="0.711" />
 
         <Button
             android:id="@+id/inventory"
@@ -214,56 +220,78 @@
             android:layout_height="53dp"
             android:layout_alignEnd="@+id/healthbar"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="118dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/menu2"
-            android:onClick="toggleMenu"
+            android:onClick="inventoryView"
             map:layout_constraintBottom_toBottomOf="parent"
             map:layout_constraintEnd_toEndOf="parent"
-            map:layout_constraintHorizontal_bias="0.939"
+            map:layout_constraintHorizontal_bias="0.94"
             map:layout_constraintRight_toRightOf="parent"
             map:layout_constraintStart_toStartOf="parent"
             map:layout_constraintTop_toTopOf="parent"
-            map:layout_constraintVertical_bias="0.957" />
+            map:layout_constraintVertical_bias="0.84" />
 
         <TextView
             android:id="@+id/profileText"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/profile"
             android:layout_alignBottom="@+id/profile"
-            android:layout_marginEnd="10dp"
             android:layout_toStartOf="@+id/quests"
-            android:text=" profile"
+            android:text="@string/profile"
             android:textColor="#def9f8"
-            android:textSize="25sp" />
+            android:textSize="25sp"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.719"
+            map:layout_constraintRight_toRightOf="parent"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintVertical_bias="0.545" />
 
         <TextView
             android:id="@+id/questText"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/quests"
             android:layout_alignBottom="@+id/quests"
             android:layout_alignStart="@+id/profileText"
-            android:text="    jobs"
+            android:text="@string/job"
             android:textColor="#def9f8"
-            android:textSize="25sp" />
+            android:textSize="25sp"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.738"
+            map:layout_constraintRight_toRightOf="parent"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintVertical_bias="0.679" />
 
         <TextView
             android:id="@+id/inventoryText"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/inventory"
             android:layout_alignBottom="@+id/inventory"
             android:layout_alignStart="@+id/questText"
-            android:text="  items"
+            android:text="@string/items"
             android:textColor="#def9f8"
-            android:textSize="25sp" />
+            android:textSize="25sp"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.726"
+            map:layout_constraintRight_toRightOf="parent"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintVertical_bias="0.806" />
 
         <TextView
             android:id="@+id/Qtimer"
             android:layout_width="120dp"
-            android:layout_height="80dp"
+            android:layout_height="90dp"
             android:layout_alignTop="@+id/questText"
             android:layout_toStartOf="@+id/healthbar"
             android:background="#40efe9e9"
@@ -272,16 +300,8 @@
             tools:layout_editor_absoluteX="125dp"
             tools:layout_editor_absoluteY="351dp" />
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
-            android:layout_alignStart="@+id/Qtimer"
-            android:layout_below="@+id/profileText"
-            android:layout_marginStart="11dp"
-            android:text="@string/qtimertext" />
+    </android.support.constraint.ConstraintLayout>
 
-    </RelativeLayout>
 
 
 </android.support.constraint.ConstraintLayout>

@@ -18,4 +18,12 @@
     <string name="getjob">Quest</string>
     <string name="armchallenge">ArmWrestle!</string>
     <string name="qtimertext">Assignment</string>
+    <string name="buy">buy</string>
+    <string name="sell">sell</string>
+    <string name="profile">profile</string>
+    <string name="job">job</string>
+    <string name="items">items</string>
+    <string name="menu">menu</string>
+    <string name="logout">log out</string>
+    <string name="delete">delete profile</string>
 </resources>

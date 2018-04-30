@@ -74,84 +74,56 @@
         android:layout_below="@+id/center_vertical">
 
         <TextView
-            android:id="@+id/buy_text"
+            android:id="@+id/discard_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="24dp"
-            android:text="buy item?"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:text="discard"
             android:textColor="#ffffff"
             android:textSize="25sp"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/buy_button"
+            android:id="@+id/discard_button"
+            android:layout_width="53dp"
+            android:layout_height="51dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/use_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="56dp"
+            android:layout_marginTop="68dp"
+            android:text="use"
+            android:textColor="#ffffff"
+            android:textSize="25sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/discard_text" />
+
+        <Button
+            android:id="@+id/use_button"
             android:layout_width="53dp"
             android:layout_height="51dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="24dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="68dp"
             android:background="@drawable/back"
-            android:onClick="buyItem"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/item_cost"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
-            android:layout_marginStart="24dp"
-            android:text="prize:"
-            android:textColor="#00ffc6"
-            android:textSize="25sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/buy_text"/>
-
-        <TextView
-            android:id="@+id/item_cost2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="5 cr"
-            android:textColor="#ff1868"
-            android:textSize="25sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.766"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/buy_text"
-            app:layout_constraintVertical_bias="0.312" />
-
-        <ImageView
-            android:id="@+id/cryptidlogo"
-            android:layout_width="96dp"
-            android:layout_height="93dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="64dp"
-            android:elevation="12dp"
-            android:src="@drawable/avatar_s2"
-            app:layout_constraintTop_toBottomOf="@id/item_cost"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent" />
-
-        <TextView
-            android:id="@+id/player_money"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="100 cr"
-            android:textColor="#ff1868"
-            android:textSize="25sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.803"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toStartOf="@id/cryptidlogo"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.628" />
+            app:layout_constraintTop_toBottomOf="@id/discard_button" />
 
     </android.support.constraint.ConstraintLayout>
 

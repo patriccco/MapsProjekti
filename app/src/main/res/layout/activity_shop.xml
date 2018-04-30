@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/store3">
+    android:background="@drawable/storepink">
 
     <Button
         android:id="@+id/store_exit"

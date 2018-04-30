@@ -1022,6 +1022,11 @@ public class MapsActivity extends FragmentActivity
         startActivity(logout);
     }
 
+    public void inventoryView(View view) {
+        Intent inventory = new Intent(this, InventoryActivity.class);
+        startActivity(inventory);
+    }
+
 
     public void timer(long time) {
 
