@@ -115,24 +115,47 @@ public class Quest {
         return name;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getVicinity() {
+        return vicinity;
+    }
+
+    public void setVicinity(String vicinity) {
+        this.vicinity = vicinity;
+    }
+
+    public Boolean getIsquest() {
+        return isquest;
+    }
+
+    public void setIsquest(Boolean isquest) {
+        this.isquest = isquest;
+    }
+
     /**
+
      * Getter for the vicinity of the Quest
      * @return
      */
-    public String getQuestVicinity() {
+    public void getQuestVicinity() {
         QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Test customer marker
-                vicinity = dataSnapshot.child("User").child(userinfo).child("Quest").child("Questvicinity").getValue().toString();
+                setVicinity(dataSnapshot.child("User").child(userinfo).child("Quest").child("Questvicinity").getValue().toString());
 
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-
-        return vicinity;
     }
 
     /**
@@ -140,12 +163,12 @@ public class Quest {
      *
      * @return
      */
-    public boolean getisQuest() {
+    public boolean isQuest() {
         QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Test customer marker
-                isquest = (Boolean) dataSnapshot.child("User").child(userinfo).child("Quest").child("isQuest").getValue();
+                setIsquest((Boolean) dataSnapshot.child("User").child(userinfo).child("Quest").child("isQuest").getValue());
 
             }
             @Override

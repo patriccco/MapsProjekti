@@ -66,19 +66,23 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import static com.example.kona.myapplication.AppConfig.BAR_RADIUS;
 import static com.example.kona.myapplication.AppConfig.GEOMETRY;
 import static com.example.kona.myapplication.AppConfig.GOOGLE_BROWSER_API_KEY;
 import static com.example.kona.myapplication.AppConfig.LATITUDE;
 import static com.example.kona.myapplication.AppConfig.LOCATION;
 import static com.example.kona.myapplication.AppConfig.LONGITUDE;
+import static com.example.kona.myapplication.AppConfig.MIN_DISTANCE_CHANGE_FOR_UPDATES;
 import static com.example.kona.myapplication.AppConfig.NAME;
 import static com.example.kona.myapplication.AppConfig.OK;
 import static com.example.kona.myapplication.AppConfig.PLACE_ID;
-import static com.example.kona.myapplication.AppConfig.PROXIMITY_RADIUS;
-import static com.example.kona.myapplication.AppConfig.QUEST_RADIUS;
+import static com.example.kona.myapplication.AppConfig.REQUEST_FINE_LOCATION;
+import static com.example.kona.myapplication.AppConfig.SHOP_RADIUS;
 import static com.example.kona.myapplication.AppConfig.STATUS;
 import static com.example.kona.myapplication.AppConfig.SUPERMARKET_ID;
 import static com.example.kona.myapplication.AppConfig.VICINITY;
+import static com.example.kona.myapplication.AppConfig.UPDATE_INTERVAL;
+import static com.example.kona.myapplication.AppConfig.FASTEST_INTERVAL;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 public class MapsActivity extends FragmentActivity
@@ -125,14 +129,10 @@ public class MapsActivity extends FragmentActivity
         Qtime = qtime;
     }
 
-    private static final int REQUEST_FINE_LOCATION = 0;
     private View mLayout;
-    private TextView enemytext, mTextField;
+    private TextView enemytext, mTextField,questinfo;
     private LocationRequest mLocationRequest;
     Button greenBtn, redBtn, locbutton;
-    private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
-    private long FASTEST_INTERVAL = 500; /* 2 sec */
-    private long DISTANCE_CHANGE_FOR_UPDATES = 8;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     String userinfo = auth.getUid();
     JSONArray questlist = new JSONArray();
@@ -165,6 +165,7 @@ public class MapsActivity extends FragmentActivity
         redBtn = findViewById(R.id.escape);
         locbutton = findViewById(R.id.button4);
         mTextField = findViewById(R.id.Qtimer);
+        questinfo = findViewById(R.id.questinfo);
 
         /**get player's current health for the healthbar**/
         final DatabaseReference hpRef = database.getReference("Player");
@@ -262,7 +263,7 @@ public class MapsActivity extends FragmentActivity
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
-        mLocationRequest.setSmallestDisplacement(DISTANCE_CHANGE_FOR_UPDATES);
+        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_CHANGE_FOR_UPDATES);
 
         // Create LocationSettingsRequest object using location request
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
@@ -337,11 +338,6 @@ public class MapsActivity extends FragmentActivity
             redBtn.setVisibility(View.VISIBLE);
         }
 
-        if (icons) {
-            icons = false;
-        } else {
-            icons = true;
-        }
         //set current location to database
         try {
             setUserlatitude(60.164457);
@@ -352,24 +348,19 @@ public class MapsActivity extends FragmentActivity
             userRef.child("User").child(userinfo).child("latitude").setValue(getUserlatitude());
             userRef.child("User").child(userinfo).child("longitude").setValue(getUserlongitude());
 
-            //loc = new LatLng(location.getLatitude(), location.getLongitude());
             loc = new LatLng(getUserlatitude(), getUserlongitude());
 
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     newquest = (Boolean) dataSnapshot.child("User").child(userinfo).child("Quest").child("newQuest").getValue();
-
-                    loadNearBySupermarket(getUserlatitude(), getUserlongitude(), false);
-                    loadNearByshops(getUserlatitude(), getUserlongitude(), false);
-                    loadNearByRestaurant(getUserlatitude(), getUserlongitude(), false);
-                    loadNearByQuest(getUserlatitude(), getUserlongitude(), newquest);
-
+                    LoadNearByPlaces(getUserlatitude(), getUserlongitude(), false);
+                    loadNearByBar(getUserlatitude(), getUserlongitude(), newquest);
 
                         locicon = mMap.addMarker(new MarkerOptions()
                                 .position(loc)
                                 .snippet("")
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.locpic2)));
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.pallopic1)));
 
 
                 }
@@ -390,23 +381,23 @@ public class MapsActivity extends FragmentActivity
 
     protected void onStop() {
         super.onStop();
-        Tune.stop();
         Tune.release();
 
+
+    }
+    protected void onPause(){
+        super.onPause();
+        Tune.stop();
+        Tune.release();
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         Tune = MediaPlayer.create(getApplicationContext(), R.raw.crimson_idle);
         Tune.start();
-
-
         getLastLocation();
-        LatLng locat = new LatLng(getUserlatitude(), getUserlongitude());
-
 
         if (randdenc.isVictory()) {
             Toast.makeText(getApplicationContext(), " You dealt with " + randdenc.enemyName + " you got 5 money!",
@@ -484,7 +475,7 @@ public class MapsActivity extends FragmentActivity
      * @param longitude
      * @param quest     = false
      */
-    private void loadNearByshops(double latitude, double longitude, boolean quest) {
+    private void LoadNearByPlaces(double latitude, double longitude, boolean quest) {
         this.quest = quest;
         this.poilat = latitude;
         this.poilong = longitude;
@@ -492,11 +483,11 @@ public class MapsActivity extends FragmentActivity
 
 //YOU Can change this type at your own will, e.g hospital, cafe, restaurant.... and see how it all works
         // String type = "convenience_store";
-        String type = "convenience_store";
+        String type = "convenience_store,supermarket,liquor_store";
         StringBuilder googlePlacesUrl =
                 new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude);
-        googlePlacesUrl.append("&radius=").append(QUEST_RADIUS);
+        googlePlacesUrl.append("&radius=").append(SHOP_RADIUS);
         googlePlacesUrl.append("&types=").append(type);
         googlePlacesUrl.append("&sensor=true");
         googlePlacesUrl.append("&key=").append(GOOGLE_BROWSER_API_KEY);
@@ -520,57 +511,7 @@ public class MapsActivity extends FragmentActivity
         AppController.getInstance().addToRequestQueue(request);
     }
 
-    /**
-     * Get the nearby supermarkets
-     *
-     * @param latitude
-     * @param longitude
-     * @param quest     =  false
-     */
-    private void loadNearBySupermarket(double latitude, double longitude, boolean quest) {
-        this.quest = quest;
-        this.poilat = latitude;
-        this.poilong = longitude;
-        mMap.clear();
-
-//YOU Can change this type at your own will, e.g hospital, cafe, restaurant.... and see how it all works
-        // String type = "convenience_store";
-        String type = "supermarket";
-        StringBuilder googlePlacesUrl =
-                new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude);
-        googlePlacesUrl.append("&radius=").append(QUEST_RADIUS);
-        googlePlacesUrl.append("&types=").append(type);
-        googlePlacesUrl.append("&sensor=true");
-        googlePlacesUrl.append("&key=AIzaSyCjnCj2kRnT5SPL4AsyEld_3yFPUTjHdMM");
-
-        JsonObjectRequest request = new JsonObjectRequest(googlePlacesUrl.toString(),
-                new com.android.volley.Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject result) {
-
-                        parseLocationResult(result, "shop");
-                    }
-                },
-                new com.android.volley.Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "onErrorResponse: Error= " + error);
-                        Log.e(TAG, "onErrorResponse: Error= " + error.getMessage());
-                    }
-                });
-
-        AppController.getInstance().addToRequestQueue(request);
-    }
-
-    /**
-     * Get the nearby Restaurants
-     *
-     * @param latitude
-     * @param longitude
-     * @param quest     = false
-     */
-    private void loadNearByRestaurant(double latitude, double longitude, boolean quest) {
+    private void loadNearByBar(double latitude, double longitude, boolean quest) {
         this.quest = quest;
         this.poilat = latitude;
         this.poilong = longitude;
@@ -580,43 +521,10 @@ public class MapsActivity extends FragmentActivity
         StringBuilder googlePlacesUrl =
                 new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude);
-        googlePlacesUrl.append("&radius=").append(QUEST_RADIUS);
-        googlePlacesUrl.append("&types=").append(type);
+        googlePlacesUrl.append("&radius=").append(BAR_RADIUS);
+        googlePlacesUrl.append("&type=").append(type);
         googlePlacesUrl.append("&sensor=true");
-        googlePlacesUrl.append("&key=AIzaSyCjnCj2kRnT5SPL4AsyEld_3yFPUTjHdMM");
-
-        JsonObjectRequest request = new JsonObjectRequest(googlePlacesUrl.toString(),
-                new com.android.volley.Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject result) {
-
-                        parseLocationResult(result, "bar");
-                    }
-                },
-                new com.android.volley.Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "onErrorResponse: Error= " + error);
-                        Log.e(TAG, "onErrorResponse: Error= " + error.getMessage());
-                    }
-                });
-        AppController.getInstance().addToRequestQueue(request);
-    }
-
-    private void loadNearByQuest(double latitude, double longitude, boolean quest) {
-        this.quest = quest;
-        this.poilat = latitude;
-        this.poilong = longitude;
-        mMap.clear();
-
-        String type = "bar";
-        StringBuilder googlePlacesUrl =
-                new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude);
-        googlePlacesUrl.append("&radius=").append(PROXIMITY_RADIUS);
-        googlePlacesUrl.append("&types=").append(type);
-        googlePlacesUrl.append("&sensor=true");
-        googlePlacesUrl.append("&key=AIzaSyCjnCj2kRnT5SPL4AsyEld_3yFPUTjHdMM");
+        googlePlacesUrl.append("&key=").append(GOOGLE_BROWSER_API_KEY);
 
         JsonObjectRequest request = new JsonObjectRequest(googlePlacesUrl.toString(),
                 new com.android.volley.Response.Listener<JSONObject>() {
@@ -647,14 +555,15 @@ public class MapsActivity extends FragmentActivity
      * handle result from places web Api
      */
     private void parseLocationResult(JSONObject result, String type) {
+        Questobject.isQuest();
 
-        String id, place_id, placeName = null, reference, icon, vicinity = null;
+        String id, place_id, placeName = null, vicinity = null;
 
         try {
             JSONArray jsonArray = result.getJSONArray("results");
 
             if (result.getString(STATUS).equalsIgnoreCase(OK)) {
-                if (Questobject.getisQuest()) {
+                if (Questobject.getIsquest()) {
                     DatabaseReference QuestRef = database.getReference("Player");
                     QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -711,7 +620,7 @@ public class MapsActivity extends FragmentActivity
                                 .position(QLatLng)
                                 .snippet("Get here to reclaim your reward"));
 
-
+                        questinfo.setText(Qvicinity);
                         Questobject.newQuest(false);
                         Questobject.setQuest(questlatitude, questlongitude, QplaceName, Qvicinity, 90000, true);
                         quest = false;
@@ -881,6 +790,7 @@ public class MapsActivity extends FragmentActivity
                             shoplatlng.longitude <= longneartop) {
                         Intent intent = new Intent(MapsActivity.this, ShopView.class);
                         startActivity(intent);
+
                         return true;
                     }
 
@@ -901,8 +811,10 @@ public class MapsActivity extends FragmentActivity
 
                         DatabaseReference myRef = database.getReference("Player");
                         myRef.child("User").child(userinfo).child("Place").setValue(marker.getTitle());
+
                         Intent bar = new Intent(MapsActivity.this, Barview.class);
                         startActivity(bar);
+
                         return true;
                     } else {
                         return false;
@@ -1041,12 +953,13 @@ public class MapsActivity extends FragmentActivity
                                     TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
 
                     DatabaseReference myRef = database.getReference("Player");
-                    myRef.child("User").child(userinfo).child("Quest").child("QuestTimeStart").setValue(SystemClock.uptimeMillis());
+                    //myRef.child("User").child(userinfo).child("Quest").child("QuestTimeStart").setValue(SystemClock.uptimeMillis());
                 }
 
 
                 public void onFinish() {
                     mTextField.setText("");
+                    questinfo.setText("");
 
                     Toast.makeText(getApplicationContext(), "You ran out of time!",
                             Toast.LENGTH_SHORT).show();

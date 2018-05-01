@@ -95,7 +95,7 @@ public class BuyActivity extends AppCompatActivity {
     public void buyItem(View view) {
         Transaction transaction = new Transaction();
         int playerMoney = transaction.getMoney();
-        transaction.addItem(itemList);
+        transaction.addItem(itemList); 
 
         Toast toast= Toast.makeText(getApplicationContext(),
                 "Item bought", Toast.LENGTH_LONG);
@@ -106,10 +106,10 @@ public class BuyActivity extends AppCompatActivity {
     /**
      *
      * @param view
-     * This takes user back to MainMenuActivity when pressing button return.
+     * This takes user back to  when pressing button return.
      */
     public void backToStore(View view) {
-        Intent intent = new Intent(this, MainMenuActivity.class);
+        Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
 }

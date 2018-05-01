@@ -101,7 +101,7 @@ public class Login extends AppCompatActivity {
                             finish();
                         }
                         else{
-                            //Alustetaan tarvittavat tiedot uudelle pelaajalle
+                            //Initialize Players database
 
 
                             String email = auth.getCurrentUser().getEmail().toString();
@@ -109,6 +109,7 @@ public class Login extends AppCompatActivity {
                             User user = new User();
                             Quest qData = new Quest();
                             user.writeNewUser(auth.getUid(), name, email);
+
                             qData.setQuest(0.01,0.01, "noquest", "noquest", 0, false);
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                             DatabaseReference myRef = database.getReference("Player");
@@ -120,12 +121,8 @@ public class Login extends AppCompatActivity {
                             myRef.child("User").child(auth.getUid()).child("latitude").setValue(0.01);
                             myRef.child("User").child(auth.getUid()).child("longitude").setValue(0.01);
                             myRef.child("User").child(auth.getUid()).child("challenged").setValue("no");
-
                             myRef.child("User").child(auth.getUid()).child("inarmgame").setValue(false);
-
                             myRef.child("User").child(auth.getUid()).child("challengedBet").setValue(0);
-
-
                             myRef.child("User").child(auth.getUid()).child("Quest").child("newQuest").setValue(false);
                             myRef.child("User").child(auth.getUid()).child("Quest").child("isQuest").setValue(false);
 

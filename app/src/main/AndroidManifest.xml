@@ -47,10 +47,14 @@
         </activity>
         <activity
             android:name=".MapsActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:launchMode="singleInstance"/>
         <activity
             android:name=".Barview"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:noHistory="true"
+            android:launchMode="singleInstance"
+            />
         <activity
             android:name=".ShopView"
             android:screenOrientation="portrait" />
@@ -63,7 +67,6 @@
         <activity
             android:name=".ProfileActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".MainMenuActivity" />
         <activity android:name=".BuyActivity" />
         <activity android:name=".SellActivity" />
         <activity android:name=".TurnBasedActivity" />

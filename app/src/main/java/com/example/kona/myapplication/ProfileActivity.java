@@ -391,13 +391,17 @@ public class ProfileActivity extends AppCompatActivity {
 
                 switch (dbavatar) {
                     case "animepic1":
-                        d = getResources().getDrawable(R.drawable.animepic1);
+                        d = getResources().getDrawable(R.drawable.pallopic1);
                         break;
                     case "animepic2":
-                        d = getResources().getDrawable(R.drawable.animepic2);
+                        d = getResources().getDrawable(R.drawable.pallopic2);
                         break;
                     case "animepic3":
-                        d = getResources().getDrawable(R.drawable.animepic3);
+                        d = getResources().getDrawable(R.drawable.pallopic3);
+                        break;
+
+                    case "animepic4":
+                        d = getResources().getDrawable(R.drawable.pallopic4);
                         break;
                 }
 

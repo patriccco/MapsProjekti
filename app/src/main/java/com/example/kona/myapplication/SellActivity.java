@@ -18,7 +18,7 @@ public class SellActivity extends AppCompatActivity {
      * @param view
      */
     public void confirmSale(View view) {
-        Intent intent = new Intent(this, MainMenuActivity.class);
+        Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
     /**
@@ -27,7 +27,7 @@ public class SellActivity extends AppCompatActivity {
      */
 
     public void backToStore(View view) {
-        Intent intent = new Intent(this, MainMenuActivity.class);
+        Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
 }

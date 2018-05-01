@@ -26,4 +26,7 @@
     <string name="menu">menu</string>
     <string name="logout">log out</string>
     <string name="delete">delete profile</string>
+    <string name="takequest">Do you want an assignment?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

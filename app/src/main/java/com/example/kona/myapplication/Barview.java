@@ -39,16 +39,13 @@ public class Barview extends AppCompatActivity {
     long bet;
     private ValueEventListener mListener;
     Transaction transaction = new Transaction();
-
     Button armchal, accept, decline, turnChallenge, acceptTurn, declineTurn,bet20,bet30;
-    TextView playertext, challengerTextView,TimeTextView;
-    Boolean inarmgame;
-
+    TextView playertext, challengerTextView,TimeTextView,Questbox,questno,questyes,questText,Moneyview;
+    Boolean inarmgame,newquest;
     Quest Questobject = new Quest();
     String UserPlace;
     String dbPlace, curUser, player, challengedplayer, opponent, opponentid, challengeOn,challengedId;
     private MediaPlayer Tune;
-
     final DatabaseReference myRef = database.getReference("Player");
 
     /**
@@ -62,28 +59,18 @@ public class Barview extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_bar);
-        Button button = findViewById(R.id.getjob);
         final TextView barName = findViewById(R.id.barname);
-
         barName.setText(UserPlace);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Barview.this, MapsActivity.class);
-                startActivity(intent);
-                if (!Questobject.getisQuest())
-                    Questobject.newQuest(true);
-
-
-            }
-        });
+        transaction.getPlayerMoney();
+        Moneyview = findViewById(R.id.money);
 
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.simplerow, PlaceNames);
-
         mListener = myRef.child("User").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                final int money = transaction.getMoney();
+                Log.d("" , "VAAA" + money);
+                Moneyview.setText(money + " ");
                 challengeOn = dataSnapshot.child(auth.getUid()).child("challenged").getValue().toString();
                 adapter.clear();
 
@@ -91,11 +78,16 @@ public class Barview extends AppCompatActivity {
                 curUser = dataSnapshot.child(auth.getUid()).child("name").getValue().toString();
 
 
+               /* newquest = (Boolean)dataSnapshot.child(auth.getUid()).child("Quest").child("newQuest").getValue();
+                if (newquest == true){
+                    finish();
+                }*/
+
                 inarmgame = (Boolean)dataSnapshot.child(auth.getUid()).child("inarmgame").getValue();
+
 
                 if (inarmgame == true && challengeOn.equals("start")) {
                     ChallengertoArmGame();
-                    myRef.removeEventListener(mListener);
                     return;
                 }
 
@@ -210,7 +202,6 @@ public class Barview extends AppCompatActivity {
         declineTurn.setVisibility(View.VISIBLE);*/
 
     }
-
     public void betButtons(View view) {
         armchal.setVisibility(View.GONE);
         turnChallenge.setVisibility(View.GONE);
@@ -220,6 +211,23 @@ public class Barview extends AppCompatActivity {
         bet30.setVisibility(View.VISIBLE);
     }
 
+    public void confirmQuest(View view){
+        questyes = findViewById(R.id.textView6);
+        questno = findViewById(R.id.textView7);
+        Questbox = findViewById(R.id.questbox);
+        questText = findViewById(R.id.questtext);
+        questyes.setVisibility(View.VISIBLE);
+        questno.setVisibility(View.VISIBLE);
+        Questbox.setVisibility(View.VISIBLE);
+        questText.setVisibility(View.VISIBLE);
+
+    }
+    public void noQuest(View view){
+        questyes.setVisibility(View.GONE);
+        questno.setVisibility(View.GONE);
+        Questbox.setVisibility(View.GONE);
+        questText.setVisibility(View.GONE);
+    }
 
     /**
      * set bet based on button chose by user
@@ -259,18 +267,15 @@ public class Barview extends AppCompatActivity {
 
         }
 
-
-
-
     @Override
     protected void onPause() {
-
+        super.onPause();
         Tune.stop();
         Tune.release();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Player");
-        myRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
-        super.onPause();
+        DatabaseReference aaRef = database.getReference("Player");
+        aaRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
+
     }
 
     /**
@@ -279,7 +284,6 @@ public class Barview extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         Tune = MediaPlayer.create(getApplicationContext(), R.raw.bartune);
         Tune.start();
 
@@ -289,12 +293,28 @@ public class Barview extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
     }
+    public void makeQuest(View view){
+
+        Questobject.newQuest(true);
+
+            Intent intent = new Intent(Barview.this, MapsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            finish();
+            startActivity(intent);
+        }
+
+
+
+
 
     /**
      * @param view When pressing return button in a barview it takes user back to MapsActivity.
      */
     public void backToMap(View view) {
-        Intent intent = new Intent(this, MapsActivity.class);
+        Intent intent = new Intent(Barview.this, MapsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        finishAffinity();
         startActivity(intent);
     }
 
@@ -327,7 +347,6 @@ public class Barview extends AppCompatActivity {
         int betint = (int)bet*-1;
         transaction.addMoney(betint);
 
-        myRef.removeEventListener(mListener);
 
         Intent in = new Intent(this, ArmGameActivity.class);
         startActivity(in);
@@ -339,16 +358,11 @@ public class Barview extends AppCompatActivity {
     public void ChallengertoArmGame(){
 
         myRef.child("User").child(auth.getUid()).child("challenged").setValue(challengedplayer);
-
-
         int betint = (int)bet*-1;
         transaction.addMoney(betint);
-
         Intent in = new Intent(this, ArmGameActivity.class);
         startActivity(in);
-
         challengertimer.cancel();
-
     }
 
     /**
@@ -372,7 +386,6 @@ public class Barview extends AppCompatActivity {
                         myRef.child("User").child(auth.getUid()).child("challenged").setValue(curUser);
                         myRef.child("User").child(challengedId).child("inarmgame").setValue(true);
                         myRef.child("User").child(auth.getUid()).child("inarmgame").setValue(true);
-                        myRef.removeEventListener(mListener);
 
 
 

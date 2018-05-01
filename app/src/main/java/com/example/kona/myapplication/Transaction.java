@@ -265,7 +265,7 @@ public class Transaction {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 long dbMoney = (long) dataSnapshot.child(auth.getUid()).child("Money").getValue();
                 setMoney((int) dbMoney);
-                Log.d(TAG, "money: " + money);
+                Log.e(TAG, "money: " + money);
             }
 
             @Override

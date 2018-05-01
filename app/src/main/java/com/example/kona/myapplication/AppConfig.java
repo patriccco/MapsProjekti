@@ -21,18 +21,20 @@ public final class AppConfig {
     public static final String SUPERMARKET_ID = "id";
     public static final String NAME = "name";
     public static final String PLACE_ID = "place_id";
-    public static final String REFERENCE = "reference";
     public static final String VICINITY = "vicinity";
-    public static final String PLACE_NAME = "place_name";
 
     // remember to change the browser api key
     public static final String GOOGLE_BROWSER_API_KEY =
             "AIzaSyCjnCj2kRnT5SPL4AsyEld_3yFPUTjHdMM";
     public static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    public static final int PROXIMITY_RADIUS = 400;
-    public static final int QUEST_RADIUS = 800;
+    public static final int SHOP_RADIUS = 300;
+    public static final int BAR_RADIUS = 450;
     // The minimum distance to change Updates in meters
-    public static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+    public static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 8; // 8 meters
     // The minimum time between updates in milliseconds
-    public static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+
+    public static final long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
+    public static final long FASTEST_INTERVAL = 500; /* 2 sec */
+    public static final int REQUEST_FINE_LOCATION = 0;
+
 }
