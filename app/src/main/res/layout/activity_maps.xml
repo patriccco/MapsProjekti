@@ -103,8 +103,6 @@
         android:id="@+id/menu"
         android:layout_width="50dp"
         android:layout_height="53dp"
-        android:layout_alignEnd="@+id/Qtimer"
-        android:layout_alignTop="@+id/profileText"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -128,7 +126,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="parent"
         map:layout_constraintHorizontal_bias="1.0"
-        map:layout_constraintVertical_bias="0.971">
+        map:layout_constraintVertical_bias="1.0">
 
         <ImageButton
             android:id="@+id/avatar"
@@ -136,8 +134,8 @@
             android:layout_height="131dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="31dp"
-            android:layout_marginTop="37dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="36dp"
             android:background="@drawable/avatar_s2"
             android:onClick="profileView"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -146,35 +144,45 @@
 
         <TextView
             android:id="@+id/username"
-            android:layout_width="200dp"
-            android:layout_height="50dp"
+            android:layout_width="191dp"
+            android:layout_height="43dp"
             android:layout_above="@+id/healthbar"
-            android:layout_marginStart="12dp"
+            android:layout_marginBottom="3dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:fontFamily="monospace"
             android:text=""
             android:textColor="#0ddfd8"
             android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@id/avatar"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.073"
-            map:layout_constraintRight_toRightOf="parent" />
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.926"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintVertical_bias="0.055" />
+
 
         <ProgressBar
             android:id="@+id/healthbar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="180dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginStart="12dp"
+            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+            android:layout_width="182dp"
+            android:layout_height="36dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="1dp"
             android:max="100"
             android:progress="50"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/avatar"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.122"
-            map:layout_constraintHorizontal_bias="0.913" />
+            android:progressTint="@color/colorPrimary"
+            android:tooltipText="HP"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.865"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintVertical_bias="0.16"
+            map:title="HP" />
 
         <Button
             android:id="@+id/profile"
@@ -319,12 +327,48 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:textColor="@color/com_facebook_button_background_color_focused"
+            android:visibility="gone"
             map:layout_constraintBottom_toBottomOf="parent"
             map:layout_constraintEnd_toEndOf="parent"
             map:layout_constraintHorizontal_bias="0.141"
             map:layout_constraintStart_toStartOf="parent"
             map:layout_constraintTop_toTopOf="parent"
             map:layout_constraintVertical_bias="0.484" />
+
+        <TextView
+            android:id="@+id/profilemoney"
+            android:layout_width="76dp"
+            android:layout_height="33dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="12sp"
+            android:visibility="visible"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.708"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintVertical_bias="0.243" />
+
+        <ImageView
+            android:id="@+id/profilemoneyicon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/money"
+            android:visibility="visible"
+            app:srcCompat="@drawable/money"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintVertical_bias="0.232" />
 
     </android.support.constraint.ConstraintLayout>
 

@@ -48,6 +48,7 @@ public class PixelGridView extends View {
     long tStop;
     double start,finaltime;
     Transaction transaction = new Transaction();
+    Quest Questobject = new Quest();
 
     Context context;
 
@@ -180,7 +181,6 @@ public class PixelGridView extends View {
             }
 
 
-
             }
             iscreated = true;
 
@@ -199,8 +199,8 @@ public class PixelGridView extends View {
                     if (finaltime < 3.000) {
 
                         Toast toast= Toast.makeText(getContext(),
-                                "You dealt with " + enemyname + ", \n   5 money awarded.", Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.CENTER_VERTICAL| Gravity.CENTER_HORIZONTAL, 0, 0);
+                                "Success!  20 money awarded", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER| Gravity.CENTER_HORIZONTAL, 0, 0);
                         toast.show();
                     }else {
                         Toast toast= Toast.makeText(getContext(),
@@ -283,18 +283,22 @@ public class PixelGridView extends View {
         return true;
 
     }
+
+    /**
+     * Determine the rewards for the armGame
+     */
     public void handlevictory(){
 
         if (finaltime < 3.00){
-            transaction.addMoney(5);
+            transaction.addMoney(20);
         }
-        else{
-            transaction.addHP((-10));
-        }
+
 
 
         redcount = 0;
         readycount =0;
+
+        Questobject.setQuest(0.01, 0.01, "noquest", "noquest", 0, false);
         Intent intent = new Intent(context,MapsActivity.class);
                         context.startActivity(intent);
 

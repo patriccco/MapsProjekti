@@ -18,9 +18,9 @@ import com.google.firebase.database.ValueEventListener;
 
 public class Quest {
 
-    private String name,vicinity;
+    public String name,vicinity;
     private Boolean isquest = false;
-    private LatLng qlatlng, questLatLng;
+    public LatLng qlatlng, questLatLng;
     private double qlat,qlong;
     long Qtime, QendTime;
     FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -76,7 +76,7 @@ public class Quest {
      * Getter for the quest location
      * @return
      */
-    public LatLng getQuestLatLng() {
+    public void getQuestLatLng() {
             QuestRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -90,9 +90,6 @@ public class Quest {
                 }
             });
 
-
-
-        return qlatlng;
     }
 
     /**
@@ -182,9 +179,6 @@ public class Quest {
     public long getQuestTime() {
         Qtime = SystemClock.uptimeMillis();
         return Qtime;
-    }
-    public long getQuestEndtTime() {
-        return QendTime;
     }
 
 

@@ -29,6 +29,7 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/back"
         android:onClick="nameChange"
+        android:rotation="180"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.908"
@@ -60,7 +61,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/deleteprofile"
-        android:onClick="DeleteProfile"
+        android:onClick="showAreYouSure"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.89"
@@ -221,7 +222,91 @@
             android:onClick="changeAvatar"
             app:layout_constraintStart_toEndOf="@+id/imageButton3"
             app:layout_constraintTop_toBottomOf="@+id/avatar" />
+
+        <ImageButton
+            android:id="@+id/imageButton5"
+            android:layout_width="74dp"
+            android:layout_height="70dp"
+            android:layout_alignStart="@+id/imageButton2"
+            android:layout_below="@+id/imageButton2"
+            android:layout_marginTop="44dp"
+            android:background="@drawable/animepic4"
+            android:onClick="changeAvatar" />
+
+        <ImageButton
+            android:id="@+id/imageButton6"
+            android:layout_width="74dp"
+            android:layout_height="70dp"
+            android:layout_alignStart="@+id/imageButton4"
+            android:layout_alignTop="@+id/imageButton5"
+            android:background="@drawable/animepic5"
+            android:onClick="changeAvatar" />
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/areyousure"
+        android:layout_width="215dp"
+        android:layout_height="153dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:drawable/editbox_dropdown_dark_frame"
+        android:text="@string/deletesure"
+        android:textAlignment="center"
+        android:textColor="@color/cardview_light_background"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.623" />
+
+    <TextView
+        android:id="@+id/deleteyes"
+        android:layout_width="51dp"
+        android:layout_height="43dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:onClick="DeleteProfile"
+        android:paddingTop="5sp"
+        android:text="@string/yes"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/cardview_light_background"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.34"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.673" />
+
+    <TextView
+        android:id="@+id/deleteno"
+        android:layout_width="54dp"
+        android:layout_height="46dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:onClick="hideAreYouSure"
+        android:paddingTop="5sp"
+        android:text="@string/no"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/cardview_light_background"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.608"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.677" />
 
 </android.support.constraint.ConstraintLayout>
 

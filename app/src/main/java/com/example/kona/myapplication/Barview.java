@@ -39,9 +39,9 @@ public class Barview extends AppCompatActivity {
     long bet;
     private ValueEventListener mListener;
     Transaction transaction = new Transaction();
-    Button armchal, accept, decline, turnChallenge, acceptTurn, declineTurn,bet20,bet30;
+    Button armchal, accept, decline, turnChallenge, acceptTurn, declineTurn,bet20,bet30,bet40;
     TextView playertext, challengerTextView,TimeTextView,Questbox,questno,questyes,questText,Moneyview;
-    Boolean inarmgame,newquest;
+    Boolean inarmgame;
     Quest Questobject = new Quest();
     String UserPlace;
     String dbPlace, curUser, player, challengedplayer, opponent, opponentid, challengeOn,challengedId;
@@ -69,7 +69,6 @@ public class Barview extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final int money = transaction.getMoney();
-                Log.d("" , "VAAA" + money);
                 Moneyview.setText(money + " ");
                 challengeOn = dataSnapshot.child(auth.getUid()).child("challenged").getValue().toString();
                 adapter.clear();
@@ -203,10 +202,13 @@ public class Barview extends AppCompatActivity {
 
     }
     public void betButtons(View view) {
+
         armchal.setVisibility(View.GONE);
         turnChallenge.setVisibility(View.GONE);
         bet20 =findViewById(R.id.bet20);
         bet30 =findViewById(R.id.bet30);
+        bet40 =findViewById(R.id.bet40);
+        bet40.setVisibility(View.VISIBLE);
         bet20.setVisibility(View.VISIBLE);
         bet30.setVisibility(View.VISIBLE);
     }
@@ -238,10 +240,15 @@ public class Barview extends AppCompatActivity {
         if (view == findViewById(R.id.bet30)) {
             bet = 30;
         }
-        if (view == findViewById(R.id.bet20)){
+        if (view == findViewById(R.id.bet20)) {
             bet = 20;
+        }
+        if (view == findViewById(R.id.bet40)){
+            bet = 40;
     }
             final DatabaseReference myRef = database.getReference("Player");
+
+            challengertimer.start();
             myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -253,7 +260,6 @@ public class Barview extends AppCompatActivity {
                             myRef.child("User").child(challengedId).child("challenged").setValue(curUser);
                             myRef.child("User").child(challengedId).child("challengedBet").setValue(bet);
 
-                            challengertimer.start();
                         }
                     }
 
@@ -303,7 +309,6 @@ public class Barview extends AppCompatActivity {
             finish();
             startActivity(intent);
         }
-
 
 
 
@@ -404,8 +409,17 @@ public class Barview extends AppCompatActivity {
 
 
     }
-        CountDownTimer challengertimer = new CountDownTimer(3000, 1000) {
-            public void onTick(long millisUntilFinished) {}
+        CountDownTimer challengertimer = new CountDownTimer(15000, 1000) {
+            public void onTick(long millisUntilFinished) {
+
+                TimeTextView = findViewById(R.id.time);
+                TimeTextView.setText("" + String.format("0%d : %d",
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
+
+
+            }
             public void onFinish() {
                 Toast.makeText(getApplicationContext(), "Opponent did not accept",
                         Toast.LENGTH_SHORT).show();
@@ -418,10 +432,12 @@ public class Barview extends AppCompatActivity {
                 turnChallenge.setVisibility(View.GONE);
                 bet20.setVisibility(View.GONE);
                 bet30.setVisibility(View.GONE);
+                bet40.setVisibility(View.GONE);
+                TimeTextView.setVisibility(View.GONE);
             }
         };
 
-        CountDownTimer opponenttimer =  new CountDownTimer(10000, 1000) {
+        CountDownTimer opponenttimer =  new CountDownTimer(15000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 challengerTextView = findViewById(R.id.armchallenger);

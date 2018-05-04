@@ -42,7 +42,7 @@ public class ArmGameActivity extends AppCompatActivity{
     long playerstatus;
     int bet;
     ImageView red,green,blue,yellow;
-    TextView mTextField;
+    TextView mTextField,invisbtn;
     String player,curUser;
     Transaction transaction = new Transaction();
 
@@ -50,6 +50,7 @@ public class ArmGameActivity extends AppCompatActivity{
 
     DatabaseReference MyRef = mDatabase.getReference("Game");
     DatabaseReference nameRef = mDatabase.getReference("Player");
+    private ValueEventListener mListener;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
@@ -60,7 +61,8 @@ public class ArmGameActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_armgame);
 
-
+        invisbtn = findViewById(R.id.invisbtn);
+        invisbtn.setVisibility(View.VISIBLE);
         mTextField = findViewById(R.id.armtime);
         red = findViewById(R.id.redbutton);
         yellow = findViewById(R.id.yellowbutton);
@@ -98,7 +100,7 @@ public class ArmGameActivity extends AppCompatActivity{
 
     public void gameOn(){
 
-        MyRef.addValueEventListener(new ValueEventListener() {
+        mListener = MyRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(final DataSnapshot dataSnapshot) {
 
@@ -118,6 +120,7 @@ public class ArmGameActivity extends AppCompatActivity{
 
                         Random rng = new Random();
                         int rngRes = rng.nextInt(4) + 1;
+
 
                         switch (rngRes) {
                             case 1:
@@ -199,7 +202,6 @@ public class ArmGameActivity extends AppCompatActivity{
                                     @Override
                                     public void onClick(View view) {
 
-                                        Log.e("", "" + hand);
 
                                         points = (long) dataSnapshot.child(player).child("Score").getValue();
 
@@ -234,7 +236,6 @@ public class ArmGameActivity extends AppCompatActivity{
                                     @Override
                                     public void onClick(View view) {
 
-                                        Log.e("", "" + hand);
 
                                         points = (long) dataSnapshot.child(player).child("Score").getValue();
 
@@ -257,6 +258,7 @@ public class ArmGameActivity extends AppCompatActivity{
                                     }
                                 });
                                 break;
+
 
                         }
                     }
@@ -295,6 +297,39 @@ public class ArmGameActivity extends AppCompatActivity{
             }
         }.start();
     }
+    public void endtimer(long time) {
+
+
+        new CountDownTimer(time, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+
+            public void onFinish() {
+
+                Intent intent = new Intent(ArmGameActivity.this, MapsActivity.class);
+                startActivity(intent);
+                finish();
+                MyRef.removeEventListener(mListener);
+
+                MyRef.child(player).removeValue();
+
+
+            }
+        }.start();
+    }
+
+    public void Missclick(View view){
+        if(playerstatus == 1){
+            points --;
+        }
+        if (playerstatus == 2){
+            points ++;
+        }
+
+    }
 
 
 
@@ -304,7 +339,6 @@ public class ArmGameActivity extends AppCompatActivity{
         imageView.setRotation(hand*5);
         imageView.getRight();
 
-        Log.e("", "" + hand);
         imageView.setTranslationX(hand*18);
         imageView.setTranslationY(hand* - 10);
     }
@@ -313,21 +347,28 @@ public class ArmGameActivity extends AppCompatActivity{
         ImageView imageView = findViewById(R.id.käsiview);
         imageView.setRotation(hand*5);
         imageView.getRight();
-        Log.e("", "" + hand);
         imageView.setTranslationX(hand* 18);
         imageView.setTranslationY(hand*  10);
     }
 
     public void HandleVictory(long score){
 
-        if(score <= -19 && playerstatus == 1){
+        red.setVisibility(View.GONE);
+        blue.setVisibility(View.GONE);
+        yellow.setVisibility(View.GONE);
+        green.setVisibility(View.GONE);
+
+        if(score <= 19 && playerstatus == 2){
             transaction.addMoney(bet*2);
             Toast.makeText(getApplicationContext(), "You Won!" + "You got " + bet*2 + "Money!",
                     Toast.LENGTH_SHORT).show();
 
         }
-        else if(score >= 19 && playerstatus == 2){
+        else if(score >= -19 && playerstatus == 1){
             transaction.addMoney(bet*2);
+
+            Toast.makeText(getApplicationContext(), "You Won!" + "You got " + bet*2 + "Money!",
+                    Toast.LENGTH_SHORT).show();
 
         }
         else {
@@ -337,11 +378,10 @@ public class ArmGameActivity extends AppCompatActivity{
         }
 
 
+        endtimer(3000);
 
 
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
-        finish();
+
 
     }
 

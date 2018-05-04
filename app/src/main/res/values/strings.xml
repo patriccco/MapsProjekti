@@ -29,4 +29,7 @@
     <string name="takequest">Do you want an assignment?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="areyousure" />
+    <string name="deletesure">Are you sure you want to delete your profile permanently?</string>
+    <string name="placebet">Place your bet!</string>
 </resources>

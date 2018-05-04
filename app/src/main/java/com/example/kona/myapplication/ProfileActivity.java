@@ -86,7 +86,7 @@ public class ProfileActivity extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     final String username = auth.getCurrentUser().getDisplayName();
     EditText newName;
-    TextView namePlease;
+    TextView namePlease,deleteyes,deleteno,areyousure;
     Button changeName;
     RelativeLayout RL;
 
@@ -94,6 +94,8 @@ public class ProfileActivity extends AppCompatActivity {
     ImageButton choice1;
     ImageButton choice2;
     ImageButton choice3;
+    ImageButton choice4;
+    ImageButton choice5;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +111,11 @@ public class ProfileActivity extends AppCompatActivity {
         choice1 = findViewById(R.id.imageButton2);
         choice2 = findViewById(R.id.imageButton3);
         choice3 = findViewById(R.id.imageButton4);
+        choice4 = findViewById(R.id.imageButton5);
+        choice5 = findViewById(R.id.imageButton6);
+        areyousure = findViewById(R.id.areyousure);
+        deleteno = findViewById(R.id.deleteno);
+        deleteyes = findViewById(R.id.deleteyes);
 
         getDatabaseName();
         getDatabaseAvatar();
@@ -315,12 +322,16 @@ public class ProfileActivity extends AppCompatActivity {
             choice1.setVisibility(View.VISIBLE);
             choice2.setVisibility(View.VISIBLE);
             choice3.setVisibility(View.VISIBLE);
+            choice4.setVisibility(View.VISIBLE);
+            choice5.setVisibility(View.VISIBLE);
         } else {
 
             RL.setVisibility(View.GONE);
             choice1.setVisibility(View.GONE);
             choice2.setVisibility(View.GONE);
             choice3.setVisibility(View.GONE);
+            choice4.setVisibility(View.GONE);
+            choice5.setVisibility(View.GONE);
         }
     }
 
@@ -344,6 +355,10 @@ public class ProfileActivity extends AppCompatActivity {
                     chosen = 2;
                 } else if (view.equals(choice3)){
                     chosen = 3;
+                } else if (view.equals(choice4)){
+                    chosen = 4;
+                } else if (view.equals(choice5)){
+                    chosen = 5;
                 } else {
                     chosen = 0;
                 }
@@ -362,6 +377,14 @@ public class ProfileActivity extends AppCompatActivity {
                         break;
                     case 3:
                         avatarname = "animepic3";
+                        break;
+
+                    case 4:
+                        avatarname = "animepic4";
+                        break;
+
+                    case 5:
+                        avatarname = "animepic5";
                         break;
 
                 }
@@ -403,6 +426,10 @@ public class ProfileActivity extends AppCompatActivity {
                     case "animepic4":
                         d = getResources().getDrawable(R.drawable.pallopic4);
                         break;
+
+                    case "animepic5":
+                        d = getResources().getDrawable(R.drawable.pallopic5);
+                        break;
                 }
 
                 avatar.setBackground(d);
@@ -437,7 +464,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String databasename = dataSnapshot.child(auth.getUid()).child("name").getValue().toString();
                 newName.setText(databasename);
-                if (databasename.equals(auth.getCurrentUser().getDisplayName())) {
+                if (databasename.equals("newPlayer")) {
                     namePlease.setVisibility(View.VISIBLE);
                 }
 
@@ -451,6 +478,23 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     }
+
+    public void showAreYouSure(View view){
+        areyousure.setVisibility(View.VISIBLE);
+        deleteyes.setVisibility(View.VISIBLE);
+        deleteno.setVisibility(View.VISIBLE);
+
+
+
+    }
+
+    public void hideAreYouSure(View view){
+
+        areyousure.setVisibility(View.GONE);
+        deleteyes.setVisibility(View.GONE);
+        deleteno.setVisibility(View.GONE);
+    }
+
 
 
 }
