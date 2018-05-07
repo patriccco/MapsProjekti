@@ -158,6 +158,7 @@ public class MapsActivity extends FragmentActivity
         avatar.getDatabaseAvatar();
         Moneyview = findViewById(R.id.profilemoney);
         profileavatar = findViewById(R.id.avatar);
+        enemyname = "no";
 
 
         /**get player's current health for the healthbar**/
@@ -306,7 +307,7 @@ public class MapsActivity extends FragmentActivity
         avatar.getDatabaseAvatar();
         Questobject.getQuestVicinity();
 
-        if (questencounter.Randomize() && !randomized) {
+        if (questencounter.Randomize() && !randomized && enemyname.equals("no")) {
             final DatabaseReference myRef = database.getReference("Enemies");
             myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -317,6 +318,9 @@ public class MapsActivity extends FragmentActivity
                     String enemID = String.valueOf(enemgen);
                     enemyname = (String) dataSnapshot.child("Type").child(enemID).child("Name").getValue();
                     myRef.child("Current").setValue(enemyname);
+
+                    final DatabaseReference encRef = database.getReference("Player");
+                    encRef.child("User").child(auth.getUid()).child("enemy").setValue(enemyname);
                     enemytext.setText(getString(R.string.youencountered) + enemyname + "!");
                     randomized = true;
                 }
@@ -352,6 +356,7 @@ public class MapsActivity extends FragmentActivity
                     //get avatar from avatarClass
                     String avatarname = avatar.toBallAvatar();
                     BitmapDescriptor markerIcon = getMarkerIconFromDrawable(GetImage(MapsActivity.this, avatarname));
+                    transaction.getPlayerMoney();
                     int profilemoney = transaction.getMoney();
                     Moneyview.setText(profilemoney + " ");
 
@@ -886,6 +891,7 @@ public class MapsActivity extends FragmentActivity
     public void inventoryView(View view) {
         Intent inventory = new Intent(this, InventoryActivity.class);
         startActivity(inventory);
+        finish();
     }
 
     /**

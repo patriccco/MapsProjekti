@@ -35,6 +35,7 @@ public class Gridactivity extends AppCompatActivity {
     }
 
     protected void onStop() {
+        finish();
         super.onStop();
         fightTune.stop();
         fightTune.release();

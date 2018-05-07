@@ -192,7 +192,7 @@ public class PixelGridView extends View {
 
         if(redcount==readycount && redcount != 0 && readycount !=0 ){
 
-            myRef.child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            myRef.child("User").child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -262,7 +262,7 @@ public class PixelGridView extends View {
 
 
                 //drawPath.moveTo(touchX, touchY);
-                if (redChecked[column][row] && cellChecked[column][row] || !redChecked[column][row]){
+                  if (redChecked[column][row] && cellChecked[column][row] || !redChecked[column][row]){
                     iscreated = false;
                     timestarted = true;
 
@@ -321,7 +321,10 @@ public class PixelGridView extends View {
 
         Questobject.setQuest(0.01, 0.01, "noquest", "noquest", 0, false);
         Intent intent = new Intent(context,MapsActivity.class);
-                        context.startActivity(intent);
+        Intent grid = new Intent(context,Gridactivity.class);
+        context.startActivity(intent);
+        context.stopService(grid);
+
 
     }
 
