@@ -3,6 +3,7 @@ package com.example.kona.myapplication;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableWrapper;
+import android.util.Log;
 import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +37,7 @@ public class Avatar {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 setAvatarname(dataSnapshot.child(auth.getUid()).child("Avatar").getValue().toString());
+                Log.e("", "avatar" + avatarname);
 
             }
 

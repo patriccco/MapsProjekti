@@ -41,10 +41,10 @@ public class Barview extends AppCompatActivity {
     Transaction transaction = new Transaction();
     Button armchal, accept, decline, turnChallenge, acceptTurn, declineTurn,bet20,bet30,bet40;
     TextView playertext, challengerTextView,TimeTextView,Questbox,questno,questyes,questText,Moneyview;
-    Boolean inarmgame;
+    Boolean inarmgame, inturngame;
     Quest Questobject = new Quest();
     String UserPlace;
-    String dbPlace, curUser, player, challengedplayer, opponent, opponentid, challengeOn,challengedId;
+    String dbPlace, curUser, player, challengedplayer, opponent, opponentid, challengeOn,challengedId, TurnchallengeOn, OpponentAvatar, curUserAvatar;
     private MediaPlayer Tune;
     final DatabaseReference myRef = database.getReference("Player");
 
@@ -71,15 +71,20 @@ public class Barview extends AppCompatActivity {
                 final int money = transaction.getMoney();
                 Moneyview.setText(money + " ");
                 challengeOn = dataSnapshot.child(auth.getUid()).child("challenged").getValue().toString();
+                TurnchallengeOn = dataSnapshot.child(auth.getUid()).child("challengedTurn").getValue().toString();
                 adapter.clear();
 
                 UserPlace = dataSnapshot.child(auth.getUid()).child("Place").getValue().toString();
                 curUser = dataSnapshot.child(auth.getUid()).child("name").getValue().toString();
                 inarmgame = (Boolean)dataSnapshot.child(auth.getUid()).child("inarmgame").getValue();
-
+                inturngame = (Boolean)dataSnapshot.child(auth.getUid()).child("inturngame").getValue();
 
                 if (inarmgame == true && challengeOn.equals("start")) {
                     ChallengertoArmGame();
+                    return;
+                }else if(inturngame == true && TurnchallengeOn.equals("startTurn")){
+                    ChallengerToTurnGame();
+                    myRef.removeEventListener(mListener);
                     return;
                 }
 
@@ -99,6 +104,10 @@ public class Barview extends AppCompatActivity {
                 if (!challengeOn.equals("no")&&!challengeOn.equals("start")&&inarmgame==false) {
                     ChallengedYouWindow(challengeOn);
 
+                }else if(!TurnchallengeOn.equals("no")&&!TurnchallengeOn.equals("startTurn")&&inturngame==false){
+
+                    Log.e("","sisällä");
+                    challengedToTurngame(TurnchallengeOn);
                 }
 
 
@@ -120,7 +129,7 @@ public class Barview extends AppCompatActivity {
                 });
 
                 //in case of false entry to the bar direct back to map.
-                if(UserPlace.equals("moving") && challengeOn.equals("no")){
+                if(UserPlace.equals("moving") && challengeOn.equals("no") && TurnchallengeOn.equals("no")){
                     Intent intent = new Intent(Barview.this, MapsActivity.class);
                     startActivity(intent);
                     finish();
@@ -315,18 +324,7 @@ public class Barview extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /**
-     * This method is the entry to turn based game
-     *
-     * @param curplayer current user
-     * @param Opponent  challenged user
-     */
-    public void toTurnGame(String curplayer, String Opponent) {
-        //TODO tämä metodi pitää saada oikeeseen kohtaan käyttöön ja tarvitaan myös se userID
-        TurnBasedGame turnGame = new TurnBasedGame();
-        turnGame.CreateGame(curplayer, Opponent);
 
-    }
 
     /**
      * initializes the armgame to database, and moves the challenged player to the activity
@@ -463,9 +461,141 @@ public class Barview extends AppCompatActivity {
             bet40.setVisibility(View.GONE);
 
         }
+    /**
+     * This method sets the accept and decline buttons to the opponent
+     * @param opponent
+     */
+    public void challengedToTurngame(final String opponent){
+        //BUTTONS TO TURN BASED GAME
+        Log.e("","challengeToTurnGame");
+        acceptTurn = findViewById(R.id.acceptTurn);
+        declineTurn = findViewById(R.id.declinTurn);
+        acceptTurn.setVisibility(View.VISIBLE);
+        declineTurn.setVisibility(View.VISIBLE);
+        challengerTextView = findViewById(R.id.armchallenger);
+        challengerTextView.setText(opponent + getString(R.string.Challenge) + "\n" + getString(R.string.turngame));
+        challengerTextView.setVisibility(View.VISIBLE);
+    }
 
+    /**
+     * This method is onclick event for player who is challenged to turn based multiplayer
+     * and accepts it
+     * @param view
+     */
+    public void acceptTurnGame(View view){
 
+        Log.e("","acceptTurnGame");
 
+        final DatabaseReference myRef = database.getReference("Player");
+        myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                curUserAvatar = dataSnapshot.child(auth.getUid()).child("Avatar").getValue().toString();
+                for (DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()) {
+                    //Loop 1 to go through all the child nodes of users
+                    String challengedName = uniqueKeySnapshot.child("name").getValue().toString();
+                    if(challengedName.equals(TurnchallengeOn)) {
+                        challengedId = uniqueKeySnapshot.child("id").getValue().toString();
+                        OpponentAvatar = uniqueKeySnapshot.child("Avatar").getValue().toString();
+
+                        myRef.child("User").child(challengedId).child("challengedTurn").setValue("startTurn");
+                        myRef.child("User").child(auth.getUid()).child("challengedTurn").setValue(curUser);
+                        myRef.child("User").child(challengedId).child("inturngame").setValue(true);
+                        myRef.child("User").child(auth.getUid()).child("inturngame").setValue(true);
+                        myRef.removeEventListener(mListener);
+                        toTurnGame(curUser,TurnchallengeOn);
+                        break;
+                    }
+                }
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    /**
+     * This method is onclick event listener for player who is challenged to turn based multiplayer
+     * and declines it
+     * @param view
+     */
+    public void declineTurnGame(View view){
+        myRef.child("User").child(challengedId).child("challengedTurn").setValue("no");
+        acceptTurn = findViewById(R.id.acceptTurn);
+        declineTurn = findViewById(R.id.declinTurn);
+        acceptTurn.setVisibility(View.GONE);
+        declineTurn.setVisibility(View.GONE);
+        challengerTextView = findViewById(R.id.armchallenger);
+        challengerTextView.setVisibility(View.GONE);
+    }
+
+    /**
+     * This method sends user to turn based multiplayer
+     */
+    private void ChallengerToTurnGame() {
+        myRef.child("User").child(auth.getUid()).child("challengedTurn").setValue(challengedplayer);
+        Intent turnGame = new Intent(this, TurnBasedActivity.class);
+        startActivity(turnGame);
+        finish();
+    }
+
+    /**
+     * This method is onclick event listener for challenge to turn based multiplayer
+     * @param view
+     */
+    public void startTurnGame(View view){
+
+        Log.e("","startToTurngame");
+        final DatabaseReference myRef = database.getReference("Player");
+        myRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot uniqueKeySnapshot : dataSnapshot.getChildren()) {
+                    //Loop 1 to go through all the child nodes of users
+                    String challengedName = uniqueKeySnapshot.child("name").getValue().toString();
+                    if (challengedName.equals(challengedplayer)) {
+                        challengedId = uniqueKeySnapshot.child("id").getValue().toString();
+                        myRef.child("User").child(challengedId).child("challengedTurn").setValue(curUser);
+
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    /**
+     * This method is the entry to turn based game
+     * This method sets the multiplayer room and needed data under "Game" in database
+     *
+     * @param curplayer current user
+     * @param Opponent  challenged user
+     */
+    public void toTurnGame(String curplayer, String opponent) {
+        this.opponent = opponent;
+        DatabaseReference GameRef = database.getReference("Game");
+        GameRef.child("TurnGame").child(curplayer).child(curplayer).child("Status").setValue(1);
+        GameRef.child("TurnGame").child(curplayer).child(curplayer).child("Action").setValue("none");
+        GameRef.child("TurnGame").child(curplayer).child(curplayer).child("HP").setValue(100);
+        GameRef.child("TurnGame").child(curplayer).child(opponent).child("Status").setValue(2);
+        GameRef.child("TurnGame").child(curplayer).child(opponent).child("Action").setValue("none");
+        GameRef.child("TurnGame").child(curplayer).child(opponent).child("HP").setValue(100);
+        GameRef.child("TurnGame").child(curplayer).child(opponent).child("Avatar").setValue(OpponentAvatar);
+        GameRef.child("TurnGame").child(curplayer).child(curplayer).child("Avatar").setValue(curUserAvatar);
+
+        myRef.removeEventListener(mListener);
+        Intent turnGame = new Intent(this, TurnBasedActivity.class);
+        startActivity(turnGame);
+        finish();
+    }
 
 }
 

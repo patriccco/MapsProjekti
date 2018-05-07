@@ -130,7 +130,9 @@ public class Login extends AppCompatActivity {
                             myRef.child("User").child(auth.getUid()).child("latitude").setValue(0.01);
                             myRef.child("User").child(auth.getUid()).child("longitude").setValue(0.01);
                             myRef.child("User").child(auth.getUid()).child("challenged").setValue("no");
+                            myRef.child("User").child(auth.getUid()).child("challengedTurn").setValue("no");
                             myRef.child("User").child(auth.getUid()).child("inarmgame").setValue(false);
+                            myRef.child("User").child(auth.getUid()).child("inturngame").setValue(false);
                             myRef.child("User").child(auth.getUid()).child("challengedBet").setValue(0);
                             myRef.child("User").child(auth.getUid()).child("Quest").child("newQuest").setValue(false);
                             myRef.child("User").child(auth.getUid()).child("Quest").child("isQuest").setValue(false);

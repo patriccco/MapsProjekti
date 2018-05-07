@@ -6,8 +6,7 @@
     <string name="EventText">Lets kick some ass!</string>
     <string name="Player">Player:</string>
     <string name="turn"> turn!</string>
-    <string name="hope">I hope</string>
-    <string name="banana">  slips on this banana!</string>
+    <string name="banana">I hope enemy slips on this banana!</string>
     <string name="UseItem">Use one of your items</string>
     <string name="printWinner">And the winner is:</string>
     <string name="turnchallenge">FistFight</string>
@@ -66,5 +65,17 @@
     <string name="escape">ESCAPE</string>
     <string name="youencountered">You Encountered</string>
     <string name="missionfialed">mission failed</string>
-
+    <string name="turngame">You to fight!</string>
+    <string name="fisthit">You smashed opponents nose with your fist!</string>
+    <string name="heal">This item increases your HP with 5 points</string>
+    <string name="attack">This is attack item</string>
+    <string name="dodge">With this item there is a chance to dodge the opponents attack</string>
+    <string name="yourAvatar">This is your avatar</string>
+    <string name="opponentAvatar">This is your opponents avatar</string>
+    <string name="fullHP">Already full HP!</string>
+    <string name="dodged">Attack was dodged!</string>
+    <string name="hit">Direct hit!</string>
+    <string name="matrixdodge">Matrix dodge!</string>
+    <string name="name">name</string>
+    <string name="Challenge">Challenged</string>
 </resources>

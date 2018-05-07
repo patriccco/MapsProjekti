@@ -69,8 +69,8 @@
             android:screenOrientation="portrait" />
         <activity android:name=".BuyActivity" />
         <activity android:name=".SellActivity" />
-        <activity android:name=".TurnBasedActivity" />
         <activity android:name=".InventoryActivity"></activity>
+        <activity android:name=".TurnBasedActivity" />
     </application>
 
 </manifest>
