@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">My Application</string>
-    <string name="title_activity_maps">KARTTA</string>
-    <string name="title_activity_buy">BuyActivity</string>
-    <string name="textview">TextView</string>
+    <string name="app_name" translatable="false">Bender</string>
+    <string name="title_activity_maps" translatable="false">Activity_Maps</string>
+    <string name="title_activity_buy" translatable="false">BuyActivity</string>
+    <string name="textview" translatable="false">TextView</string>
     <string name="EventText">Lets kick some ass!</string>
     <string name="Player">Player:</string>
     <string name="turn"> turn!</string>
@@ -10,7 +10,7 @@
     <string name="banana">  slips on this banana!</string>
     <string name="UseItem">Use one of your items</string>
     <string name="printWinner">And the winner is:</string>
-    <string name="turnchallenge">TurnChallenge</string>
+    <string name="turnchallenge">FistFight</string>
     <string name="points">Gained 10 points</string>
     <string name="decline">Decline</string>
     <string name="accept">Accept</string>
@@ -26,10 +26,45 @@
     <string name="menu">menu</string>
     <string name="logout">log out</string>
     <string name="delete">delete profile</string>
-    <string name="takequest">Do you want an assignment?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="areyousure" />
     <string name="deletesure">Are you sure you want to delete your profile permanently?</string>
     <string name="placebet">Place your bet!</string>
+    <string name="takequest">"Do you want an assignment?  "</string>
+    <string name="deleteprofile">Delete profile</string>
+    <string name="namechanged">Name changed successfully</string>
+    <string name="tooshortname">Name is Too short! (3)</string>
+    <string name="tooshortnameph">Name is too short!</string>
+    <string name="nametoolong">Name is Too long! (15)</string>
+    <string name="nametoolongph">Name is too long!</string>
+    <string name="badname">Name can\'t have symbols or curses!</string>
+    <string name="badnameph">That\'s not allowed!</string>
+    <string name="namenotavail">Name not available, try again</string>
+    <string name="namenotavailph">Name not available!</string>
+    <string name="outoftime">You ran out of time!</string>
+    <string name="questmarker">Get here to reclaim your reward</string>
+    <string name="beermarker">You can find friends and Beer here!</string>
+    <string name="shopmarker">You can shop here!</string>
+    <string name="armwin">You Won! You got</string>
+    <string name="lost">You Lost!</string>
+    <string name="money">Money!</string>
+    <string name="startarm">START!</string>
+    <string name="noaccept">Opponent did not accept</string>
+    <string name="challenged">Challenged</string>
+    <string name="you">You</string>
+    <string name="foramount">for</string>
+    <string name="challenge">Challenge</string>
+    <string name="bar">Bar</string>
+    <string name="whoshere">Who\'s in the bar</string>
+    <string name="questreward">Success! 20 Money awarded</string>
+    <string name="enemyreward">you dealt with</string>
+    <string name="enemyreward2">20 Money Awarded!</string>
+    <string name="tooslow">Too slow</string>
+    <string name="enemybeatyou">beat you and took 10 money!</string>
+    <string name="startgridgame">PRESS ANYWHERE TO START</string>
+    <string name="fight">FIGHT</string>
+    <string name="escape">ESCAPE</string>
+    <string name="youencountered">You Encountered</string>
+    <string name="missionfialed">mission failed</string>
+
 </resources>

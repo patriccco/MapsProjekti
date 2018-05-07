@@ -52,7 +52,7 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/greenbtn"
 
-        android:text="Fight!"
+        android:text="@string/fight"
         android:visibility="gone"
         map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="parent"
@@ -70,7 +70,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/redbtn"
-        android:text="Escape!"
+        android:text="@string/escape"
         android:textStyle="bold"
 
         android:visibility="gone"

@@ -138,6 +138,11 @@ public class MapsActivity extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
         // Construct a GeoDataClient.
         mGeoDataClient = Places.getGeoDataClient(this, null);
         super.onCreate(savedInstanceState);
@@ -218,6 +223,10 @@ public class MapsActivity extends FragmentActivity
                 greenBtn.setVisibility(View.GONE);
                 redBtn.setVisibility(View.GONE);
                 enemytext.setVisibility(View.GONE);
+
+                final DatabaseReference encRef = database.getReference("User");
+                encRef.child(auth.getUid()).child("enemy").setValue(enemyname);
+
                 Intent fightscreen = new Intent(MapsActivity.this, Gridactivity.class);
                 startActivity(fightscreen);
 
@@ -308,7 +317,7 @@ public class MapsActivity extends FragmentActivity
                     String enemID = String.valueOf(enemgen);
                     enemyname = (String) dataSnapshot.child("Type").child(enemID).child("Name").getValue();
                     myRef.child("Current").setValue(enemyname);
-                    enemytext.setText("You Encountered " + enemyname + "!");
+                    enemytext.setText(getString(R.string.youencountered) + enemyname + "!");
                     randomized = true;
                 }
 
@@ -396,7 +405,7 @@ public class MapsActivity extends FragmentActivity
         getLastLocation();
 
         if (questencounter.isVictory()) {
-            Toast.makeText(getApplicationContext(), " Success!" + "\n" + " you got 20 money!",
+            Toast.makeText(getApplicationContext(), R.string.questreward + "\n" + " you got 20 money!",
                     Toast.LENGTH_SHORT).show();
         }
 
@@ -412,8 +421,6 @@ public class MapsActivity extends FragmentActivity
         FusedLocationProviderClient locationClient = getFusedLocationProviderClient(this);
         if (checkPermission()) {
 
-            setUserlatitude(getUserlatitude());
-            setUserlongitude(getUserlongitude());
 
             locationClient.getLastLocation()
                     .addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -422,8 +429,8 @@ public class MapsActivity extends FragmentActivity
                             // GPS location can be null if GPS is switched off
                             if (location != null) {
 
-                                setUserlatitude(getUserlatitude());
-                                setUserlongitude(getUserlongitude());
+                                setUserlatitude(location.getLatitude());
+                                setUserlongitude(location.getLongitude());
 
                                 CameraPosition cameraPosition = new CameraPosition.Builder()
                                         .target(new LatLng(getUserlatitude(), getUserlongitude()))
@@ -642,7 +649,7 @@ public class MapsActivity extends FragmentActivity
                         shopmarker = mMap.addMarker(new MarkerOptions()
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.shopicon))
                                 .position(latLng)
-                                .snippet("You can shop here!")
+                                .snippet(getString(R.string.shopmarker))
                                 .title(placeName + " : " + vicinity));
 
 
@@ -654,7 +661,7 @@ public class MapsActivity extends FragmentActivity
                             barmarker = mMap.addMarker(new MarkerOptions()
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.beericon))
                                     .position(latLng)
-                                    .snippet("You can find friends and Beer here!")
+                                    .snippet(getString(R.string.beermarker))
                                     .title(placeName + " : " + vicinity));
                             Questobject.getQuestLatLng();
                             if (latLng.equals(Questobject.qlatlng)) {
@@ -680,6 +687,11 @@ public class MapsActivity extends FragmentActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String screenname = dataSnapshot.child("User").child(auth.getUid()).child("name").getValue().toString();
                 TextView pelaajanimi = findViewById(R.id.username);
+                if(screenname.equals("newPlayer")){
+                    Intent toprofile = new Intent(MapsActivity.this, ProfileActivity.class);
+                    startActivity(toprofile);
+                    finish();}
+
                 pelaajanimi.setText(screenname);
                 long QendTime = (long) dataSnapshot.child("User").child(userinfo).child("Quest").child("QuestTimeEnd").getValue();
                 long resTime = (QendTime) - Questobject.getQuestTime();
@@ -729,7 +741,7 @@ public class MapsActivity extends FragmentActivity
             public boolean onMarkerClick(Marker marker) {
 
                 //if shop is close enough, enter
-                if (marker.getSnippet().equals("You can shop here!")) {
+                if (marker.getSnippet().equals(getString(R.string.shopmarker))) {
                     LatLng shoplatlng = marker.getPosition();
 
                     if ((shoplatlng.latitude >= latnearbot) &&
@@ -745,7 +757,7 @@ public class MapsActivity extends FragmentActivity
                     return false;
                 }
                 //if bar is close enough, enter
-                else if (marker.getSnippet().equals("You can find friends and Beer here!")) {
+                else if (marker.getSnippet().equals(getString(R.string.beermarker))) {
                     LatLng Barlatlng = marker.getPosition();
 
                     if ((Barlatlng.latitude >= latnearbot) &&
@@ -766,7 +778,7 @@ public class MapsActivity extends FragmentActivity
                 }
 
                 //if quest is close enough, enter
-                else if (marker.getSnippet().equals("Get here to reclaim your reward")) {
+                else if (marker.getSnippet().equals(getString(R.string.questmarker))) {
                     LatLng qlatlng = marker.getPosition();
 
                     if ((qlatlng.latitude >= latnearbot) &&
@@ -868,6 +880,7 @@ public class MapsActivity extends FragmentActivity
     public void profileView(View view) {
         Intent logout = new Intent(this, ProfileActivity.class);
         startActivity(logout);
+        finish();
     }
 
     public void inventoryView(View view) {
@@ -901,14 +914,13 @@ public class MapsActivity extends FragmentActivity
                             TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
                                     TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
 
-                    DatabaseReference myRef = database.getReference("Player");
                 }
 
                 public void onFinish() {
                     mTextField.setText("");
                     questinfo.setText("");
 
-                    Toast.makeText(getApplicationContext(), "You ran out of time!",
+                    Toast.makeText(getApplicationContext(), R.string.outoftime,
                             Toast.LENGTH_SHORT).show();
                     setQtime(0);
                     Questobject.setQuest(0.01, 0.01, "noquest", "noquest", (0), false);

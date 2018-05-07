@@ -96,9 +96,18 @@ public class Login extends AppCompatActivity {
 
                         if(dataSnapshot.hasChild("id")){
                             //IT EXISTS
+                            if(dataSnapshot.child("name").getValue().toString().equals("newPlayer")){
 
-                            startActivity(new Intent(Login.this,MapsActivity.class));
-                            finish();
+                                startActivity(new Intent(Login.this,ProfileActivity.class));
+                                finish();
+                            }
+                            else{
+
+                                startActivity(new Intent(Login.this,MapsActivity.class));
+                                finish();
+
+                            }
+
                         }
                         else{
                             //Initialize Players database
@@ -125,7 +134,10 @@ public class Login extends AppCompatActivity {
                             myRef.child("User").child(auth.getUid()).child("challengedBet").setValue(0);
                             myRef.child("User").child(auth.getUid()).child("Quest").child("newQuest").setValue(false);
                             myRef.child("User").child(auth.getUid()).child("Quest").child("isQuest").setValue(false);
+                            myRef.child("User").child(auth.getUid()).child("enemy").setValue("noenemy");
 
+                            startActivity(new Intent(Login.this,ProfileActivity.class));
+                            finish();
 
                             //IT DOESNT EXISTS
                         }
@@ -136,9 +148,6 @@ public class Login extends AppCompatActivity {
                     }
                 });
 
-                startActivity(new Intent(Login.this,ProfileActivity.class));
-                finish();
-                return;
             } else {
                 // Sign in failed
                 if (response == null) {

@@ -105,7 +105,7 @@ public class ArmGameActivity extends AppCompatActivity{
             public void onDataChange(final DataSnapshot dataSnapshot) {
 
 
-                mTextField.setText("START!");
+                mTextField.setText(R.string.startarm);
                 long betDB = (long) dataSnapshot.child(player).child("bet").getValue();
                 bet = (int) betDB;
                 playerstatus = (long) dataSnapshot.child(player).child(curUser).getValue();
@@ -114,7 +114,8 @@ public class ArmGameActivity extends AppCompatActivity{
 
 
                     if (hand > -20 && hand < 20) {
-                        if (points >= 19 || points <= -19){
+                        if (points >= 20 || points <= -20){
+                            points = (long) dataSnapshot.child(player).child("Score").getValue();
                             HandleVictory(points);
                     }
 
@@ -122,14 +123,20 @@ public class ArmGameActivity extends AppCompatActivity{
                         int rngRes = rng.nextInt(4) + 1;
 
 
+
+                        points = (long) dataSnapshot.child(player).child("Score").getValue();
                         switch (rngRes) {
                             case 1:
+                                if (hand > 0) {
+                                    RotateRight();
+                                } else {
+                                    Rotateleft();
+                                }
                                 mTextField.setVisibility(GONE);
                                 red.setVisibility(View.VISIBLE);
-
-                                blue.setVisibility(View.INVISIBLE);
-                                yellow.setVisibility(View.INVISIBLE);
-                                green.setVisibility(View.INVISIBLE);
+                                blue.setVisibility(View.GONE);
+                                yellow.setVisibility(View.GONE);
+                                green.setVisibility(View.GONE);
                                 red.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -145,11 +152,15 @@ public class ArmGameActivity extends AppCompatActivity{
                                         }
 
                                         MyRef.child(player).child("Score").setValue(points);
-                                        red.setVisibility(View.INVISIBLE);
+                                        red.setVisibility(View.GONE);
                                         if (hand > 0) {
-                                            RotateRight();
+
+                                                RotateRight();
+
                                         } else {
-                                            Rotateleft();
+
+                                                Rotateleft();
+
 
                                         }
 
@@ -159,12 +170,17 @@ public class ArmGameActivity extends AppCompatActivity{
                                 break;
                             case 2:
 
+                                if (hand > 0) {
+                                    RotateRight();
+                                } else {
+                                    Rotateleft();
+                                }
                                 mTextField.setVisibility(GONE);
                                 blue.setVisibility(View.VISIBLE);
 
-                                yellow.setVisibility(View.INVISIBLE);
-                                red.setVisibility(View.INVISIBLE);
-                                green.setVisibility(View.INVISIBLE);
+                                yellow.setVisibility(View.GONE);
+                                red.setVisibility(View.GONE);
+                                green.setVisibility(View.GONE);
                                 blue.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -180,11 +196,15 @@ public class ArmGameActivity extends AppCompatActivity{
                                         }
 
                                         MyRef.child(player).child("Score").setValue(points);
-                                        blue.setVisibility(View.INVISIBLE);
+                                        blue.setVisibility(View.GONE);
                                         if (hand > 0) {
-                                            RotateRight();
+
+                                                RotateRight();
+
                                         } else {
-                                            Rotateleft();
+
+                                                Rotateleft();
+
 
                                         }
 
@@ -193,11 +213,16 @@ public class ArmGameActivity extends AppCompatActivity{
                                 break;
                             case 3:
 
+                                if (hand > 0) {
+                                    RotateRight();
+                                } else {
+                                    Rotateleft();
+                                }
                                 mTextField.setVisibility(GONE);
                                 green.setVisibility(View.VISIBLE);
-                                blue.setVisibility(View.INVISIBLE);
-                                red.setVisibility(View.INVISIBLE);
-                                yellow.setVisibility(View.INVISIBLE);
+                                blue.setVisibility(View.GONE);
+                                red.setVisibility(View.GONE);
+                                yellow.setVisibility(View.GONE);
                                 green.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -215,11 +240,16 @@ public class ArmGameActivity extends AppCompatActivity{
                                         }
 
                                         MyRef.child(player).child("Score").setValue(points);
-                                        green.setVisibility(View.INVISIBLE);
+                                        green.setVisibility(View.GONE);
                                         if (hand > 0) {
-                                            RotateRight();
+
+                                                RotateRight();
+
                                         } else {
-                                            Rotateleft();
+
+                                                Rotateleft();
+
+
 
                                         }
                                     }
@@ -227,11 +257,17 @@ public class ArmGameActivity extends AppCompatActivity{
                                 break;
 
                             case 4:
+
+                                if (hand > 0) {
+                                    RotateRight();
+                                } else {
+                                    Rotateleft();
+                                }
                                 mTextField.setVisibility(GONE);
                                 yellow.setVisibility(View.VISIBLE);
-                                blue.setVisibility(View.INVISIBLE);
-                                red.setVisibility(View.INVISIBLE);
-                                green.setVisibility(View.INVISIBLE);
+                                blue.setVisibility(View.GONE);
+                                red.setVisibility(View.GONE);
+                                green.setVisibility(View.GONE);
                                 yellow.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -248,12 +284,11 @@ public class ArmGameActivity extends AppCompatActivity{
                                             hand = points * (-1);
                                         }
                                         MyRef.child(player).child("Score").setValue(points);
-                                        yellow.setVisibility(View.INVISIBLE);
+                                        yellow.setVisibility(View.GONE);
                                         if (hand > 0) {
-                                            RotateRight();
-                                        } else {
-                                            Rotateleft();
-
+                                            RotateRight();}
+                                         else {
+                                                Rotateleft();
                                         }
                                     }
                                 });
@@ -306,12 +341,17 @@ public class ArmGameActivity extends AppCompatActivity{
 
             }
 
-
             public void onFinish() {
+
 
                 Intent intent = new Intent(ArmGameActivity.this, MapsActivity.class);
                 startActivity(intent);
                 finish();
+
+                nameRef.child("User").child(auth.getUid()).child("challenged").setValue("no");
+                nameRef.child("User").child(auth.getUid()).child("inarmgame").setValue(false);
+
+                nameRef.child("User").child(auth.getUid()).child("challengedBet").setValue(0);
                 MyRef.removeEventListener(mListener);
 
                 MyRef.child(player).removeValue();
@@ -323,10 +363,12 @@ public class ArmGameActivity extends AppCompatActivity{
 
     public void Missclick(View view){
         if(playerstatus == 1){
-            points --;
+            points = points - 1;
+            MyRef.child(player).child("Score").setValue(points);
         }
         if (playerstatus == 2){
-            points ++;
+            points = points +1;
+            MyRef.child(player).child("Score").setValue(points);
         }
 
     }
@@ -343,36 +385,33 @@ public class ArmGameActivity extends AppCompatActivity{
         imageView.setTranslationY(hand* - 10);
     }
     public void RotateRight(){
+            ImageView imageView = findViewById(R.id.käsiview);
+            imageView.setRotation(hand * 5);
+            imageView.getRight();
+            imageView.setTranslationX(hand * 18);
+            imageView.setTranslationY(hand * 10);
 
-        ImageView imageView = findViewById(R.id.käsiview);
-        imageView.setRotation(hand*5);
-        imageView.getRight();
-        imageView.setTranslationX(hand* 18);
-        imageView.setTranslationY(hand*  10);
     }
 
     public void HandleVictory(long score){
-
         red.setVisibility(View.GONE);
         blue.setVisibility(View.GONE);
         yellow.setVisibility(View.GONE);
         green.setVisibility(View.GONE);
 
-        if(score <= 19 && playerstatus == 2){
-            transaction.addMoney(bet*2);
-            Toast.makeText(getApplicationContext(), "You Won!" + "You got " + bet*2 + "Money!",
-                    Toast.LENGTH_SHORT).show();
+        if(score > 18 && playerstatus == 2){
 
+            transaction.addMoney(bet*2);
+            Toast.makeText(getApplicationContext(), getString(R.string.armwin) + bet*2 + getString(R.string.money),
+                    Toast.LENGTH_SHORT).show();
         }
-        else if(score >= -19 && playerstatus == 1){
+        else if (score < -18 && playerstatus == 1){
             transaction.addMoney(bet*2);
-
-            Toast.makeText(getApplicationContext(), "You Won!" + "You got " + bet*2 + "Money!",
+            Toast.makeText(getApplicationContext(), getString(R.string.armwin) + bet*2 + getString(R.string.money),
                     Toast.LENGTH_SHORT).show();
-
         }
         else {
-            Toast.makeText(getApplicationContext(), "You Lost!",
+            Toast.makeText(getApplicationContext(), R.string.lost,
                     Toast.LENGTH_SHORT).show();
 
         }

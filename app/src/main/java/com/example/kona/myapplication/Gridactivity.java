@@ -21,7 +21,7 @@ public class Gridactivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gridactivity);
         text = findViewById(R.id.GridText);
-        text.setText("PRESS ANYWHERE TO START");
+        text.setText(R.string.startgridgame);
         PixelGridView pixelGrid = findViewById(R.id.pixelGridView);
         pixelGrid.setNumColumns(7);
         pixelGrid.setNumRows(10);

@@ -2,12 +2,15 @@ package com.example.kona.myapplication;
 
 import android.*;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +36,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import static android.support.constraint.Constraints.TAG;
 import static com.example.kona.myapplication.R.drawable.avatar_s2;
@@ -43,6 +47,8 @@ public class ProfileActivity extends AppCompatActivity {
     public FirebaseDatabase database = FirebaseDatabase.getInstance();
     final DatabaseReference nameref = database.getReference("Player");
     ArrayList<String> names = new ArrayList<>();
+    Locale myLocale;
+
 
     /**
      *  This list contains banned words and symbols
@@ -87,15 +93,11 @@ public class ProfileActivity extends AppCompatActivity {
     final String username = auth.getCurrentUser().getDisplayName();
     EditText newName;
     TextView namePlease,deleteyes,deleteno,areyousure;
-    Button changeName;
+    Button changeName,japan,en;
     RelativeLayout RL;
 
     ImageButton avatar;
-    ImageButton choice1;
-    ImageButton choice2;
-    ImageButton choice3;
-    ImageButton choice4;
-    ImageButton choice5;
+    ImageButton choice1,choice2,choice3,choice4,choice5;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +118,26 @@ public class ProfileActivity extends AppCompatActivity {
         areyousure = findViewById(R.id.areyousure);
         deleteno = findViewById(R.id.deleteno);
         deleteyes = findViewById(R.id.deleteyes);
+        en = findViewById(R.id.ukbtn);
+        japan = findViewById(R.id.japanbtn);
+        en.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setLocale("en");
+
+            }
+        });
+
+        japan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setLocale("ja");
+
+            }
+        });
+
+
+
 
         getDatabaseName();
         getDatabaseAvatar();
@@ -254,32 +276,32 @@ public class ProfileActivity extends AppCompatActivity {
                 }
 
                 if (names.contains(name)) {
-                    newName.setText("Name not available!");
+                    newName.setText(R.string.namenotavailph);
 
-                    Toast.makeText(getApplicationContext(), "Name not available, try again",
+                    Toast.makeText(getApplicationContext(), R.string.namenotavail,
                             Toast.LENGTH_SHORT).show();
 
                 }
 
                 if (checkNaughty(name) == false) {
-                    newName.setText("That's not allowed!");
+                    newName.setText(R.string.badnameph);
 
-                    Toast.makeText(getApplicationContext(), "Name can't have symbols or curses!",
+                    Toast.makeText(getApplicationContext(), R.string.badname,
                             Toast.LENGTH_SHORT).show();
                 }
 
                 if (name.length() > 15) {
-                    newName.setText("Name is too long!");
+                    newName.setText(R.string.nametoolongph);
 
-                    Toast.makeText(getApplicationContext(), "Name is Too long! (15)",
+                    Toast.makeText(getApplicationContext(), R.string.nametoolong,
                             Toast.LENGTH_SHORT).show();
 
                 }
 
                 if (name.length() < 3) {
-                    newName.setText("Name is too short!");
+                    newName.setText(R.string.tooshortnameph);
 
-                    Toast.makeText(getApplicationContext(), "Name is Too short! (3)",
+                    Toast.makeText(getApplicationContext(), R.string.tooshortname,
                             Toast.LENGTH_SHORT).show();
 
                 }
@@ -289,7 +311,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     namePlease.setVisibility(View.GONE);
 
-                    Toast.makeText(getApplicationContext(), "Name changed successfully",
+                    Toast.makeText(getApplicationContext(), R.string.namechanged,
                             Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(ProfileActivity.this, MapsActivity.class);
@@ -487,6 +509,28 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     }
+
+
+    public void setLocale(String lang) {
+
+        myLocale = new Locale(lang);
+
+        Resources res = getResources();
+
+        DisplayMetrics dm = res.getDisplayMetrics();
+
+        Configuration conf = res.getConfiguration();
+
+        conf.locale = myLocale;
+
+        res.updateConfiguration(conf, dm);
+
+        Intent refresh = new Intent(this, ProfileActivity.class);
+
+        startActivity(refresh);
+
+    }
+
 
     public void hideAreYouSure(View view){
 

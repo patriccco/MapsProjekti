@@ -99,7 +99,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="log out"
+        android:text="@string/logout"
         android:textColor="#def9f8"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -118,7 +118,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="delete profile"
+        android:text="@string/deleteprofile"
         android:textColor="#def9f8"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -170,6 +170,38 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.394" />
 
+    <Button
+        android:id="@+id/japanbtn"
+        android:layout_width="90dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/japan"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.715"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/ukbtn"
+        android:layout_width="85dp"
+        android:layout_height="71dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/uk"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
     <RelativeLayout
         android:id="@+id/relativeavatar"
         android:layout_width="0dp"
@@ -194,9 +226,7 @@
             android:layout_alignTop="@+id/imageButton4"
             android:layout_centerHorizontal="true"
             android:background="@drawable/animepic1"
-            android:onClick="changeAvatar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/avatar" />
+            android:onClick="changeAvatar" />
 
         <ImageButton
             android:id="@+id/imageButton3"
@@ -206,9 +236,7 @@
             android:layout_marginStart="37dp"
             android:layout_toEndOf="@+id/imageButton2"
             android:background="@drawable/animepic2"
-            android:onClick="changeAvatar"
-            app:layout_constraintStart_toEndOf="@+id/imageButton2"
-            app:layout_constraintTop_toBottomOf="@+id/avatar" />
+            android:onClick="changeAvatar"/>
 
         <ImageButton
             android:id="@+id/imageButton4"
@@ -219,9 +247,7 @@
             android:layout_marginStart="30dp"
             android:layout_marginTop="26dp"
             android:background="@drawable/animepic3"
-            android:onClick="changeAvatar"
-            app:layout_constraintStart_toEndOf="@+id/imageButton3"
-            app:layout_constraintTop_toBottomOf="@+id/avatar" />
+            android:onClick="changeAvatar"/>
 
         <ImageButton
             android:id="@+id/imageButton5"

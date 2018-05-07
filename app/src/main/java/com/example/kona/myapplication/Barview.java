@@ -75,13 +75,6 @@ public class Barview extends AppCompatActivity {
 
                 UserPlace = dataSnapshot.child(auth.getUid()).child("Place").getValue().toString();
                 curUser = dataSnapshot.child(auth.getUid()).child("name").getValue().toString();
-
-
-               /* newquest = (Boolean)dataSnapshot.child(auth.getUid()).child("Quest").child("newQuest").getValue();
-                if (newquest == true){
-                    finish();
-                }*/
-
                 inarmgame = (Boolean)dataSnapshot.child(auth.getUid()).child("inarmgame").getValue();
 
 
@@ -119,7 +112,6 @@ public class Barview extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         challengedplayer = adapter.getItem(i);
-                        Log.e("User", "" + challengedplayer);
                         challengewindow(challengedplayer);
 
 
@@ -151,7 +143,7 @@ public class Barview extends AppCompatActivity {
     public void challengewindow(String player) {
         armchal = findViewById(R.id.armchallenge);
         playertext = findViewById(R.id.challengedplayer);
-        playertext.setText("Challenge " + "\n" + player);
+        playertext.setText(getString(R.string.challenge) + "\n" + player);
         playertext.setVisibility(View.VISIBLE);
         armchal.setVisibility(View.VISIBLE);
         //TODO tehdäänkö molemmille peleille omat challengit vai käytetäänkö if/switch
@@ -178,7 +170,7 @@ public class Barview extends AppCompatActivity {
                 decline = findViewById(R.id.declinearm);
                 challengerTextView = findViewById(R.id.armchallenger);
                 TimeTextView = findViewById(R.id.time);
-                challengerTextView.setText(opponent + " Challenged " + "\n" + "You" + " for " + bet + "!");
+                challengerTextView.setText(opponent + getString(R.string.challenged) + "\n" + getString(R.string.you) + getString(R.string.foramount) + bet + "!");
                 challengerTextView.setVisibility(View.VISIBLE);
                 accept.setVisibility(View.VISIBLE);
                 decline.setVisibility(View.VISIBLE);
@@ -421,7 +413,7 @@ public class Barview extends AppCompatActivity {
 
             }
             public void onFinish() {
-                Toast.makeText(getApplicationContext(), "Opponent did not accept",
+                Toast.makeText(getApplicationContext(), R.string.noaccept,
                         Toast.LENGTH_SHORT).show();
                 myRef.child("User").child(challengedId).child("challenged").setValue("no");
                 myRef.child("User").child(auth.getUid()).child("challenged").setValue("no");
@@ -458,6 +450,19 @@ public class Barview extends AppCompatActivity {
             }
 
         };
+
+        public void hideAll(View view){
+            TimeTextView.setVisibility(View.GONE);
+            accept.setVisibility(View.GONE);
+            decline.setVisibility(View.GONE);
+            playertext.setVisibility(View.GONE);
+            armchal.setVisibility(View.GONE);
+            turnChallenge.setVisibility(View.GONE);
+            bet20.setVisibility(View.GONE);
+            bet30.setVisibility(View.GONE);
+            bet40.setVisibility(View.GONE);
+
+        }
 
 
 

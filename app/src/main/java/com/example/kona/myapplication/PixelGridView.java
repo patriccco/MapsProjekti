@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.graphics.Color;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,7 +32,7 @@ import static com.firebase.ui.auth.AuthUI.getApplicationContext;
  * Class for the grid minigame
  */
 public class PixelGridView extends View {
-
+    FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     private String enemyname;
 
@@ -49,6 +50,8 @@ public class PixelGridView extends View {
     double start,finaltime;
     Transaction transaction = new Transaction();
     Quest Questobject = new Quest();
+
+    final DatabaseReference myRef = database.getReference("Player");
 
     Context context;
 
@@ -189,37 +192,54 @@ public class PixelGridView extends View {
 
         if(redcount==readycount && redcount != 0 && readycount !=0 ){
 
-            final DatabaseReference myRef = database.getReference("Enemies");
-            myRef.child("Current").addListenerForSingleValueEvent(new ValueEventListener() {
+            myRef.child(auth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     //Haetaan vihun tiedot, ensin nimi
-                    enemyname = dataSnapshot.getValue().toString();
+                    enemyname = dataSnapshot.child("enemy").getValue().toString();
                     if (finaltime < 3.000) {
-
-                        Toast toast= Toast.makeText(getContext(),
-                                "Success!  20 money awarded", Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.CENTER| Gravity.CENTER_HORIZONTAL, 0, 0);
-                        toast.show();
-                    }else {
-                        Toast toast= Toast.makeText(getContext(),
-                                "Too slow,  " + enemyname + " beat you ! \n  You lost 10 hp and your dignity", Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.CENTER| Gravity.CENTER_HORIZONTAL, 0, 0);
-                        toast.show();
+                        if(enemyname.equals("no")) {
+                            String settext = getContext().getString(R.string.questreward);
+                            Toast toast = Toast.makeText(getContext(),
+                                    settext, Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL, 0, 0);
+                            toast.show();
+                        }
+                        else {
+                            String settext = getContext().getString(R.string.enemyreward);
+                            String settext2 = getContext().getString(R.string.enemyreward2);
+                            Toast toast = Toast.makeText(getContext(),
+                                    settext + "\n" + settext2, Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL, 0, 0);
+                            toast.show();
+                        }
+                    }
+                    else {
+                        String settext = getContext().getString(R.string.tooslow);
+                        if(enemyname.equals("no")) {
+                            String settext2 = getContext().getString(R.string.missionfialed);
+                            Toast toast = Toast.makeText(getContext(),
+                                    settext + "\n" + settext2, Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL, 0, 0);
+                            toast.show();
+                        }else{
+                            Toast toast = Toast.makeText(getContext(),
+                                    settext + "\n" + enemyname + getContext().getString(R.string.enemybeatyou), Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL, 0, 0);
+                            toast.show();
+                        }
                     }
 
-                }
 
+                    handlevictory();
+                }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                 }
             });
 
-            handlevictory();
         }
-
-
 
 
     }
@@ -297,6 +317,7 @@ public class PixelGridView extends View {
 
         redcount = 0;
         readycount =0;
+        myRef.child("User").child(auth.getUid()).child("enemy").setValue("noenemy");
 
         Questobject.setQuest(0.01, 0.01, "noquest", "noquest", 0, false);
         Intent intent = new Intent(context,MapsActivity.class);

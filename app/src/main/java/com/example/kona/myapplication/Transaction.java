@@ -23,7 +23,6 @@ public class Transaction {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     public FirebaseDatabase database = FirebaseDatabase.getInstance();
     private int money, price, itemhp, userHP, currItem;
-    private int newUserHP, newUserMoney;
     private ArrayList<Item> playerItems = new ArrayList<>();
 
     public int getUserHP() {
