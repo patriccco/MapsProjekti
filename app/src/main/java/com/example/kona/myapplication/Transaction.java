@@ -22,7 +22,8 @@ public class Transaction {
     private final static String TAG = "TÄÄ";
     FirebaseAuth auth = FirebaseAuth.getInstance();
     public FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private int money, price, itemhp, userHP, currItem;
+    private int money, price, itemhp, userHP;
+    private int newUserHP, newUserMoney;
     private ArrayList<Item> playerItems = new ArrayList<>();
 
     public int getUserHP() {
@@ -57,15 +58,10 @@ public class Transaction {
         this.money = money;
     }
 
-    public void setCurrItem(int currItem) {
-        this.currItem = currItem;
-    }
-
-
     /**
      * Request users HP from database.
      */
-    public void checkHP() {
+    public void getPlayerHealth() {
         DatabaseReference HPRef = database.getReference("Player");
         HPRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -84,7 +80,9 @@ public class Transaction {
     }
 
     /**
-     * update users money to database
+     * Increases the amount of money the player has.
+     * The increased amount is equal to the price of
+     * the sold item.
      *
      * @param money
      */
@@ -94,12 +92,8 @@ public class Transaction {
         MoneyRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                long dbMoney = (long) dataSnapshot.child(auth.getUid()).child("Money").getValue();
-                setMoney((int) dbMoney);
-
-                final int totalMoney = getMoney() + money;
-                MoneyRef.child("User").child(auth.getUid()).child("Money").setValue(totalMoney);
-
+                final int moneyAfterSale = getMoney() + money;
+                MoneyRef.child("User").child(auth.getUid()).child("Money").setValue(moneyAfterSale);
             }
 
             @Override
@@ -133,29 +127,44 @@ public class Transaction {
      * The variable currItem is assigned by the ItemAdapter when an item is clicked
      * and represents the item the player is currently viewing.
      */
-    public void addItem(final ArrayList<Item> storeItems) {
-        final Item item = storeItems.get(currItem);
+    public void addItem(final Item item) {
         getPlayerMoney();
         if (validateMoney(money)) {
             if (checkForExistingItem(item)) {
-                updateItemAmount(item);
+                updateItemAmount(item, "buy");
             } else {
                 addNewItem(item);
             }
         } else {
-            //inform player that more money is needed
+            // do thing
         }
     }
 
-    public void updateItemAmount(final Item item) {
+    /**
+     * Increases and decreases the number of items the player is holding.
+     * @param item
+     * @param action
+     */
+    public void updateItemAmount(final Item item, final String action) {
         final DatabaseReference playerRef = database.getReference("Player");
         final Query query = playerRef.child("User").child("Items").orderByChild("name").equalTo(item.name);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                ++item.amount;
-                decreaseMoney(item.price);
+                switch (action) {
+                    case "buy":
+                        ++item.amount;
+                        decreaseMoney(item.price);
+                        break;
+                    case "sell":
+                        --item.amount;
+                        addMoney(item.value);
+                        break;
+                    case "use":
+                        --item.amount;
+                        break;
+                }
             }
 
             @Override
@@ -180,6 +189,122 @@ public class Transaction {
             }
         });
     }
+
+    /**
+     * Decreases the amount of the specified item in player's inventory.
+     * If item count reaches zero, the item entry is removed from player.
+     * @param item
+     */
+    public void removeItem(final Item item) {
+        if (item.amount > 1) {
+            final DatabaseReference playerRef = database.getReference("Player");
+            playerRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    --item.amount;
+                    DatabaseReference itemRef = playerRef.child("User").child(auth.getUid()).child("Items");
+                    itemRef.child(item.name).setValue(item);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+            //updateItemAmount(item, "sell");
+        } else {
+            final DatabaseReference playerRef = database.getReference("Player");
+            playerRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    DatabaseReference itemRef = playerRef.child("User").child(auth.getUid()).child("Items");
+                    itemRef.child(item.name).removeValue();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    /**
+     *
+     * @param item
+     */
+    void sellItem(final Item item) {
+        getPlayerMoney();
+        addMoney(item.value);
+        removeItem(item);
+    }
+
+    /**
+     * Updates player's "Power" row to correspond with the equipped weapon's power.
+     * @param item
+     */
+    public void equipWeapon(final Item item) {
+        final DatabaseReference playerRef = database.getReference("Player");
+        playerRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                DatabaseReference powerRef = playerRef.child("User").child(auth.getUid()).child("Power");
+                powerRef.setValue(item.power);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    public void useCurative(final Item item) {
+        removeItem(item);
+        final DatabaseReference playerRef = database.getReference("Player");
+        playerRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                DatabaseReference hpRef = playerRef.child("User").child(auth.getUid()).child("HP");
+                getPlayerHealth();
+                int currHealth = getUserHP();
+                int newHealth = currHealth + item.power;
+                hpRef.setValue(newHealth);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    /**
+     * Updates user's health to the database.
+     *
+     * @param damage
+     */
+
+    public void decreaseHealth(final int damage) {
+
+        final DatabaseReference playerRef = database.getReference("Player");
+        playerRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                DatabaseReference hpRef = playerRef.child("User").child(auth.getUid()).child("HP");
+                long dbHealth = (long) dataSnapshot.child(auth.getUid()).child("HP").getValue();
+                int currHealth = (int) dbHealth;
+                int newHealth = currHealth - damage;
+
+                hpRef.setValue(newHealth);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
 
     /**Compares the item to be added to the player's current items.
      * This is used to determine whether to update the Amount of an Item
@@ -218,42 +343,6 @@ public class Transaction {
         });
     }
 
-    public void removeItem(final ArrayList<Item> itemList) {
-        final DatabaseReference playerRef = database.getReference("Player");
-        playerRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Item item = itemList.get(currItem);
-                --item.amount;
-                DatabaseReference itemRef = playerRef.child("User").child(auth.getUid()).child("Items");
-                //itemRef.child(item).removeValue();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-/*
-    public void removeItem(final ArrayList<Item> itemList) {
-
-        final DatabaseReference playerRef = database.getReference("Player");
-        playerRef.child("User").addListenerForSingleValueEvent((new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Item item = itemList.get(currItem);
-                DatabaseReference itemRef = playerRef.child("User").child(auth.getUid()).child("Items");
-                itemRef.child(item).remove();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        }));
-    }*/
-
     /**
      * Return users Money amount from database.
      */
@@ -285,6 +374,25 @@ public class Transaction {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Subtracts health from enemy.
+     * @param power
+     */
+    public void attack(final int power) {
+        final DatabaseReference enemyRef = database.getReference("Player");
+        enemyRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                DatabaseReference hpRef = enemyRef.child("User").child(auth.getUid()).child("HP");
+                hpRef.setValue(power);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     // check the price of selected item
@@ -346,32 +454,4 @@ public class Transaction {
                 });
     }
 */
-
-    /**
-     * Update Users HP to database.
-     *
-     * @param hp
-     */
-
-    public void addHP(final int hp) {
-
-        final DatabaseReference hpRef = database.getReference("Player");
-        hpRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                long dbHP = (long) dataSnapshot.child(auth.getUid()).child("HP").getValue();
-                setUserHP((int) dbHP);
-
-
-                final int totalHP = getUserHP() + hp;
-                hpRef.child("User").child(auth.getUid()).child("HP").setValue(totalHP);
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
 }

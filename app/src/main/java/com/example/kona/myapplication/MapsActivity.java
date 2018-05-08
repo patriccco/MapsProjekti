@@ -937,5 +937,11 @@ public class MapsActivity extends FragmentActivity
         }
     }
 
+    /**test**/
+    public void demoBattle(View view) {
+        Intent battle = new Intent(this, BenderBattleActivity.class);
+        startActivity(battle);
+    }
+
 
 }

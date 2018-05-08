@@ -19,6 +19,8 @@
     <string name="qtimertext">Assignment</string>
     <string name="buy">buy</string>
     <string name="sell">sell</string>
+    <string name="buy_confirm">buy?</string>
+    <string name="sell_confirm">sell?</string>
     <string name="profile">profile</string>
     <string name="job">job</string>
     <string name="items">items</string>
@@ -78,4 +80,5 @@
     <string name="matrixdodge">Matrix dodge!</string>
     <string name="name">name</string>
     <string name="Challenge">Challenged</string>
+
 </resources>

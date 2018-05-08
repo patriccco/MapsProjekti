@@ -8,5 +8,7 @@ public class Item {
     public String type;
     public int price;
     public int value;
+    public int resId;
+    public int power; //curatives: healing power / weapons: attack power
     public int amount; //the default amount is zero
 }

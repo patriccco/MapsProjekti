@@ -1,7 +1,10 @@
 package com.example.kona.myapplication;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -48,6 +51,12 @@ public class InventoryActivity extends AppCompatActivity {
         imageLarge = findViewById(R.id.item_large);
         layoutManager = new LinearLayoutManager(this);
 
+        // Register to receive messages.
+        // Registers an observer (mMessageReceiver) to receive Intents
+        // with actions named "pass-item"
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("pass-item"));
+
         DatabaseReference itemRef = database.getReference("Player");
         itemRef.child("User").child(auth.getUid()).child("Items").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -60,11 +69,17 @@ public class InventoryActivity extends AppCompatActivity {
                     item.image = (String) snapshot.child("image").getValue();
                     item.type = (String) snapshot.child("type").getValue();
 
-                    //long itemAmount = (long) snapshot.child("Amount").getValue();
-                    //item.amount = (int) itemAmount;
+                    long itemPrice = (long) snapshot.child("price").getValue();
+                    item.price = (int) itemPrice;
+                    long itemValue = (long) snapshot.child("value").getValue();
+                    item.value = (int) itemValue;
+                    long itemPower = (long) snapshot.child("power").getValue();
+                    item.power = (int) itemPower;
+                    long itemAmount = (long) snapshot.child("amount").getValue();
+                    item.amount = (int) itemAmount;
 
                     String img = item.image;
-                    resId = getResources().getIdentifier(img,"drawable",getPackageName());
+                    item.resId = getResources().getIdentifier(img,"drawable",getPackageName());
 
                     itemList.add(item);
                 }
@@ -78,10 +93,39 @@ public class InventoryActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Receives the message passed by intent.
+     */
+    public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            currItem = (int) intent.getLongExtra("item",0);
+        }
+    };
+
+    public void useItem(View view) {
+        Transaction transaction = new Transaction();
+        Item toUse = itemList.get(currItem);
+        if (toUse.type.equals("Weapon")) {
+            transaction.equipWeapon(toUse);
+            Toast toast= Toast.makeText(getApplicationContext(),
+                    "Weapon equipped!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER_VERTICAL| Gravity.CENTER_HORIZONTAL, 0, 0);
+            toast.show();
+        } else {
+            transaction.useCurative(toUse);
+            Toast toast= Toast.makeText(getApplicationContext(),
+                    "Item used!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER_VERTICAL| Gravity.CENTER_HORIZONTAL, 0, 0);
+            toast.show();
+        }
+    }
+
     public void discardItem(View view) {
         Transaction transaction = new Transaction();
-        //returns the current List of items
-        transaction.addItem(itemList);
+        Item toDiscard = itemList.get(currItem);
+        transaction.removeItem(toDiscard);
 
         Toast toast= Toast.makeText(getApplicationContext(),
                 "Item discarded", Toast.LENGTH_LONG);

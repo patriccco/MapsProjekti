@@ -18,12 +18,10 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
-public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
+public class BattleAdapter extends RecyclerView.Adapter<BattleAdapter.ViewHolder> {
 
     private ArrayList<Item> items;
     private int resId;
-    private TextView itemInfo;
-    private ImageView img_l;
     private long currItem;
     Context context;
 
@@ -42,11 +40,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         }
     }
 
-    ItemAdapter(ArrayList<Item> items, int resId, TextView itemInfo, ImageView img_l) {
+    BattleAdapter(ArrayList<Item> items, int resId) {
         this.items = items;
         this.resId = resId;
-        this.itemInfo = itemInfo;
-        this.img_l = img_l;
     }
     /*
         ItemAdapter(Context context, ArrayList<Item> items) {
@@ -64,8 +60,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
     // Create new views (invoked by the layout manager)
     @Override
-    public ItemAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
+    public BattleAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                       int viewType) {
         // create a new view
         LayoutInflater inflater = LayoutInflater.from(
                 parent.getContext());
@@ -89,9 +85,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         holder.layout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                img_l.setImageResource(item.resId);
-                itemInfo.setText(item.info);
-
                 // gets the recycler position
                 currItem = holder.getAdapterPosition();
 

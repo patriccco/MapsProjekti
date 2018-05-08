@@ -55,10 +55,10 @@ public class ShopView extends AppCompatActivity{
         Tune.start();
 
         /**piilottaa status barin**/
-        View decorView = getWindow().getDecorView();
+        /*View decorView = getWindow().getDecorView();
         // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
+        decorView.setSystemUiVisibility(uiOptions);*/
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ShopView extends AppCompatActivity{
         DatabaseReference myRef = database.getReference("Player");
         myRef.child("User").child(auth.getUid()).child("Place").setValue("moving");
         super.onPause();
-        }
+    }
 
     /**
      * Buy from the shop
@@ -82,10 +82,10 @@ public class ShopView extends AppCompatActivity{
         startActivity(intent);
     }
 
-    /*public void sell(View view) {
+    public void sell(View view) {
         Intent intent = new Intent(this, SellActivity.class);
         startActivity(intent);
-    }*/
+    }
 
     /**
      * Switch the activity by view
@@ -94,12 +94,6 @@ public class ShopView extends AppCompatActivity{
     public void backToMap(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
-    }
-
-    public void toArmGame(View view){
-        Intent in = new Intent(this, ArmGameActivity.class);
-        startActivity(in);
-
     }
 
 }

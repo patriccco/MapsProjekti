@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/storepinkblur" >
+    android:background="@drawable/storeeblur" >
 
     <View
         android:id="@+id/center_horizontal"
@@ -12,7 +12,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:layout_centerHorizontal="true"
-        android:background="#CC661a29"/>
+        android:background="#ff005a"/>
 
     <View
         android:id="@+id/center_vertical"
@@ -22,7 +22,7 @@
         android:layout_marginEnd="20dp"
         android:layout_toEndOf="@+id/center_horizontal"
         android:layout_centerVertical="true"
-        android:background="#CC661a29"/>
+        android:background="#ff005a"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler"
@@ -44,7 +44,6 @@
             android:layout_height="120dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="24dp"
-            android:src="@mipmap/ic_launcher"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -79,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginStart="24dp"
-            android:text="buy item?"
+            android:text="@string/buy_confirm"
             android:textColor="#ffffff"
             android:textSize="25sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -98,42 +97,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/item_cost"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
-            android:layout_marginStart="24dp"
-            android:text="prize:"
-            android:textColor="#00ffc6"
-            android:textSize="25sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/buy_text"/>
-
-        <TextView
-            android:id="@+id/item_cost2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="5 cr"
-            android:textColor="#ff1868"
-            android:textSize="25sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.766"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/buy_text"
-            app:layout_constraintVertical_bias="0.312" />
-
         <ImageView
-            android:id="@+id/cryptidlogo"
+            android:id="@+id/user_money"
             android:layout_width="96dp"
             android:layout_height="93dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="64dp"
             android:elevation="12dp"
-            android:src="@drawable/avatar_s2"
-            app:layout_constraintTop_toBottomOf="@id/item_cost"
+            app:layout_constraintTop_toBottomOf="@id/buy_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent" />
 
@@ -141,7 +113,7 @@
             android:id="@+id/player_money"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="100 cr"
+            android:text=""
             android:textColor="#ff1868"
             android:textSize="25sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -149,7 +121,7 @@
             app:layout_constraintHorizontal_bias="0.803"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toStartOf="@id/cryptidlogo"
+            app:layout_constraintStart_toStartOf="@id/user_money"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.628" />
 

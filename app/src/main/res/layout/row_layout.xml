@@ -2,11 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="100dp"
-    android:padding="20dip" >
+    android:padding="20dip">
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true"
@@ -23,7 +23,6 @@
         android:layout_toEndOf="@id/icon"
         android:ellipsize="marquee"
         android:singleLine="true"
-        android:text="Held: 0"
         android:textColor="#ff1868"
         android:textSize="12sp" />
 
@@ -37,7 +36,6 @@
         android:layout_alignWithParentIfMissing="true"
         android:layout_toEndOf="@id/icon"
         android:gravity="center_vertical"
-        android:text="Sample item"
         android:textColor="#ff1868"
         android:textSize="16sp" />
 

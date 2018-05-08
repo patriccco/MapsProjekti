@@ -370,6 +370,18 @@
             map:layout_constraintTop_toTopOf="parent"
             map:layout_constraintVertical_bias="0.232" />
 
+        <Button
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="320dp"
+            android:layout_marginStart="52dp"
+            android:onClick="demoBattle"
+            app:srcCompat="@drawable/banana"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintStart_toStartOf="parent" />
+
+
     </android.support.constraint.ConstraintLayout>
 
 
