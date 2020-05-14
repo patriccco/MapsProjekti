@@ -5,11 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.provider.ContactsContract;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.content.LocalBroadcastManager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.widget.LinearLayoutManager;
+import androidx.appcompat.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -43,7 +43,6 @@ public class BenderBattleActivity extends AppCompatActivity {
     BenderBattle battle = new BenderBattle();
     ProgressBar pHealthBar;
     ProgressBar eHealthBar;
-
 
 
     @Override
@@ -180,6 +179,11 @@ public class BenderBattleActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Called when the Attack button is pressed in the battle view.
+     * Calls the required methods for one turn in the game.
+     * @param view
+     */
     public void attack(View view) {
         battle.attack(stats.power);
         battle.enemyAttack(eStats.power);
@@ -193,12 +197,17 @@ public class BenderBattleActivity extends AppCompatActivity {
         eHealthBar.setProgress(newEnemyHealth);
     }
 
+    /**
+     * Called when the Heal button is pressed in the battle view.
+     * Calls the required methods for the healing action.
+     * @param view
+     */
     public void useItem(View view) {
         Transaction transaction = new Transaction();
         Item toUse = itemList.get(currItem);
         transaction.useCurative(toUse);
         Toast toast= Toast.makeText(getApplicationContext(),
-                "Item used!", Toast.LENGTH_LONG);
+                "You healed!", Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER_VERTICAL| Gravity.CENTER_HORIZONTAL, 0, 0);
         toast.show();
 

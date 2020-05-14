@@ -4,11 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
+//import androidx.core.content.LocalBroadcastManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -104,6 +106,12 @@ public class InventoryActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Called when the Use button is pressed in the Inventory view.
+     * Checks whether the chosen item is a weapon or a curative
+     * and calls the required methods for the Use action.
+     * @param view
+     */
     public void useItem(View view) {
         Transaction transaction = new Transaction();
         Item toUse = itemList.get(currItem);
@@ -121,6 +129,7 @@ public class InventoryActivity extends AppCompatActivity {
             toast.show();
         }
     }
+
 
     public void discardItem(View view) {
         Transaction transaction = new Transaction();

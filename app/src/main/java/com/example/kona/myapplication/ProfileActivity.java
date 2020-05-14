@@ -1,14 +1,13 @@
 package com.example.kona.myapplication;
 
-import android.*;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -38,8 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static android.support.constraint.Constraints.TAG;
-import static com.example.kona.myapplication.R.drawable.avatar_s2;
+import static androidx.constraintlayout.Constraints.TAG;
 
 public class ProfileActivity extends AppCompatActivity {
 

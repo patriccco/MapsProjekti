@@ -127,7 +127,7 @@ public class Transaction {
      * The variable currItem is assigned by the ItemAdapter when an item is clicked
      * and represents the item the player is currently viewing.
      */
-    public void addItem(final Item item) {
+     void addItem(final Item item) {
         getPlayerMoney();
         if (validateMoney(money)) {
             if (checkForExistingItem(item)) {
@@ -173,6 +173,10 @@ public class Transaction {
         });
     }
 
+    /**
+     * Pushes a new Item for the player to the database.
+     * @param item
+     */
     public void addNewItem(final Item item) {
         final DatabaseReference playerRef = database.getReference("Player");
         playerRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -195,7 +199,7 @@ public class Transaction {
      * If item count reaches zero, the item entry is removed from player.
      * @param item
      */
-    public void removeItem(final Item item) {
+     void removeItem(final Item item) {
         if (item.amount > 1) {
             final DatabaseReference playerRef = database.getReference("Player");
             playerRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -210,7 +214,6 @@ public class Transaction {
                 public void onCancelled(DatabaseError databaseError) {
                 }
             });
-            //updateItemAmount(item, "sell");
         } else {
             final DatabaseReference playerRef = database.getReference("Player");
             playerRef.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -257,6 +260,12 @@ public class Transaction {
         });
     }
 
+    /**
+     * Updates player's health by the amount corresponding to the
+     * specified healing item's healing power
+     * and decreases the amount of specified healing item by 1.
+     * @param item
+     */
     public void useCurative(final Item item) {
         removeItem(item);
         final DatabaseReference playerRef = database.getReference("Player");

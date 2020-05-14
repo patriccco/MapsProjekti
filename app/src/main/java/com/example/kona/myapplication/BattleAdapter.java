@@ -6,8 +6,8 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,7 +96,7 @@ public class BattleAdapter extends RecyclerView.Adapter<BattleAdapter.ViewHolder
         });
     }
 
-    // Return the size of dataset (invoked by the layout manager)
+    // Return the size of data set (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return items.size();

@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://C:\Users\Lenovo\Desktop\tiisai\MapsProjekti\.idea\1.5.versio.iml" filepath="C:\Users\Lenovo\Desktop\tiisai\MapsProjekti\.idea\1.5.versio.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/MapsProjekti.iml" filepath="$PROJECT_DIR$/.idea/MapsProjekti.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MapsProjekti.iml" filepath="$PROJECT_DIR$/MapsProjekti.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\Lenovo\Desktop\tiisai\MapsProjekti\app\app.iml" filepath="C:\Users\Lenovo\Desktop\tiisai\MapsProjekti\app\app.iml" />
     </modules>
   </component>
 </project>
